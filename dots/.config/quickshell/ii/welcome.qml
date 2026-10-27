@@ -28,7 +28,7 @@ ApplicationWindow {
         Quickshell.execDetached(["notify-send", Translation.tr("Welcome app"), Translation.tr("Enjoy! You can reopen the welcome app any time with <tt>Super+Shift+Alt+/</tt>. To open the settings app, hit <tt>Super+I</tt>"), "-a", "Shell"]);
         Qt.quit();
     }
-    title: Translation.tr("illogical-impulse Welcome")
+    title: Translation.tr("Artificial Impulse Welcome")
 
     Component.onCompleted: {
         MaterialThemeLoader.reapplyTheme();
@@ -445,14 +445,14 @@ ApplicationWindow {
                             materialIcon: "help"
                             mainText: Translation.tr("Usage")
                             onClicked: {
-                                Qt.openUrlExternally("https://end-4.github.io/dots-hyprland-wiki/en/ii-qs/02usage/");
+                                Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland#develop");
                             }
                         }
                         RippleButtonWithIcon {
                             materialIcon: "construction"
                             mainText: Translation.tr("Configuration")
                             onClicked: {
-                                Qt.openUrlExternally("https://end-4.github.io/dots-hyprland-wiki/en/ii-qs/03config/");
+                                Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland/blob/main/nix/README.md");
                             }
                         }
                     }
@@ -470,16 +470,10 @@ ApplicationWindow {
                             nerdIcon: "󰊤"
                             mainText: Translation.tr("GitHub")
                             onClicked: {
-                                Qt.openUrlExternally("https://github.com/end-4/dots-hyprland");
+                                Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland");
                             }
                         }
-                        RippleButtonWithIcon {
-                            materialIcon: "favorite"
-                            mainText: "Funny number"
-                            onClicked: {
-                                Qt.openUrlExternally("https://github.com/sponsors/end-4");
-                            }
-                        }
+
                     }
                 }
 

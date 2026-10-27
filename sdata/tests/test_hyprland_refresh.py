@@ -47,7 +47,7 @@ import QtQuick
 import Quickshell
 import "panelFamilies"
 ShellRoot {
-    property Component primaryPanels: Component { IllogicalImpulseFamily {} }
+    property Component primaryPanels: Component { ArtificialImpulseFamily {} }
     property Component alternatePanels: Component { WaffleFamily {} }
     Timer { interval: 300; running: true; onTriggered: { console.log("SHELL_TYPES_OK"); Qt.quit(); } }
 }

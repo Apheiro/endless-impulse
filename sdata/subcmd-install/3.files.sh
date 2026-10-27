@@ -1,3 +1,6 @@
+# Migrate the shell's preferences before installing the renamed runtime.
+python3 "${REPO_ROOT}/dots/.config/quickshell/ii/scripts/shell/branding.py"
+
 # This script is meant to be sourced.
 # It's not for directly running.
 printf "${STY_CYAN}[$0]: 3. Copying config files\n${STY_RST}"

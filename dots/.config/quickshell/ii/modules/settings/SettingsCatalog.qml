@@ -30,7 +30,7 @@ QtObject {
         { group: Translation.tr("Tools & services"), name: Translation.tr("Online services"), icon: "cloud", component: "ServicesConfig.qml",
           description: Translation.tr("Weather location, music recognition, AI instructions and network requests."), keywords: "weather gps fahrenheit music recognition ai prompt network clima musica inteligencia red ubicacion" },
         { group: Translation.tr("Tools & services"), name: Translation.tr("About"), icon: "info", component: "About.qml",
-          description: Translation.tr("System information and project details."), keywords: "about version distro help credits acerca version sistema ayuda" }
+          description: Translation.tr("System information and Artificial Impulse project details."), keywords: "about version distro help credits acerca version sistema ayuda" }
     ]
 
     function normalize(text) {

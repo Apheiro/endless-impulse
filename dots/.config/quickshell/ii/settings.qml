@@ -108,7 +108,7 @@ PanelWindow {
             Layout.leftMargin: 10
             StyledText {
                 Layout.fillWidth: true
-                text: Translation.tr("Settings")
+                text: "Artificial Impulse · " + Translation.tr("Settings")
                 font.pixelSize: Appearance.font.pixelSize.larger
                 font.weight: Font.Medium
             }

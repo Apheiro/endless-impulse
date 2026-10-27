@@ -2,7 +2,11 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-data=$(secret-tool lookup 'application' 'illogical-impulse')
+data=$(secret-tool lookup 'application' 'artificial-impulse')
+# Read existing credentials without deleting or rewriting their legacy entry.
+if [[ -z "$data" ]]; then
+    data=$(secret-tool lookup 'application' 'illogical-impulse')
+fi
 if [[ -z "$data" ]]; then
     if "${SCRIPT_DIR}/is_unlocked.sh"; then
         echo 'not found'

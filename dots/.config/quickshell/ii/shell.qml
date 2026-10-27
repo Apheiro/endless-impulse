@@ -63,7 +63,7 @@ ShellRoot {
     
     PanelFamilyLoader {
         identifier: "ii"
-        component: IllogicalImpulseFamily {}
+        component: ArtificialImpulseFamily {}
     }
 
     PanelFamilyLoader {
