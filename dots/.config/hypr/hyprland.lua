@@ -4,6 +4,8 @@
 -- Internal stuff --
 require("hyprland.lib")
 require("hyprland.services")
+local shortcuts = require("hyprland.services.shortcuts")
+shortcuts.start()
 
 -- Environment variables --
 require("hyprland.env")
@@ -42,3 +44,4 @@ end
 
 -- Shell overrides --
 require("hyprland.shellOverrides.main")
+shortcuts.finish()
