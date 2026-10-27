@@ -18,9 +18,42 @@ Scope {
     PanelWindow {
         id: panelWindow
         property string searchingText: ""
+        property real entranceProgress: 0
+        property real previewProgress: 0
         readonly property HyprlandMonitor monitor: Hyprland.monitorFor(panelWindow.screen)
         property bool monitorIsFocused: (Hyprland.focusedMonitor?.id == monitor?.id)
         visible: GlobalStates.overviewOpen
+
+        function resetEntrance() {
+            entranceAnimation.stop();
+            entranceProgress = 0;
+            previewProgress = 0;
+        }
+
+        Component.onCompleted: {
+            if (GlobalStates.overviewOpen) entranceAnimation.restart();
+        }
+
+        SequentialAnimation {
+            id: entranceAnimation
+            NumberAnimation {
+                target: panelWindow
+                property: "entranceProgress"
+                from: 0
+                to: 1
+                duration: 220
+                easing.type: Easing.OutCubic
+            }
+            PauseAnimation { duration: 40 }
+            NumberAnimation {
+                target: panelWindow
+                property: "previewProgress"
+                from: 0
+                to: 1
+                duration: 160
+                easing.type: Easing.OutCubic
+            }
+        }
 
         WlrLayershell.namespace: "quickshell:overview"
         WlrLayershell.layer: WlrLayer.Top
@@ -41,11 +74,13 @@ Scope {
         Connections {
             target: GlobalStates
             function onOverviewOpenChanged() {
+                panelWindow.resetEntrance();
                 if (!GlobalStates.overviewOpen) {
                     searchWidget.disableExpandAnimation();
                     overviewScope.dontAutoCancelSearch = false;
                     GlobalFocusGrab.dismiss();
                 } else {
+                    entranceAnimation.restart();
                     if (!overviewScope.dontAutoCancelSearch) {
                         searchWidget.cancelSearch();
                     }
@@ -71,6 +106,10 @@ Scope {
         Column {
             id: columnLayout
             visible: GlobalStates.overviewOpen
+            opacity: panelWindow.entranceProgress
+            transform: Translate {
+                y: -18 * (1 - panelWindow.entranceProgress)
+            }
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 top: parent.top
@@ -97,6 +136,7 @@ Scope {
                 active: GlobalStates.overviewOpen && (Config?.options.overview.enable ?? true)
                 sourceComponent: OverviewWidget {
                     screen: panelWindow.screen
+                    previewReveal: panelWindow.previewProgress
                     visible: (panelWindow.searchingText == "")
                 }
             }

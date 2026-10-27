@@ -16,6 +16,7 @@ Item { // Window
     property var windowData
     property var monitorData
     property var scale
+    property real revealProgress: 1
     property bool restrictToWorkspace: true
     property real widthRatio: {
         const widgetWidth = widgetMonitor.transform & 1 ? widgetMonitor.height : widgetMonitor.width;
@@ -58,7 +59,8 @@ Item { // Window
     y: initY
     width: targetWindowWidth
     height: targetWindowHeight
-    opacity: windowData.monitor == widgetMonitorId ? 1 : 0.4
+    opacity: revealProgress * (windowData.monitor == widgetMonitorId ? 1 : 0.4)
+    enabled: revealProgress > 0.5
 
     property real topLeftRadius
     property real topRightRadius
