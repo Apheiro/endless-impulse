@@ -24,17 +24,14 @@ Singleton {
 
     Process {
         id: checkConflictsProc
-        command: ["bash", "-c", `echo "$(pidof kded6);$(pidof mako dunst)"`]
+        // kded6 may own the shared tray registry; killing it loses app registrations.
+        // Quickshell can consume that registry without owning the watcher itself.
+        command: ["bash", "-c", "pidof mako dunst || true"]
         stdout: StdioCollector {
             onStreamFinished: {
                 const output = this.text;
-                const conflictingTrays = output.split(";")[0].trim().length > 0;
-                const conflictingNotifications = output.split(";")[1].trim().length > 0;
+                const conflictingNotifications = output.trim().length > 0;
                 var openDialog = false;
-                if (conflictingTrays) {
-                    if (!Config.options.conflictKiller.autoKillTrays) openDialog = true;
-                    else Quickshell.execDetached(["killall", "kded6"])
-                }
                 if (conflictingNotifications) {
                     if (!Config.options.conflictKiller.autoKillNotificationDaemons) openDialog = true;
                     else Quickshell.execDetached(["killall", "mako", "dunst"])

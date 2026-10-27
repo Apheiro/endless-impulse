@@ -23,6 +23,9 @@ ShellRoot {
     ReloadPopup {}
 
     Component.onCompleted: {
+        registerRuntime.running = true
+        // Legacy X11 applications need a bridge to the shared StatusNotifier registry.
+        Quickshell.execDetached(["sh", "-c", "command -v xembedsniproxy >/dev/null && (pidof xembedsniproxy >/dev/null || exec xembedsniproxy)"])
         MaterialThemeLoader.reapplyTheme()
         Hyprsunset.load()
         FirstRunExperience.load()
@@ -30,6 +33,17 @@ ShellRoot {
         Cliphist.refresh()
         Wallpapers.load()
         Updates.load()
+    }
+
+    Process {
+        id: registerRuntime
+        command: ["python3", Quickshell.shellPath("scripts/shell/control.py"), "register",
+            Quickshell.shellPath("shell.qml"), "qs"]
+    }
+
+    IpcHandler {
+        target: "health"
+        function ping(): string { return "ok"; }
     }
 
 
