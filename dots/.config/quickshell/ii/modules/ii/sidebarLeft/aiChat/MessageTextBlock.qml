@@ -62,6 +62,7 @@ ColumnLayout {
     function handleRenderedLatex(hash, force = false) {
         if (renderedLatexHashes.includes(hash) || force) {
             const imagePath = LatexRenderer.renderedImagePaths[hash];
+            if (!imagePath) return; // Keep the original formula when rendering fails.
             const markdownImage = `![latex](${imagePath})`;
 
             const expression = LatexRenderer.processedExpressions[hash];

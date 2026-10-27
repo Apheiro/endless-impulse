@@ -1,0 +1,9 @@
+{
+  "name": "dots-hyperland-math",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Upstream MathJax runtime for desktop formula rendering",
+  "dependencies": {
+    "mathjax": "4.1.3"
+  }
+}

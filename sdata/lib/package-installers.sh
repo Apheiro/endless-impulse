@@ -47,19 +47,19 @@ install-bibata(){
 }
 
 install-MicroTeX(){
-  x mkdir -p $REPO_ROOT/cache/MicroTeX
-  x cd $REPO_ROOT/cache/MicroTeX
-  try git init -b master
-  try git remote add origin https://github.com/NanoMichael/MicroTeX.git
-  x git pull origin master && git submodule update --init --recursive
-  x mkdir -p build
-  x cd build
-  x cmake ..
-  x make -j32
-	x sudo mkdir -p /opt/MicroTeX
-  x sudo cp ./LaTeX /opt/MicroTeX/
-  x sudo cp -r ./res /opt/MicroTeX/
-  x cd $REPO_ROOT
+  # Compatibility entry point for the other distribution installers.
+  install-math-runtime
+}
+
+install-math-runtime(){
+  local runtime="${XDG_DATA_HOME:-$HOME/.local/share}/dots-hyperland/math"
+  command -v node >/dev/null && command -v npm >/dev/null || {
+    echo 'Install Node.js and npm before installing the formula renderer.' >&2
+    return 1
+  }
+  x mkdir -p "$runtime"
+  x cp "$REPO_ROOT/sdata/math/package.json" "$REPO_ROOT/sdata/math/package-lock.json" "$runtime/"
+  x npm ci --ignore-scripts --no-audit --no-fund --prefix "$runtime"
 }
 
 install-uv(){

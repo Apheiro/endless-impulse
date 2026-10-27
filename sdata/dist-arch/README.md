@@ -1,23 +1,28 @@
-# Install scripts for Arch Linux
+# Arch Linux dependencies
 
-- See also [Install scripts | illogical-impulse](https://ii.clsty.link/en/dev/inst-script/)
+The installer uses ordinary repository/AUR packages listed explicitly in
+`../dependencies/arch.json`. It does not build or install `illogical-impulse-*`
+packages. `quickshell` comes from Arch Extra; `bibata-cursor-theme-bin` is the
+upstream cursor package from AUR. Formula rendering uses upstream MathJax and
+its locally installed font package, locked by `../math/package-lock.json`.
 
-## Old Dependency Installation Method
-The old deps install method mainly involved `./sdata/dependencies.conf` (which has been removed now).
+List or check dependencies:
 
-## Current Dependency Installation
-Local PKGBUILDs under `./sdata/dist-arch/` are used to install dependencies.
+```bash
+python3 sdata/dependencies.py all
+python3 sdata/dependencies.py all --missing
+```
 
-The mechanism is introduced by [Makrennel](https://github.com/Makrennel) in [PR#570](https://github.com/end-4/dots-hyprland/pull/570).
+`./setup install-deps` installs these packages and the formula runtime. The
+normal full installer also configures services and copies files; it is not a
+preview. Uninstallation retains shared dependency packages.
 
-Why is this awesome?
-- It makes it possible to control version since some packages may involve breaking changes from time to time.
-- It makes the dependency trackable for package manager, so that you always know why you have installed some package.
-- As a result, it enables a workable uninstall process.
+For an existing installation, preserve the dependencies of the old metapackages
+as explicit packages before removing the wrappers. Do not use recursive removal
+or disable dependency checks. Back up installable packages before replacing
+Quickshell or cursor packages. Legacy package names remain in the manifest only
+as a migration inventory.
 
-The PKGBUILDs contains two forms of dependencies:
-- Package name written in dependencies, like a "meta" package.
-- Normal PKGBUILD content to build dependencies, e.g. AGS, which is often for version controlling.
-
-## Note
-- `pkgver()` should be removed from `PKGBUILD` cuz it will modify the `PKGBUILD` which is tracked by Git and should not be modified during building.
+Hyprland, GPU drivers, audio/network services, authentication agents and screen
+locking remain host responsibilities. See `../dist-nix/README.md` for the
+separate, locked application runtime.

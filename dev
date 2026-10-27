@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+set -euo pipefail
+root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+cd "$root"
+command -v nix >/dev/null || { echo 'Install Nix first. See nix/README.md.' >&2; exit 1; }
+export DOTS_SHELL_SOURCE="$root/dots/.config/quickshell/ii"
+nix_cmd=(nix --extra-experimental-features 'nix-command flakes')
+action="${1:-run}"
+if (($#)); then shift; fi
+case "$action" in
+  run) exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@" ;;
+  settings) exec "${nix_cmd[@]}" run "$root#settings" -- --no-duplicate "$@" ;;
+  stop) exec "${nix_cmd[@]}" run "$root#default" -- kill "$@" ;;
+  restart)
+    "${nix_cmd[@]}" run "$root#default" -- kill
+    exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@"
+    ;;
+  build) exec "${nix_cmd[@]}" build "$root#default" "$@" ;;
+  check) exec "${nix_cmd[@]}" develop "$root" --command python3 -m unittest discover -s sdata/tests -v "$@" ;;
+  *) echo 'Usage: ./dev [run|settings|stop|restart|build|check]' >&2; exit 2 ;;
+esac
