@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import "hyprland" as Ipc
 
 /**
  * Provides access to some Hyprland data not available in Quickshell.Hyprland.
@@ -44,30 +45,108 @@ Singleton {
         return root.windowByAddress[address];
     }
 
-    // Internals
+    // Coalesce bursts into bounded windows; never cancel an in-flight query.
+    readonly property int clientsFlag: 1
+    readonly property int workspacesFlag: 2
+    readonly property int activeWorkspaceFlag: 4
+    readonly property int monitorsFlag: 8
+    readonly property int layersFlag: 16
+    readonly property int allFlags: 31
+    property int pendingUpdates: 0
+    property var lastPayloads: ({})
+    readonly property var queryJobs: [getClients, getWorkspaces, getActiveWorkspace, getMonitors, getLayers]
 
-    function updateWindowList() {
-        getClients.running = true;
+    function queueUpdates(flags) {
+        pendingUpdates |= flags;
+        // Starting only once avoids starvation during a continuous event stream.
+        if (pendingUpdates && !refreshTimer.running) refreshTimer.start();
     }
 
-    function updateLayers() {
-        getLayers.running = true;
+    function flushUpdates() {
+        for (const job of queryJobs) {
+            if ((pendingUpdates & job.queryFlag) && !job.running) {
+                pendingUpdates &= ~job.queryFlag;
+                job.running = true;
+            }
+        }
+        // Busy queries keep their pending bit and schedule it when they finish.
     }
 
-    function updateMonitors() {
-        getMonitors.running = true;
+    function queryFinished(name, exitCode) {
+        if (exitCode !== 0) console.warn("[HyprlandData] Query failed:", name, exitCode);
+        if (pendingUpdates && !refreshTimer.running) refreshTimer.start();
     }
 
-    function updateWorkspaces() {
-        getWorkspaces.running = true;
-        getActiveWorkspace.running = true;
+    function updateWindowList() { queueUpdates(clientsFlag); }
+    function updateLayers() { queueUpdates(layersFlag); }
+    function updateMonitors() { queueUpdates(monitorsFlag); }
+    function updateWorkspaces() { queueUpdates(workspacesFlag | activeWorkspaceFlag); }
+    function updateAll() { queueUpdates(allFlags); }
+
+    function handleEvent(name) {
+        if (["submap", "activelayout", "screencast"].includes(name)) return;
+        if (name === "configreloaded" || name.startsWith("monitor")) {
+            updateAll();
+        } else if (name === "openlayer" || name === "closelayer") {
+            updateLayers();
+        } else if (name === "focusedmon") {
+            queueUpdates(monitorsFlag | workspacesFlag | activeWorkspaceFlag);
+        } else if (name.startsWith("workspace") || name.startsWith("createworkspace")
+                   || name.startsWith("destroyworkspace") || name.startsWith("moveworkspace")
+                   || name === "renameworkspace" || name.startsWith("activespecial")) {
+            queueUpdates(clientsFlag | workspacesFlag | activeWorkspaceFlag | monitorsFlag);
+        } else if (name.startsWith("openwindow") || name.startsWith("closewindow") || name.startsWith("movewindow")) {
+            queueUpdates(clientsFlag | workspacesFlag | activeWorkspaceFlag);
+        } else if (name.startsWith("activewindow") || name === "fullscreen") {
+            queueUpdates(clientsFlag | workspacesFlag | activeWorkspaceFlag);
+        } else if (name.startsWith("window") || ["changefloatingmode", "pin", "urgent", "minimize", "moveintogroup", "moveoutofgroup", "togglegroup", "ignoregrouplock", "lockgroups"].includes(name)) {
+            updateWindowList();
+        } else {
+            // Preserve correctness for new/unknown events instead of silently missing updates.
+            updateAll();
+        }
     }
 
-    function updateAll() {
-        updateWindowList();
-        updateMonitors();
-        updateLayers();
-        updateWorkspaces();
+    function applyResult(name, text) {
+        const payload = text.trim();
+        if (lastPayloads[name] === payload) return;
+        try {
+            const data = JSON.parse(payload);
+            const listQuery = ["clients", "workspaces", "monitors"].includes(name);
+            if (listQuery ? !Array.isArray(data) || data.some(item => item === null || typeof item !== "object")
+                          : data === null || typeof data !== "object" || Array.isArray(data)) {
+                throw new Error("Unexpected response type");
+            }
+            if (name === "clients") {
+                const byAddress = {};
+                for (const win of data) {
+                    if (typeof win.address !== "string") throw new Error("Missing window address");
+                    byAddress[win.address] = win;
+                }
+                root.windowList = data;
+                root.windowByAddress = byAddress;
+                root.addresses = data.map(win => win.address);
+            } else if (name === "workspaces") {
+                const valid = data.filter(ws => ws.id >= 1 && ws.id <= 100);
+                const byId = {};
+                for (const workspace of valid) byId[workspace.id] = workspace;
+                root.workspaces = valid;
+                root.workspaceById = byId;
+                root.workspaceIds = valid.map(ws => ws.id);
+            } else if (name === "activeworkspace") root.activeWorkspace = data;
+            else if (name === "monitors") root.monitors = data;
+            else if (name === "layers") root.layers = data;
+            lastPayloads[name] = payload;
+        } catch (error) {
+            // A transient IPC failure must not clear the last valid desktop state.
+            console.warn("[HyprlandData] Invalid response:", name, error.message);
+        }
+    }
+
+    Timer {
+        id: refreshTimer
+        interval: 60
+        onTriggered: root.flushUpdates()
     }
 
     function biggestWindowForWorkspace(workspaceId) {
@@ -80,87 +159,21 @@ Singleton {
     }
 
     Component.onCompleted: {
+        for (const job of queryJobs) {
+            job.resultReceived.connect(root.applyResult);
+            job.finished.connect(root.queryFinished);
+        }
         updateAll();
     }
 
     Connections {
         target: Hyprland
-
-        function onRawEvent(event) {
-            // console.log("Hyprland raw event:", event.name);
-            if (["openlayer", "closelayer", "screencast"].includes(event.name)) return;
-            updateAll()
-        }
+        function onRawEvent(event) { root.handleEvent(event.name); }
     }
 
-    Process {
-        id: getClients
-        command: ["hyprctl", "clients", "-j"]
-        stdout: StdioCollector {
-            id: clientsCollector
-            onStreamFinished: {
-                root.windowList = JSON.parse(clientsCollector.text)
-                let tempWinByAddress = {};
-                for (var i = 0; i < root.windowList.length; ++i) {
-                    var win = root.windowList[i];
-                    tempWinByAddress[win.address] = win;
-                }
-                root.windowByAddress = tempWinByAddress;
-                root.addresses = root.windowList.map(win => win.address);
-            }
-        }
-    }
-
-    Process {
-        id: getMonitors
-        command: ["hyprctl", "monitors", "-j"]
-        stdout: StdioCollector {
-            id: monitorsCollector
-            onStreamFinished: {
-                root.monitors = JSON.parse(monitorsCollector.text);
-            }
-        }
-    }
-
-    Process {
-        id: getLayers
-        command: ["hyprctl", "layers", "-j"]
-        stdout: StdioCollector {
-            id: layersCollector
-            onStreamFinished: {
-                root.layers = JSON.parse(layersCollector.text);
-            }
-        }
-    }
-
-    Process {
-        id: getWorkspaces
-        command: ["hyprctl", "workspaces", "-j"]
-        stdout: StdioCollector {
-            id: workspacesCollector
-            onStreamFinished: {
-                var rawWorkspaces = JSON.parse(workspacesCollector.text);
-                // Filter out invalid workspace ids (e.g. lock-screen temp workspace 2147483647 - N)
-                root.workspaces = rawWorkspaces.filter(ws => ws.id >= 1 && ws.id <= 100);
-                let tempWorkspaceById = {};
-                for (var i = 0; i < root.workspaces.length; ++i) {
-                    var ws = root.workspaces[i];
-                    tempWorkspaceById[ws.id] = ws;
-                }
-                root.workspaceById = tempWorkspaceById;
-                root.workspaceIds = root.workspaces.map(ws => ws.id);
-            }
-        }
-    }
-
-    Process {
-        id: getActiveWorkspace
-        command: ["hyprctl", "activeworkspace", "-j"]
-        stdout: StdioCollector {
-            id: activeWorkspaceCollector
-            onStreamFinished: {
-                root.activeWorkspace = JSON.parse(activeWorkspaceCollector.text);
-            }
-        }
-    }
+    Ipc.QueryProcess { id: getClients; queryName: "clients"; queryFlag: root.clientsFlag }
+    Ipc.QueryProcess { id: getWorkspaces; queryName: "workspaces"; queryFlag: root.workspacesFlag }
+    Ipc.QueryProcess { id: getActiveWorkspace; queryName: "activeworkspace"; queryFlag: root.activeWorkspaceFlag }
+    Ipc.QueryProcess { id: getMonitors; queryName: "monitors"; queryFlag: root.monitorsFlag }
+    Ipc.QueryProcess { id: getLayers; queryName: "layers"; queryFlag: root.layersFlag }
 }
