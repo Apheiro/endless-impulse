@@ -16,6 +16,8 @@ RowLayout {
     Layout.rightMargin: 8
 
     RowLayout {
+        Layout.fillWidth: true
+        Layout.minimumWidth: 0
         spacing: 10
         OptionalMaterialSymbol {
             icon: root.icon
@@ -24,7 +26,9 @@ RowLayout {
         StyledText {
             id: labelWidget
             Layout.fillWidth: true
+            Layout.minimumWidth: 0
             text: root.text
+            wrapMode: Text.WordWrap
             color: Appearance.colors.colOnSecondaryContainer
             opacity: root.enabled ? 1 : 0.4
         }

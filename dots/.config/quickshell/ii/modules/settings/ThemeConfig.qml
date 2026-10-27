@@ -1,16 +1,16 @@
 import QtQuick
 import QtQuick.Layouts
-import Qt5Compat.GraphicalEffects
 import Quickshell
-import Quickshell.Io
+import Quickshell.Widgets
 import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
+import Qt5Compat.GraphicalEffects
+import Quickshell.Io
 import qs.modules.common.functions
+import Quickshell.Hyprland
 
-ContentPage {
-    forceWidth: true
-
+SettingsPage {
     Process {
         id: randomWallProc
         property string status: ""
@@ -55,19 +55,25 @@ ContentPage {
         }
     }
 
-    // Wallpaper selection
-    ContentSection {
+
+
+    SettingsSection {
         icon: "format_paint"
         title: Translation.tr("Wallpaper & Colors")
         Layout.fillWidth: true
 
-        RowLayout {
+        GridLayout {
             Layout.fillWidth: true
+            columns: width >= 720 ? 2 : 1
+            rowSpacing: 12
+            columnSpacing: 16
 
             Item {
-                implicitWidth: 340
+                Layout.fillWidth: true
+                Layout.preferredWidth: 340
+                Layout.minimumWidth: 0
                 implicitHeight: 200
-                
+
                 StyledImage {
                     id: wallpaperPreview
                     anchors.fill: parent
@@ -77,8 +83,8 @@ ContentPage {
                     layer.enabled: true
                     layer.effect: OpacityMask {
                         maskSource: Rectangle {
-                            width: 360
-                            height: 200
+                            width: wallpaperPreview.width
+                            height: wallpaperPreview.height
                             radius: Appearance.rounding.normal
                         }
                     }
@@ -86,6 +92,7 @@ ContentPage {
             }
 
             ColumnLayout {
+                Layout.fillWidth: true
                 RippleButtonWithIcon {
                     enabled: !randomWallProc.running
                     visible: Config.options.policies.weeb === 1
@@ -226,72 +233,152 @@ ContentPage {
         }
     }
 
-    ContentSection {
-        icon: "screenshot_monitor"
-        title: Translation.tr("Bar & screen")
+    SettingsSection {
+        icon: "wallpaper_slideshow"
+        title: Translation.tr("Wallpaper selector")
+
+        ConfigSwitch {
+            buttonIcon: "ad"
+            text: Translation.tr('Use system file picker')
+            checked: Config.options.wallpaperSelector.useSystemFileDialog
+            onCheckedChanged: {
+                Config.options.wallpaperSelector.useSystemFileDialog = checked;
+            }
+        }
+    }
+
+    SettingsSection {
+        icon: "sync_alt"
+        title: Translation.tr("Parallax")
+
+        ConfigSwitch {
+            buttonIcon: "unfold_more_double"
+            text: Translation.tr("Vertical")
+            checked: Config.options.background.parallax.vertical
+            onCheckedChanged: {
+                Config.options.background.parallax.vertical = checked;
+            }
+        }
 
         ConfigRow {
-            ContentSubsection {
-                title: Translation.tr("Bar position")
-                ConfigSelectionArray {
-                    currentValue: (Config.options.bar.bottom ? 1 : 0) | (Config.options.bar.vertical ? 2 : 0)
-                    onSelected: newValue => {
-                        Config.options.bar.bottom = (newValue & 1) !== 0;
-                        Config.options.bar.vertical = (newValue & 2) !== 0;
-                    }
-                    options: [
-                        {
-                            displayName: Translation.tr("Top"),
-                            icon: "arrow_upward",
-                            value: 0 // bottom: false, vertical: false
-                        },
-                        {
-                            displayName: Translation.tr("Left"),
-                            icon: "arrow_back",
-                            value: 2 // bottom: false, vertical: true
-                        },
-                        {
-                            displayName: Translation.tr("Bottom"),
-                            icon: "arrow_downward",
-                            value: 1 // bottom: true, vertical: false
-                        },
-                        {
-                            displayName: Translation.tr("Right"),
-                            icon: "arrow_forward",
-                            value: 3 // bottom: true, vertical: true
-                        }
-                    ]
+            uniform: true
+            ConfigSwitch {
+                buttonIcon: "counter_1"
+                text: Translation.tr("Depends on workspace")
+                checked: Config.options.background.parallax.enableWorkspace
+                onCheckedChanged: {
+                    Config.options.background.parallax.enableWorkspace = checked;
                 }
             }
-            ContentSubsection {
-                title: Translation.tr("Bar style")
+            ConfigSwitch {
+                buttonIcon: "side_navigation"
+                text: Translation.tr("Depends on sidebars")
+                checked: Config.options.background.parallax.enableSidebar
+                onCheckedChanged: {
+                    Config.options.background.parallax.enableSidebar = checked;
+                }
+            }
+        }
+        ConfigSpinBox {
+            icon: "loupe"
+            text: Translation.tr("Preferred wallpaper zoom (%)")
+            value: Config.options.background.parallax.workspaceZoom * 100
+            from: 10
+            to: 200
+            stepSize: 1
+            onValueChanged: {
+                Config.options.background.parallax.workspaceZoom = value / 100;
+            }
+        }
+    }
 
-                ConfigSelectionArray {
-                    currentValue: Config.options.bar.cornerStyle
-                    onSelected: newValue => {
-                        Config.options.bar.cornerStyle = newValue; // Update local copy
-                    }
-                    options: [
-                        {
-                            displayName: Translation.tr("Hug"),
-                            icon: "line_curve",
-                            value: 0
-                        },
-                        {
-                            displayName: Translation.tr("Float"),
-                            icon: "page_header",
-                            value: 1
-                        },
-                        {
-                            displayName: Translation.tr("Rect"),
-                            icon: "toolbar",
-                            value: 2
-                        }
-                    ]
+    SettingsSection {
+        icon: "colors"
+        title: Translation.tr("Color generation")
+
+        ConfigSwitch {
+            buttonIcon: "hardware"
+            text: Translation.tr("Shell & utilities")
+            checked: Config.options.appearance.wallpaperTheming.enableAppsAndShell
+            onCheckedChanged: {
+                Config.options.appearance.wallpaperTheming.enableAppsAndShell = checked;
+            }
+        }
+        ConfigSwitch {
+            buttonIcon: "tv_options_input_settings"
+            text: Translation.tr("Qt apps")
+            checked: Config.options.appearance.wallpaperTheming.enableQtApps
+            onCheckedChanged: {
+                Config.options.appearance.wallpaperTheming.enableQtApps = checked;
+            }
+            StyledToolTip {
+                text: Translation.tr("Shell & utilities theming must also be enabled")
+            }
+        }
+        ConfigSwitch {
+            buttonIcon: "terminal"
+            text: Translation.tr("Terminal")
+            checked: Config.options.appearance.wallpaperTheming.enableTerminal
+            onCheckedChanged: {
+                Config.options.appearance.wallpaperTheming.enableTerminal = checked;
+            }
+            StyledToolTip {
+                text: Translation.tr("Shell & utilities theming must also be enabled")
+            }
+        }
+        ConfigRow {
+            uniform: true
+            ConfigSwitch {
+                buttonIcon: "dark_mode"
+                text: Translation.tr("Force dark mode in terminal")
+                checked: Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode
+                onCheckedChanged: {
+                     Config.options.appearance.wallpaperTheming.terminalGenerationProps.forceDarkMode= checked;
+                }
+                StyledToolTip {
+                    text: Translation.tr("Ignored if terminal theming is not enabled")
                 }
             }
         }
 
+        ConfigSpinBox {
+            icon: "invert_colors"
+            text: Translation.tr("Terminal: Harmony (%)")
+            value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony * 100
+            from: 0
+            to: 100
+            stepSize: 10
+            onValueChanged: {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony = value / 100;
+            }
+        }
+        ConfigSpinBox {
+            icon: "gradient"
+            text: Translation.tr("Terminal: Harmonize threshold")
+            value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold
+            from: 0
+            to: 100
+            stepSize: 10
+            onValueChanged: {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold = value;
+            }
+        }
+        ConfigSpinBox {
+            icon: "format_color_text"
+            text: Translation.tr("Terminal: Foreground boost (%)")
+            value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost * 100
+            from: 0
+            to: 100
+            stepSize: 10
+            onValueChanged: {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost = value / 100;
+            }
+        }
+    }
+
+    SettingsSection {
+        icon: "rounded_corner"
+        title: Translation.tr("Screen corners")
         ConfigRow {
             ContentSubsection {
                 title: Translation.tr("Screen round corner")
@@ -320,40 +407,7 @@ ContentPage {
                     ]
                 }
             }
-            
-        }
-    }
 
-    NoticeBox {
-        Layout.fillWidth: true
-        text: Translation.tr('Not all options are available in this app. You should also check the config file by hitting the "Config file" button on the topleft corner or opening %1 manually.').arg(Directories.shellConfigPath)
-
-        Item {
-            Layout.fillWidth: true
-        }
-        RippleButtonWithIcon {
-            id: copyPathButton
-            property bool justCopied: false
-            Layout.fillWidth: false
-            buttonRadius: Appearance.rounding.small
-            materialIcon: justCopied ? "check" : "content_copy"
-            mainText: justCopied ? Translation.tr("Path copied") : Translation.tr("Copy path")
-            onClicked: {
-                copyPathButton.justCopied = true
-                Quickshell.clipboardText = FileUtils.trimFileProtocol(`${Directories.config}/illogical-impulse/config.json`);
-                revertTextTimer.restart();
-            }
-            colBackground: ColorUtils.transparentize(Appearance.colors.colPrimaryContainer)
-            colBackgroundHover: Appearance.colors.colPrimaryContainerHover
-            colRipple: Appearance.colors.colPrimaryContainerActive
-
-            Timer {
-                id: revertTextTimer
-                interval: 1500
-                onTriggered: {
-                    copyPathButton.justCopied = false
-                }
-            }
         }
     }
 }

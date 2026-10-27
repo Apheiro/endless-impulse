@@ -1,0 +1,46 @@
+import QtQuick
+import qs.services
+
+QtObject {
+    // Keep navigation, descriptions and search terms together. Config keys stay unchanged.
+    readonly property var pages: [
+        { group: Translation.tr("Appearance"), name: Translation.tr("Wallpaper & colors"), icon: "palette", component: "ThemeConfig.qml",
+          description: Translation.tr("Wallpaper, color scheme, transparency and application themes."),
+          keywords: "theme dark light wallpaper color transparency parallax terminal qt fondo colores tema transparencia esquinas" },
+        { group: Translation.tr("Appearance"), name: Translation.tr("Typography"), icon: "text_fields", component: "FontsConfig.qml",
+          description: Translation.tr("Fonts for the interface, clocks, reading and icons."), keywords: "font text numbers monospace nerd fuente tipografia letras" },
+        { group: Translation.tr("Appearance"), name: Translation.tr("Bar & tray"), icon: "toolbar", component: "BarConfig.qml",
+          description: Translation.tr("Position, workspace indicators, tray icons and utility buttons."), keywords: "bar tray icons workspace weather tooltip barra bandeja iconos espacios" },
+        { group: Translation.tr("Desktop"), name: Translation.tr("Desktop widgets"), icon: "widgets", component: "WidgetsConfig.qml",
+          description: Translation.tr("Desktop clock styles, date, quotes and weather widgets."), keywords: "clock weather date quote digital analog reloj clima fecha widgets" },
+        { group: Translation.tr("Desktop"), name: Translation.tr("Panels & notifications"), icon: "dock_to_right", component: "PanelsConfig.qml",
+          description: Translation.tr("Dock, sidebars, quick controls, notification popups and volume indicators."), keywords: "dock sidebar notification osd brightness volume translator panels paneles notificaciones brillo volumen" },
+        { group: Translation.tr("Desktop"), name: Translation.tr("Overview & search"), icon: "overview", component: "OverviewConfig.qml",
+          description: Translation.tr("Workspace previews, overview layout and launcher search behavior."), keywords: "super windows preview rows columns launcher search prefix web ventanas workspaces buscar busqueda lanzador" },
+        { group: Translation.tr("Desktop"), name: Translation.tr("Shortcuts"), icon: "keyboard", component: "ShortcutsConfig.qml",
+          description: Translation.tr("Edit keyboard and mouse shortcuts and customize the shortcut guide."), keywords: "shortcut keybind keyboard mouse cheat sheet atajos teclado raton teclas" },
+        { group: Translation.tr("System"), name: Translation.tr("Sound & power"), icon: "battery_charging_full", component: "SystemConfig.qml",
+          description: Translation.tr("Volume protection, battery warnings, sounds and resource monitoring."), keywords: "audio battery suspend resources polling sound power energia bateria sonido volumen recursos" },
+        { group: Translation.tr("System"), name: Translation.tr("Language & time"), icon: "language", component: "LocaleConfig.qml",
+          description: Translation.tr("Interface language, translations and clock format."), keywords: "locale translation time clock language idioma traduccion hora formato segundos" },
+        { group: Translation.tr("System"), name: Translation.tr("Lock & privacy"), icon: "lock", component: "SecurityConfig.qml",
+          description: Translation.tr("Lock screen, authentication, content policies and clipboard privacy."), keywords: "lock password keyring privacy ai policy safety security bloqueo clave privacidad seguridad" },
+        { group: Translation.tr("Tools & services"), name: Translation.tr("Capture & overlays"), icon: "screenshot_region", component: "CaptureConfig.qml",
+          description: Translation.tr("Screen capture, region selection, crosshair, floating images and save locations."), keywords: "screenshot record capture overlay crosshair lens image path captura grabacion imagen rutas" },
+        { group: Translation.tr("Tools & services"), name: Translation.tr("Online services"), icon: "cloud", component: "ServicesConfig.qml",
+          description: Translation.tr("Weather location, music recognition, AI instructions and network requests."), keywords: "weather gps fahrenheit music recognition ai prompt network clima musica inteligencia red ubicacion" },
+        { group: Translation.tr("Tools & services"), name: Translation.tr("About"), icon: "info", component: "About.qml",
+          description: Translation.tr("System information and project details."), keywords: "about version distro help credits acerca version sistema ayuda" }
+    ]
+
+    function normalize(text) {
+        return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    }
+
+    function matches(index, query) {
+        const page = pages[index];
+        const terms = normalize(query).trim().split(/\s+/);
+        const haystack = normalize(`${page.group} ${page.name} ${page.description} ${page.keywords}`);
+        return terms.every(term => haystack.includes(term));
+    }
+}

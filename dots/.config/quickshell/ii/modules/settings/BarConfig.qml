@@ -4,10 +4,10 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 
-ContentPage {
+SettingsPage {
     forceWidth: true
 
-    ContentSection {
+    SettingsSection {
         icon: "notifications"
         title: Translation.tr("Notifications")
         ConfigSwitch {
@@ -19,8 +19,8 @@ ContentPage {
             }
         }
     }
-    
-    ContentSection {
+
+    SettingsSection {
         icon: "spoke"
         title: Translation.tr("Positioning")
 
@@ -85,7 +85,7 @@ ContentPage {
         }
 
         ConfigRow {
-            
+
             ContentSubsection {
                 title: Translation.tr("Corner style")
                 Layout.fillWidth: true
@@ -141,7 +141,7 @@ ContentPage {
         }
     }
 
-    ContentSection {
+    SettingsSection {
         icon: "shelf_auto_hide"
         title: Translation.tr("Tray")
 
@@ -153,7 +153,7 @@ ContentPage {
                 Config.options.tray.invertPinnedItems = checked;
             }
         }
-        
+
         ConfigSwitch {
             buttonIcon: "colors"
             text: Translation.tr('Tint icons')
@@ -164,7 +164,7 @@ ContentPage {
         }
     }
 
-    ContentSection {
+    SettingsSection {
         icon: "widgets"
         title: Translation.tr("Utility buttons")
 
@@ -238,7 +238,7 @@ ContentPage {
         }
     }
 
-    ContentSection {
+    SettingsSection {
         icon: "cloud"
         title: Translation.tr("Weather")
         ConfigSwitch {
@@ -251,7 +251,7 @@ ContentPage {
         }
     }
 
-    ContentSection {
+    SettingsSection {
         icon: "workspaces"
         title: Translation.tr("Workspaces")
 
@@ -335,7 +335,7 @@ ContentPage {
         }
     }
 
-    ContentSection {
+    SettingsSection {
         icon: "tooltip"
         title: Translation.tr("Tooltips")
         ConfigSwitch {

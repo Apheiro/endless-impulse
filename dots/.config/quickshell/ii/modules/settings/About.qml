@@ -6,10 +6,10 @@ import qs.services
 import qs.modules.common
 import qs.modules.common.widgets
 
-ContentPage {
+SettingsPage {
     forceWidth: true
 
-    ContentSection {
+    SettingsSection {
         icon: "box"
         title: Translation.tr("Distro")
         
@@ -78,7 +78,7 @@ ContentPage {
         }
 
     }
-    ContentSection {
+    SettingsSection {
         icon: "folder_managed"
         title: Translation.tr("Dotfiles")
 

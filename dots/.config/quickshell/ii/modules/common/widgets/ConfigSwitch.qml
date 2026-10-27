@@ -10,6 +10,7 @@ RippleButton {
     property alias iconSize: iconWidget.iconSize
 
     Layout.fillWidth: true
+    Layout.minimumWidth: 0
     implicitHeight: contentItem.implicitHeight + 8 * 2
     font.pixelSize: Appearance.font.pixelSize.small
     
@@ -26,7 +27,9 @@ RippleButton {
         StyledText {
             id: labelWidget
             Layout.fillWidth: true
+            Layout.minimumWidth: 0
             text: root.text
+            wrapMode: Text.WordWrap
             font: root.font
             color: Appearance.colors.colOnSecondaryContainer
             opacity: root.enabled ? 1 : 0.4
