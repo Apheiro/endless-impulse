@@ -59,6 +59,7 @@ PanelWindow {
     }
 
     Settings.SettingsCatalog { id: catalog }
+    Settings.DesktopPreviewPrompt { screen: root.screen }
 
     Component.onCompleted: {
         if (HyprlandData.monitors.some(monitor => monitor.focused)) finishOpening();

@@ -45,3 +45,6 @@ end
 -- Shell overrides --
 require("hyprland.shellOverrides.main")
 shortcuts.finish()
+
+-- Artificial Impulse desktop settings
+require("hyprland.services.desktop").load()
