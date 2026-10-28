@@ -8,7 +8,28 @@ import qs.modules.common.widgets
 
 SettingsPage {
     forceWidth: true
+    property alias installationMap: installationMap
 
+    SettingsSection {
+        icon: "memory"
+        title: "Artificial Impulse"
+
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("A fork of illogical-impulse.")
+            wrapMode: Text.WordWrap
+        }
+        RippleButtonWithIcon {
+            materialIcon: "code"
+            mainText: Translation.tr("Project repository")
+            onClicked: Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland")
+        }
+    }
+    SettingsSection {
+        icon: "account_tree"
+        title: Translation.tr("Installation map")
+        InstallationMap { id: installationMap }
+    }
     SettingsSection {
         icon: "box"
         title: Translation.tr("Distro")
@@ -78,19 +99,5 @@ SettingsPage {
         }
 
     }
-    SettingsSection {
-        icon: "memory"
-        title: "Artificial Impulse"
 
-        StyledText {
-            Layout.fillWidth: true
-            text: Translation.tr("A fork of illogical-impulse.")
-            wrapMode: Text.WordWrap
-        }
-        RippleButtonWithIcon {
-            materialIcon: "code"
-            mainText: Translation.tr("Project repository")
-            onClicked: Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland")
-        }
-    }
 }
