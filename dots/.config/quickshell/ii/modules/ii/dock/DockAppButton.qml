@@ -1,6 +1,7 @@
 import qs.services
 import qs.modules.common
 import qs.modules.common.functions
+import qs.modules.common.widgets
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
@@ -16,6 +17,8 @@ DockButton {
     property real countDotWidth: 10
     property real countDotHeight: 4
     property bool appIsActive: appToplevel.toplevels.find(t => (t.activated == true)) !== undefined
+
+    readonly property bool appIsMinimized: appToplevel.toplevels.length > 0 && appToplevel.toplevels.every(t => WindowMinimizer.isMinimized(t))
 
     readonly property bool isSeparator: appToplevel.appId === "SEPARATOR"
     property var desktopEntry: DesktopEntries.heuristicLookup(appToplevel.appId)
@@ -51,7 +54,6 @@ DockButton {
             onEntered: {
                 appListRoot.lastHoveredButton = root
                 appListRoot.buttonHovered = true
-                lastFocused = appToplevel.toplevels.length - 1
             }
             onExited: {
                 if (appListRoot.lastHoveredButton === root) {
@@ -66,8 +68,23 @@ DockButton {
             root.desktopEntry?.execute();
             return;
         }
-        lastFocused = (lastFocused + 1) % appToplevel.toplevels.length
-        appToplevel.toplevels[lastFocused].activate()
+        const windows = appToplevel.toplevels;
+        const active = windows.find(window => window.activated);
+        if (active) {
+            lastFocused = windows.indexOf(active);
+            WindowMinimizer.toggle(active);
+            return;
+        }
+        const remembered = windows[Math.max(0, Math.min(lastFocused, windows.length - 1))];
+        const target = windows.find(window => !WindowMinimizer.isMinimized(window)) ?? remembered;
+        lastFocused = windows.indexOf(target);
+        WindowMinimizer.activate(target);
+    }
+
+    StyledToolTip {
+        text: WindowMinimizer.error
+        extraVisibleCondition: root.hovered && WindowMinimizer.error !== ""
+            && root.appToplevel.toplevels.some(window => WindowMinimizer.address(window) === WindowMinimizer.errorAddress)
     }
 
     middleClickAction: () => {
@@ -94,6 +111,7 @@ DockButton {
                 sourceComponent: IconImage {
                     source: Quickshell.iconPath(AppSearch.guessIcon(appToplevel.appId), "image-missing")
                     implicitSize: root.iconSize
+                    opacity: root.appIsMinimized ? 0.55 : 1
                 }
             }
 
@@ -131,7 +149,10 @@ DockButton {
                         implicitWidth: (appToplevel.toplevels.length <= 3) ? 
                             root.countDotWidth : root.countDotHeight // Circles when too many
                         implicitHeight: root.countDotHeight
-                        color: appIsActive ? Appearance.colors.colPrimary : ColorUtils.transparentize(Appearance.colors.colOnLayer0, 0.4)
+                        readonly property bool minimized: WindowMinimizer.isMinimized(appToplevel.toplevels[index])
+                        color: minimized ? "transparent" : appIsActive ? Appearance.colors.colPrimary : ColorUtils.transparentize(Appearance.colors.colOnLayer0, 0.4)
+                        border.width: minimized ? 1 : 0
+                        border.color: Appearance.colors.colOnLayer0
                     }
                 }
             }

@@ -13,8 +13,6 @@ import qs.modules.common.functions
 
 Item {
     id: root
-    property real maxWindowPreviewHeight: 200
-    property real maxWindowPreviewWidth: 300
     property real windowControlsHeight: 30
     property real buttonPadding: 5
 
@@ -25,6 +23,8 @@ Item {
     Layout.fillHeight: true
     Layout.topMargin: Appearance.sizes.hyprlandGapsOut
     implicitWidth: listView.implicitWidth
+
+    DockPreviewCapture {}
 
     function popupCenterXForButton(button) {
         if (!button || !root.QsWindow)
@@ -110,7 +110,7 @@ Item {
             id: popupMouseArea
             anchors.bottom: parent.bottom
             implicitWidth: popupBackground.implicitWidth + Appearance.sizes.elevationMargin * 2
-            implicitHeight: root.maxWindowPreviewHeight + root.windowControlsHeight + Appearance.sizes.elevationMargin * 2
+            implicitHeight: 200 + root.windowControlsHeight + Appearance.sizes.elevationMargin * 2
             hoverEnabled: true
             x: previewPopup.cachedCenterX - width / 2
 
@@ -157,16 +157,19 @@ Item {
                             id: windowButton
                             Layout.fillHeight: true
                             required property var modelData
+                            readonly property bool minimized: WindowMinimizer.isMinimized(modelData)
+                            readonly property real previewX: popupMouseArea.x + popupBackground.x + previewRowLayout.x + x
+                            readonly property bool previewInView: previewX + width > 0 && previewX < previewPopup.width
                             padding: 0
                             middleClickAction: () => {
                                 windowButton.modelData?.close();
                             }
                             onClicked: {
-                                windowButton.modelData?.activate();
+                                WindowMinimizer.activate(windowButton.modelData);
                             }
                             contentItem: ColumnLayout {
-                                implicitWidth: screencopyView.implicitWidth
-                                implicitHeight: screencopyView.implicitHeight
+                                implicitWidth: thumbnail.implicitWidth
+                                implicitHeight: root.windowControlsHeight + thumbnail.implicitHeight
 
                                 ButtonGroup {
                                     contentWidth: parent.width - anchors.margins * 2
@@ -177,6 +180,22 @@ Item {
                                         text: windowButton.modelData?.title
                                         elide: Text.ElideRight
                                         color: Appearance.m3colors.m3onSurface
+                                    }
+                                    GroupButton {
+                                        colBackground: ColorUtils.transparentize(Appearance.colors.colSurfaceContainer)
+                                        baseWidth: root.windowControlsHeight
+                                        baseHeight: root.windowControlsHeight
+                                        buttonRadius: Appearance.rounding.full
+                                        contentItem: MaterialSymbol {
+                                            text: windowButton.minimized ? "open_in_full" : "minimize"
+                                            iconSize: Appearance.font.pixelSize.normal
+                                            horizontalAlignment: Text.AlignHCenter
+                                        }
+                                        onClicked: WindowMinimizer.minimize(windowButton.modelData)
+                                        StyledToolTip {
+                                            text: WindowMinimizer.error && WindowMinimizer.errorAddress === WindowMinimizer.address(windowButton.modelData)
+                                                ? WindowMinimizer.error : windowButton.minimized ? Translation.tr("Restore") : Translation.tr("Minimize")
+                                        }
                                     }
                                     GroupButton {
                                         id: closeButton
@@ -199,20 +218,21 @@ Item {
                                 Item {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
-                                    implicitHeight: screencopyView.height
-                                    implicitWidth: screencopyView.width
-                                    ScreencopyView {
-                                        id: screencopyView
+                                    implicitHeight: thumbnail.implicitHeight
+                                    implicitWidth: thumbnail.implicitWidth
+                                    DockWindowThumbnail {
+                                        id: thumbnail
                                         anchors.centerIn: parent
-                                        captureSource: windowButton.modelData
-                                        live: true
-                                        paintCursor: true
-                                        constraintSize: Qt.size(root.maxWindowPreviewWidth, root.maxWindowPreviewHeight)
+                                        width: implicitWidth
+                                        height: implicitHeight
+                                        toplevel: windowButton.modelData
+                                        minimized: windowButton.minimized
+                                        sampling: previewPopup.show && previewPopup.shouldShow && windowButton.previewInView
                                         layer.enabled: true
                                         layer.effect: OpacityMask {
                                             maskSource: Rectangle {
-                                                width: screencopyView.width
-                                                height: screencopyView.height
+                                                width: thumbnail.width
+                                                height: thumbnail.height
                                                 radius: Appearance.rounding.small
                                             }
                                         }
