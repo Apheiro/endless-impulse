@@ -1,3 +1,4 @@
+import qs.services
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -15,17 +16,17 @@ StyledImage {
 
     source: {
         if (!fileModelData.fileIsDir)
-            return Quickshell.iconPath("application-x-zerosize");
+            return IconTheme.iconPath("application-x-zerosize");
 
         if ([Directories.documents, Directories.downloads, Directories.music, Directories.pictures, Directories.videos].some(dir => FileUtils.trimFileProtocol(dir) === fileModelData.filePath))
-            return Quickshell.iconPath(`folder-${fileModelData.fileName.toLowerCase()}`);
+            return IconTheme.iconPath(`folder-${fileModelData.fileName.toLowerCase()}`);
 
-        return Quickshell.iconPath("inode-directory");
+        return IconTheme.iconPath("inode-directory");
     }
 
     onStatusChanged: {
         if (status === Image.Error)
-            source = Quickshell.iconPath("error");
+            source = IconTheme.iconPath("error");
     }
 
     Process {
@@ -34,7 +35,7 @@ StyledImage {
         stdout: StdioCollector {
             onStreamFinished: {
                 const mime = text.split(";")[0].replace("/", "-");
-                root.source = Images.validImageTypes.some(t => mime === `image-${t}`) ? fileModelData.fileUrl : Quickshell.iconPath(mime, "image-missing");
+                root.source = Images.validImageTypes.some(t => mime === `image-${t}`) ? fileModelData.fileUrl : IconTheme.iconPath(mime, "image-missing");
             }
         }
     }

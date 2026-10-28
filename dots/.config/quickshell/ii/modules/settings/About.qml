@@ -20,7 +20,7 @@ SettingsPage {
             Layout.bottomMargin: 10
             IconImage {
                 implicitSize: 80
-                source: Quickshell.iconPath(SystemInfo.logo)
+                source: IconTheme.iconPath(SystemInfo.logo)
             }
             ColumnLayout {
                 Layout.alignment: Qt.AlignVCenter

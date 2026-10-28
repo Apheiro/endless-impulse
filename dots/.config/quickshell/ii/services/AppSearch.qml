@@ -79,7 +79,7 @@ Singleton {
 
     function iconExists(iconName) {
         if (!iconName || iconName.length == 0) return false;
-        return (Quickshell.iconPath(iconName, true).length > 0) 
+        return (IconTheme.iconPath(iconName, true).length > 0)
             && !iconName.includes("image-missing");
     }
 
@@ -96,6 +96,7 @@ Singleton {
     }
 
     function guessIcon(str) {
+        if (IconTheme.aliases[str]) return IconTheme.aliases[str];
         if (!str || str.length == 0) return "image-missing";
 
         // Quickshell's desktop entry lookup

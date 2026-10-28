@@ -11,6 +11,7 @@ import qs.modules.common.functions
 import Quickshell.Hyprland
 
 SettingsPage {
+    property alias environmentPaths: environmentPaths
     Process {
         id: randomWallProc
         property string status: ""
@@ -410,4 +411,6 @@ SettingsPage {
 
         }
     }
+    EnvironmentPaths { id: environmentPaths; entries: IconTheme.colorPaths.concat(IconTheme.paths) }
+
 }

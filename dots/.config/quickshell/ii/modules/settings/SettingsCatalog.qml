@@ -7,6 +7,8 @@ QtObject {
         { group: Translation.tr("Appearance"), name: Translation.tr("Wallpaper & colors"), icon: "palette", component: "ThemeConfig.qml",
           description: Translation.tr("Wallpaper, color scheme, transparency and application themes."),
           keywords: "theme dark light wallpaper color transparency parallax terminal qt fondo colores tema transparencia esquinas" },
+        { group: Translation.tr("Appearance"), name: Translation.tr("Icons"), icon: "interests", component: "IconsConfig.qml",
+          description: Translation.tr("System icon themes, application overrides and environment configuration files."), keywords: "icons theme gtk qt kde applications overrides environment paths iconos tema aplicaciones entornos rutas" },
         { group: Translation.tr("Appearance"), name: Translation.tr("Typography"), icon: "text_fields", component: "FontsConfig.qml",
           description: Translation.tr("Fonts for the interface, clocks, reading and icons."), keywords: "font text numbers monospace nerd fuente tipografia letras" },
         { group: Translation.tr("Appearance"), name: Translation.tr("Bar & tray"), icon: "toolbar", component: "BarConfig.qml",
