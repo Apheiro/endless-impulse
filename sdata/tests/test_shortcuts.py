@@ -72,6 +72,14 @@ class ShortcutTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "edited externally"):
             shortcuts.read_overrides()
 
+    def test_list_reports_storage_without_creating_an_override_file(self):
+        with patch.object(shortcuts, "catalog", return_value=self.entries), patch.object(shortcuts.sys, "argv", ["shortcuts.py", "list"]):
+            result = shortcuts.main()
+        self.assertEqual(result["store"], str(shortcuts.STORE))
+        self.assertEqual(result["directory"], str(shortcuts.CONFIG))
+        self.assertFalse(result["storeExists"])
+        self.assertFalse(shortcuts.STORE.exists())
+
     def test_full_lua_catalog_and_linked_actions(self):
         # Execute the real keybind definitions with inert dispatchers, never the desktop.
         harness = r'''
@@ -107,6 +115,11 @@ print(count, remapped)
         first = execute()
         entries = shortcuts.catalog()
         self.assertGreater(len(entries), 100)
+        for trigger, category in [("SUPER + T", "App"), ("SUPER + code:10", "Workspace"),
+                                  ("XF86AudioRaiseVolume", "Media"), ("XF86MonBrightnessUp", "Screen")]:
+            entry = next(entry for entry in entries if entry["default"] == trigger)
+            self.assertEqual(entry["category"], category)
+        self.assertTrue(all(entry["category"] for entry in entries))
         for entry in entries:
             with self.subTest(shortcut=entry["default"]):
                 shortcuts.normalize(entry["default"])

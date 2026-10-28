@@ -24,6 +24,28 @@ local function identity(keys)
     return submap .. "|" .. table.concat(parts, "+")
 end
 
+local category_cache = {}
+local function source_category()
+    if not debug or not debug.getinfo then return "Other" end
+    local info = debug.getinfo(3, "Sl")
+    if not info or info.source:sub(1, 1) ~= "@" then return "Other" end
+    local path = info.source:sub(2)
+    if not category_cache[path] then
+        local categories, category = {}, path:match("/hyprland/keybinds%.lua$") and "Shell" or "Other"
+        local file = io.open(path, "r")
+        if file then
+            for line in file:lines() do
+                local heading = line:match("^%s*%-%-##!%s*(.-)%s*$")
+                if heading and heading ~= "" then category = heading end
+                table.insert(categories, ({Apps = "App", Workspaces = "Workspace", Windows = "Window"})[category] or category)
+            end
+            file:close()
+        end
+        category_cache[path] = categories
+    end
+    return category_cache[path][info.currentline] or "Other"
+end
+
 function M.start()
     local load = loadfile(config .. "/shortcuts.lua", "t", {})
     if load then
@@ -45,7 +67,9 @@ function M.start()
         local entry = entries[id]
         if not entry then
             entry = { id = id, default = keys, submap = submap, descriptions = {}, count = 0,
-                universal = false, ignore_mods = false }
+                universal = false, ignore_mods = false, category = source_category() }
+            if keys:find("XF86Audio", 1, true) then entry.category = "Media" end
+            if keys:find("XF86MonBrightness", 1, true) then entry.category = "Screen" end
             entries[id] = entry
             table.insert(order, id)
         end
@@ -54,6 +78,11 @@ function M.start()
         entry.ignore_mods = entry.ignore_mods or (options and options.ignore_mods) or false
         if options and options.description then
             entry.descriptions[options.description] = true
+            local category = options.description:match("^([^:]+):")
+            if category and not entry.explicit_category then
+                entry.category = category
+                entry.explicit_category = true
+            end
         end
         local replacement = overrides[id]
         return original_bind(type(replacement) == "string" and replacement or keys, dispatcher, options)
@@ -73,7 +102,7 @@ function M.finish()
         for description in pairs(entry.descriptions) do table.insert(descriptions, description) end
         table.sort(descriptions)
         table.insert(rows, '{"id":' .. quote(id) .. ',"default":' .. quote(entry.default)
-            .. ',"submap":' .. quote(entry.submap) .. ',"description":'
+            .. ',"category":' .. quote(entry.category) .. ',"submap":' .. quote(entry.submap) .. ',"description":'
             .. quote(table.concat(descriptions, " / ")) .. ',"count":' .. entry.count
             .. ',"universal":' .. tostring(entry.universal) .. ',"ignore_mods":'
             .. tostring(entry.ignore_mods) .. '}')

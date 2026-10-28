@@ -46,3 +46,21 @@ python3 -m unittest discover -s sdata/tests -v
 
 Tests use temporary directories, inert Lua dispatchers and mocked reloads; they
 do not change the active desktop.
+
+## Compact editor
+
+The Settings editor groups every binding under collapsible categories. Explicit
+Hyprland description prefixes take precedence; unlabeled bindings inherit the
+`--##!` section of their source file. Unknown/custom sources remain available.
+This category metadata never changes the registered key, callback or bind flags.
+Searching matches categories, descriptions, triggers and submaps and expands the
+matching groups. A selected row contains its editor; linked actions stay together.
+
+`ShortcutSymbols.js` supplies the shared modifier, function-key, mouse and media
+labels used by the shortcut guide and `ShortcutKeycaps.qml`. The editor displays
+exact numbered/keycode triggers instead of the guide's generalized examples.
+Guide appearance controls are folded away by default.
+
+The file and folder buttons use paths reported by the helper. Only customized
+bindings are written to `shortcuts.lua`; the file button is enabled after the first
+customization creates it. Right-click either button to copy its path.

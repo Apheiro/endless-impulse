@@ -5,6 +5,7 @@ import qs.modules.common
 import qs.modules.common.functions
 import qs.modules.common.widgets
 import QtQuick
+import "../../common/functions/ShortcutSymbols.js" as ShortcutSymbols
 import QtQuick.Layouts
 import Quickshell
 
@@ -18,81 +19,11 @@ Column {
     property real columnSpacing: 40
     property real titleSpacing: 7
 
-    // Excellent symbol explaination and source :
-    // http://xahlee.info/comp/unicode_computing_symbols.html
-    // https://www.nerdfonts.com/cheat-sheet
-    property var macSymbolMap: ({
-        "Ctrl": "󰘴",
-        "Alt": "󰘵",
-        "Shift": "󰘶",
-        "Space": "󱁐",
-        "Tab": "↹",
-        "Equal": "󰇼",
-        "Minus": "",
-        "Print": "",
-        "BackSpace": "󰭜",
-        "Delete": "⌦",
-        "Return": "󰌑",
-        "Period": ".",
-        "Escape": "⎋"
-      })
-    property var functionSymbolMap: ({
-        "F1":  "󱊫",
-        "F2":  "󱊬",
-        "F3":  "󱊭",
-        "F4":  "󱊮",
-        "F5":  "󱊯",
-        "F6":  "󱊰",
-        "F7":  "󱊱",
-        "F8":  "󱊲",
-        "F9":  "󱊳",
-        "F10": "󱊴",
-        "F11": "󱊵",
-        "F12": "󱊶",
-    })
-
-    property var mouseSymbolMap: ({
-        "mouse_up": "󱕐",
-        "mouse_down": "󱕑",
-        "mouse:272": "L󰍽",
-        "mouse:273": "R󰍽",
-        "Scroll ↑/↓": "󱕒",
-        "Page_↑/↓": "⇞/⇟",
-    })
-
     property var keyBlacklist: ["SUPER_L", "SUPER_R"]
-    property var keySubstitutions: Object.assign({
-        "Super": "",
-        "mouse_up": "Scroll ↓",    // ikr, weird
-        "mouse_down": "Scroll ↑",  // trust me bro
-        "mouse:272": "LMB",
-        "mouse:273": "RMB",
-        "mouse:275": "MouseBack",
-        "Slash": "/",
-        "Hash": "#",
-        "Return": "Enter",
-        // "Shift": "",
-      },
-      !!Config.options.cheatsheet.superKey ? {
-          "Super": Config.options.cheatsheet.superKey,
-      }: {},
-      Config.options.cheatsheet.useMacSymbol ? macSymbolMap : {},
-      Config.options.cheatsheet.useFnSymbol ? functionSymbolMap : {},
-      Config.options.cheatsheet.useMouseSymbol ? mouseSymbolMap : {},
-    )
+    property var keySubstitutions: ShortcutSymbols.substitutions(Config.options.cheatsheet)
 
     function modMaskToStringList(modMask: int): list<string> {
-        var list = [];
-        // Funny mathematical order but we wanna have this natural user-facing order
-        if (modMask & (1 << 2)) { list.push("Ctrl"); }
-        if (modMask & (1 << 6)) { list.push("Super"); }
-        if (modMask & (1 << 0)) { list.push("Shift"); }
-        if (modMask & (1 << 3)) { list.push("Alt"); }
-        if (modMask & (1 << 1)) { list.push("Caps"); }
-        if (modMask & (1 << 4)) { list.push("Mod2"); }
-        if (modMask & (1 << 5)) { list.push("Mod3"); }
-        if (modMask & (1 << 7)) { list.push("Mod5"); }
-        return list;
+        return ShortcutSymbols.modifiers(modMask);
     }
 
     visible: repeater.model.length > 0

@@ -158,7 +158,8 @@ def main():
             if len(sys.argv) != (4 if action == "set" else 3):
                 raise ValueError("Missing shortcut arguments.")
             update(action, sys.argv[2], sys.argv[3] if action == "set" else "", entries, overrides)
-        return {"ok": True, "shortcuts": rows(entries, overrides)}
+        return {"ok": True, "shortcuts": rows(entries, overrides), "store": str(STORE),
+                "directory": str(CONFIG), "storeExists": STORE.is_file()}
 
 
 if __name__ == "__main__":
