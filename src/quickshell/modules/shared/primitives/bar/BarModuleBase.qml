@@ -10,6 +10,8 @@ Item {
     property bool editing: false
     property real spaceSize: 24
     property bool separatorBefore: false
+    property bool joinedBefore: false
+    property bool joinedAfter: false
     property bool available: true
     property bool interactive: false
     property bool hoverable: true
@@ -41,11 +43,15 @@ Item {
         id: surface
         objectName: "bar-module-surface"
         x: root.vertical ? Appearance.sizes.barModuleInset : 0
-        y: root.vertical ? 0 : Appearance.sizes.barModuleInset
+        y: root.vertical ? 0 : (root.height - height) / 2
         width: Math.max(0, root.width - (root.vertical ? Appearance.sizes.barModuleInset * 2 : 0))
-        height: Math.max(0, root.height - (root.vertical ? 0 : Appearance.sizes.barModuleInset * 2))
+        height: Math.max(0, root.vertical ? root.height : Math.min(root.height, Appearance.sizes.baseBarHeight) - Appearance.sizes.barModuleInset * 2)
         // Half the actual surface height preserves full pill ends at any bar size.
         radius: Math.min(width, height) / 2
+        topLeftRadius: !root.vertical && root.joinedBefore ? Math.min(radius, Appearance.rounding.unsharpen) : radius
+        bottomLeftRadius: topLeftRadius
+        topRightRadius: !root.vertical && root.joinedAfter ? Math.min(radius, Appearance.rounding.unsharpen) : radius
+        bottomRightRadius: topRightRadius
         visible: root.surfaceEnabled
         color: root.active ? Appearance.colors.colSecondaryContainer
             : root.pressed ? Appearance.colors.colLayer1Active
@@ -63,6 +69,7 @@ Item {
     }
     Item {
         id: content
+        objectName: "bar-module-content"
         anchors.fill: parent
         anchors.leftMargin: root.horizontalPadding
         anchors.rightMargin: root.horizontalPadding

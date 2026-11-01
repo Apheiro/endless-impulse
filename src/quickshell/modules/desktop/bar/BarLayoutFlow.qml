@@ -13,7 +13,6 @@ Flickable {
     id: section
     required property var entries
     property bool alignEnd: false
-    property var previousEntry: null
     property alias row: row
     readonly property bool flexible: entries.some(item => item.type === "flex")
     height: editor.barHeight
@@ -44,10 +43,8 @@ Flickable {
             delegate: BarLayoutTile {
                 editor: section.editor
                 required property var modelData
-                required property int index
                 entry: modelData
                 scrollTarget: section
-                separatorBefore: section.editor.dividerBetween(index > 0 ? section.entries[index - 1] : section.previousEntry, modelData)
             }
         }
     }

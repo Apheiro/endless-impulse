@@ -7,6 +7,9 @@ Item {
     property bool editing: false
     property real spaceSize: 24
     property bool separatorBefore: false
+    property bool joinedBefore: false
+    property bool joinedAfter: false
+    readonly property bool available: true
     readonly property var previewItem: null
     implicitHeight: Appearance.sizes.barHeight
 }
