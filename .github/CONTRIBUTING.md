@@ -6,7 +6,7 @@
 
 # Translations
 
-See `dots/.config/quickshell/ii/translations/tools`
+See `src/quickshell/translations/tools`
 
 # Code
 
@@ -46,19 +46,20 @@ _Might not be necessary depending on what you change, but this is recommended._
 _Most stuff in the shell will work but not everything._
 
 - Install Hyprland and the development version of Quickshell (`yay -S hyprland quickshell-git`).
-- Copy `dots/.config/quickshell` folder to your home directory.
+- Copy `src/quickshell/` into `~/.config/quickshell/artificial-impulse/` for a traditional deployment, or use `./dev` with Nix.
 
 ## Extra setup for Quickshell
-- Quickshell-specific LSP setup: Run `touch ~/.config/quickshell/ii/.qmlls.ini` for proper LSP support.
+- Quickshell-specific LSP setup: Run `touch ~/.config/quickshell/artificial-impulse/.qmlls.ini` for proper LSP support.
 - Hint for VSCode: Get the official "Qt Qml" extension, go to its settings and change custom exe path to `/usr/bin/qmlls6`.
 
 ## Python
-If your changes involves using python package or script, please use the virtual environment created by uv as described in `sdata/uv/README.md`.
+If your changes involves using python package or script, please use the virtual environment created by uv as described in `runtime/python/README.md`.
 
 # Running
 
 - Launch Hyprland (not the "uwsm-managed" one)
 - For the shell:
-  - Open `~/.config/quickshell/ii` in your code editor.
-  - In a terminal run `pkill qs; qs -c ii` to start the shell in the terminal (for logs).
+  - Open `src/quickshell/` in your checkout in your code editor.
+  - From the checkout, run `./dev restart` to restart this shell with logs in the terminal.
+  - For a traditional installed configuration, use `qs -c artificial-impulse` after closing that instance. Do not run a second shell alongside it.
   - Make edits in the opened folder. Changes are reloaded live.
