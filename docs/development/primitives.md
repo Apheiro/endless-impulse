@@ -40,8 +40,21 @@ explicit (`interactive`, `hoverable`, `surfaceEnabled`, `available`). Modules do
 not set private background colors or select styling based on their catalog ID.
 Content can retain semantic graphics such as battery progress, workspace state
 or the red recording indicator.
+The card's internal horizontal padding comes only from
+`Appearance.sizes.barModulePadding` through `BarModuleBase.contentItem`. Content
+layouts measure their actual contents without extra edge margins or inflated
+widths. Spacing between controls and semantic graphics remains internal to the
+content; embedded buttons omit their standalone edge padding.
 
-In Pills mode each module gets one shared surface. In Line-separated mode the
+In Pills mode adjacent visible content modules form one pill, with rounded caps
+at the group's exposed ends, lightly rounded inner corners, and narrow transparent
+gaps between modules (no painted dividers). Grouping follows
+the actual layout (also across the center anchor), never module IDs. Hidden
+modules are skipped; fixed/flexible spaces and explicit separators break groups.
+`ConfiguredBarContent` supplies adjacency; the base preserves the gaps without
+overlapping translucent layers. Its height stays inside `baseBarHeight`, preserving
+the bar's floating gaps and module insets. Surfaces use theme transparency rather
+than item opacity, keeping text and icons crisp. In Line-separated mode the
 normal surface is transparent and adjacent content modules are separated by a
 line; spaces delimit groups and explicit separators are not doubled. Hover and
 active feedback use the same theme states in both modes. Embedded controls can
@@ -52,6 +65,24 @@ padding. Flow viewports clip only when contents overflow.
 The original renderer remains available while `bar.layout` is null. Its
 `BarGroup` delegates its surface to the same primitive while retaining original
 grouping and the vertical layout API.
+
+During editing, `ConfiguredBarContent.displayEntries` projects an insertion gap
+without changing `BarLayout.draft` until release. The source delegate retains the
+mouse grab while its original slot collapses; neighbours animate with the shared
+Appearance timing. A fixed `ShaderEffectSource` snapshot follows the pointer with
+reduced opacity. Catalog items load one offscreen module for the snapshot. The
+optional pinned module keeps its stable host at the exact center. Cancellation
+discards the projection; only Save writes preferences.
+Dropping an existing module onto the catalog removes it from the draft and frees
+its catalog entry; hovering alone does not remove it. The catalog highlights this
+drop target, and removing the pinned module also clears its center anchor.
+
+`bar.independentLayouts` selects per-monitor module arrangements. Consumers read
+`BarLayout.layoutFor(screenName)`; saved layouts live in `bar.layoutsByScreen`
+under the Wayland output name. Missing entries fall back to `bar.layout`; explicit
+null entries select the original arrangement. Switching modes preserves both
+stores and cancels editing. Independent drafts only affect the target monitor.
+Bar settings expose the mode and a connected-monitor selector for Edit/Restore.
 
 ## Inventory
 
@@ -78,3 +109,7 @@ every registered bar module and checks both group styles, rounded ends and activ
 foreground/background pairs. `test_bar_layout.py` exercises actual pointer input,
 spaces, centering and persistence with isolated preferences. Settings, recording,
 status navigation and tint rendering have targeted regression tests.
+`test_bar_groups.py` checks dynamic neighbours, hidden modules, center anchoring,
+reordering, group boundaries, exposed caps, padding and surface transparency.
+`test_bar_drag.py` uses real pointer events and image capture to check the dimmed
+preview, displaced neighbours, source grab, catalog insertion and cancellation.
