@@ -9,10 +9,11 @@ import qs.modules.desktop.bar
 
 import qs.modules.desktop.bar.weather
 BarModuleBase {
-    available: Config.options.bar.weather.enable
+    id: root
+    available: Config.options.bar.independentLayouts || Config.options.bar.weather.enable
     Loader {
         anchors.fill: parent
-        active: Config.options.bar.weather.enable
+        active: root.available
         sourceComponent: WeatherBar {}
     }
 }

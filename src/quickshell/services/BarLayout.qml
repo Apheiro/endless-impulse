@@ -25,7 +25,7 @@ Singleton {
         {type:"battery",name:Translation.tr("Battery"),icon:"battery_full"},
         {type:"weather",name:Translation.tr("Weather"),icon:"partly_cloudy_day"},
         {type:"tray",name:Translation.tr("System tray"),icon:"apps"},
-        {type:"status",name:Translation.tr("Sound, network & Bluetooth"),icon:"settings_input_component"},
+        {type:"status",name:Translation.tr("Right panel"),icon:"right_panel_open"},
         {type:"search",name:Translation.tr("Search"),icon:"search"},
         {type:"networkSpeed",name:Translation.tr("Network speed"),icon:"network_check"},
         {type:"updates",name:Translation.tr("System updates"),icon:"system_update"},
@@ -38,6 +38,29 @@ Singleton {
     readonly property var layout: editing ? draft : saved
     readonly property bool customized: Config.options.bar.layout !== null
     readonly property var selected: locate(selectedKey)?.item ?? null
+    Connections {
+        target: Config.options.bar
+        function onIndependentLayoutsChanged() { root.cancel(); }
+    }
+
+    function storedFor(name) {
+        const perScreen = Config.options.bar.layoutsByScreen;
+        if (Config.options.bar.independentLayouts && name && perScreen?.[name] !== undefined)
+            return perScreen[name];
+        return Config.options.bar.layout;
+    }
+    function savedFor(name) { return normalize(storedFor(name) ?? defaults()); }
+    function customizedFor(name) { return storedFor(name) !== null; }
+    function layoutFor(name) {
+        return editing && (!Config.options.bar.independentLayouts || name === screenName)
+            ? draft : savedFor(name);
+    }
+    function setIndependent(value) {
+        if (Config.options.bar.independentLayouts === value) return;
+        cancel();
+        // Keep both shared and per-monitor layouts, so switching modes is reversible.
+        Config.options.bar.independentLayouts = value;
+    }
 
     function defaults() {
         return migrate({
@@ -98,8 +121,9 @@ Singleton {
     }
     function begin(name) {
         if (Config.options.bar.vertical) return;
-        if (!editing) draft = normalize(saved);
-        screenName = name || Quickshell.screens[0]?.name || "";
+        const target = name || Quickshell.screens[0]?.name || "";
+        if (!editing || target !== screenName) draft = savedFor(target);
+        screenName = target;
         selectedKey = "";
         editing = true;
         GlobalStates.sidebarRightOpen = false;
@@ -110,13 +134,25 @@ Singleton {
     function save() {
         if (!editing) return;
         const next = normalize(draft);
-        if (next.items.some(item => item.type === "weather")) Config.options.bar.weather.enable = true;
-        Config.options.bar.layout = next;
+        if (!Config.options.bar.independentLayouts && next.items.some(item => item.type === "weather"))
+            Config.options.bar.weather.enable = true;
+        if (Config.options.bar.independentLayouts && screenName) {
+            const layouts = Object.assign({}, Config.options.bar.layoutsByScreen);
+            layouts[screenName] = next;
+            Config.options.bar.layoutsByScreen = layouts;
+        } else Config.options.bar.layout = next;
         editing = false;
         selectedKey = "";
     }
     function resetDraft() { draft = normalize(defaults()); selectedKey = ""; }
-    function restoreSaved() { Config.options.bar.layout = null; }
+    function restoreSaved(name = "") {
+        cancel();
+        if (Config.options.bar.independentLayouts && name) {
+            const layouts = Object.assign({}, Config.options.bar.layoutsByScreen);
+            layouts[name] = null;
+            Config.options.bar.layoutsByScreen = layouts;
+        } else Config.options.bar.layout = null;
+    }
     function locate(key) {
         const index = draft.items.findIndex(item => item.key === key);
         return index < 0 ? null : {index, item: draft.items[index]};
@@ -161,7 +197,8 @@ Singleton {
         next.items[found.index].size = Math.max(4, Math.min(600, Math.round(Number(size))));
         draft = next;
     }
-    function requestEditor() {
-        Quickshell.execDetached(["python3", Quickshell.shellPath("scripts/shell/control.py"), "ipc", "barEditor", "open"]);
+    function requestEditor(name = "") {
+        const command = ["python3", Quickshell.shellPath("scripts/shell/control.py"), "ipc", "barEditor"];
+        Quickshell.execDetached(name ? [...command, "openOnScreen", name] : [...command, "open"]);
     }
 }

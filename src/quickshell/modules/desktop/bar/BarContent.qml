@@ -13,6 +13,8 @@ Item {
     objectName:"bar-content"
     readonly property var screen:root.QsWindow.window?.screen
     readonly property bool editing:BarLayout.editing&&BarLayout.screenName===screen?.name
+    readonly property bool customized:BarLayout.customizedFor(screen?.name ?? "")
+    readonly property bool layoutEditing:BarLayout.editing&&(!Config.options.bar.independentLayouts||root.editing)
     readonly property bool contextOpen:context.visible
     readonly property var editorSurface:editing?(configured.item?.editorSurface??null):null
     readonly property var contextSurface:context.visible?contextBackground:null
@@ -26,12 +28,12 @@ Item {
     Loader {
         id:legacy
         objectName:"bar-legacy-strip"
-        width:parent.width;height:Appearance.sizes.barHeight;y:Config.options.bar.bottom?parent.height-height:0;active:!BarLayout.customized&&!BarLayout.editing
+        width:parent.width;height:Appearance.sizes.barHeight;y:Config.options.bar.bottom?parent.height-height:0;active:!root.customized&&!root.layoutEditing
         sourceComponent:LegacyBarContent{}
     }
     Loader {
         id:configured
-        width:parent.width;height:root.editing?parent.height:Appearance.sizes.barHeight;y:Config.options.bar.bottom?parent.height-height:0;active:BarLayout.customized||BarLayout.editing
+        width:parent.width;height:root.editing?parent.height:Appearance.sizes.barHeight;y:Config.options.bar.bottom?parent.height-height:0;active:root.customized||root.layoutEditing
         sourceComponent:ConfiguredBarContent{editing:root.editing;screenName:root.screen?.name??""}
     }
     Connections {
@@ -52,7 +54,6 @@ Item {
         height:contextItems.implicitHeight+20+Appearance.sizes.elevationMargin*2
         x:Math.max(0,Math.min(root.width-width,root.contextX-Appearance.sizes.elevationMargin))
         y:Config.options.bar.bottom?Appearance.sizes.elevationMargin:Appearance.sizes.barHeight+Appearance.sizes.hyprlandGapsOut-Appearance.sizes.elevationMargin
-        StyledRectangularShadow{target:contextBackground}
         Rectangle{id:contextBackground;anchors.fill:parent;anchors.margins:Appearance.sizes.elevationMargin;color:Appearance.colors.colLayer0;border.width:1;border.color:Appearance.colors.colLayer0Border;radius:Appearance.rounding.large}
         ColumnLayout {
             id:contextItems;anchors{left:parent.left;right:parent.right;top:parent.top;margins:Appearance.sizes.elevationMargin+10}

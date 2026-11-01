@@ -242,6 +242,8 @@ Singleton {
 
             property JsonObject bar: JsonObject {
                 property var layout: null // null preserves the original layout until customized
+                property bool independentLayouts: false
+                property var layoutsByScreen: ({})
 
                 property JsonObject autoHide: JsonObject {
                     property bool enable: false

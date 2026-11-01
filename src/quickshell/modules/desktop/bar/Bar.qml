@@ -18,8 +18,18 @@ Scope {
     IpcHandler {
         target: "barEditor"
         function open(): void { BarLayout.begin(Hyprland.focusedMonitor?.name); }
+        function openOnScreen(name: string): void {
+            if (Quickshell.screens.some(screen => screen.name === name)) BarLayout.begin(name);
+        }
         function close(): void { BarLayout.cancel(); }
-        function state(): string { return JSON.stringify({editing: BarLayout.editing, screen: BarLayout.screenName, customized: BarLayout.customized, moduleCount: BarLayout.saved.items.length, moduleTypes: BarLayout.saved.items.map(item => item.type), centerKey: BarLayout.saved.centerKey}); }
+        function state(): string { return stateFor(BarLayout.screenName || Hyprland.focusedMonitor?.name || ""); }
+        function stateFor(name: string): string {
+            const layout = BarLayout.savedFor(name);
+            return JSON.stringify({editing: BarLayout.editing, screen: name,
+                independent: Config.options.bar.independentLayouts,
+                customized: BarLayout.customizedFor(name), moduleCount: layout.items.length,
+                moduleTypes: layout.items.map(item => item.type), centerKey: layout.centerKey});
+        }
     }
 
     Variants {

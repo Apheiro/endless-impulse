@@ -2,16 +2,46 @@ import qs.modules.shared.primitives.settings
 import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
 import qs.services
 import qs.modules.shared
 import qs.modules.shared.widgets
 
 SettingsPage {
+    id: root
     forceWidth: true
+    property string selectedScreenName: ""
+    readonly property string targetScreenName: Quickshell.screens.some(screen => screen.name === selectedScreenName)
+        ? selectedScreenName : (root.QsWindow.window?.screen?.name ?? Quickshell.screens[0]?.name ?? "")
+    readonly property var targetLayout: BarLayout.savedFor(targetScreenName)
 
     SettingsSection {
         icon: "view_week"
         title: Translation.tr("Panel layout")
+        ConfigSwitch {
+            objectName: "bar-independent-layouts"
+            buttonIcon: "desktop_windows"
+            text: Translation.tr("Independent layout per monitor")
+            checked: Config.options.bar.independentLayouts
+            onCheckedChanged: {
+                if (Config.ready && checked !== Config.options.bar.independentLayouts)
+                    BarLayout.setIndependent(checked);
+            }
+        }
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("Choose different modules, order and spaces on each monitor. Turning this off restores the shared layout without deleting individual layouts.")
+            wrapMode: Text.WordWrap
+            color: Appearance.colors.colSubtext
+            font.pixelSize: Appearance.font.pixelSize.smaller
+        }
+        ConfigSelectionArray {
+            objectName: "bar-layout-monitor"
+            visible: Config.options.bar.independentLayouts
+            currentValue: root.targetScreenName
+            options: Quickshell.screens.map(screen => ({displayName: screen.name, icon: "monitor", value: screen.name}))
+            onSelected: name => root.selectedScreenName = name
+        }
         StyledText {
             Layout.fillWidth: true
             text: Translation.tr("Right-click an empty area of the horizontal bar and choose Edit bar. Arrange panels freely with fixed or flexible spaces; pin a panel to keep it exactly centered.")
@@ -20,12 +50,12 @@ SettingsPage {
         }
         RowLayout {
             Layout.fillWidth: true
-            RippleButtonWithIcon { materialIcon: "edit"; mainText: Translation.tr("Edit bar"); enabled: !Config.options.bar.vertical; onClicked: BarLayout.requestEditor() }
-            RippleButtonWithIcon { materialIcon: "restart_alt"; mainText: Translation.tr("Restore original layout"); enabled: BarLayout.customized; onClicked: BarLayout.restoreSaved() }
+            RippleButtonWithIcon { materialIcon: "edit"; mainText: Translation.tr("Edit bar"); enabled: !Config.options.bar.vertical; onClicked: BarLayout.requestEditor(root.targetScreenName) }
+            RippleButtonWithIcon { materialIcon: "restart_alt"; mainText: Translation.tr("Restore original layout"); enabled: BarLayout.customizedFor(root.targetScreenName); onClicked: BarLayout.restoreSaved(root.targetScreenName) }
         }
         StyledText {
             Layout.fillWidth: true
-            text: BarLayout.saved.items.map(item => BarLayout.info(item.type).name + (item.key === BarLayout.saved.centerKey ? " ⊙" : "")).join(" · ")
+            text: root.targetLayout.items.map(item => BarLayout.info(item.type).name + (item.key === root.targetLayout.centerKey ? " ⊙" : "")).join(" · ")
             wrapMode: Text.WordWrap
             font.pixelSize: Appearance.font.pixelSize.smaller
             color: Appearance.colors.colSubtext
