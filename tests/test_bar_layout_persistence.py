@@ -93,7 +93,22 @@ import QtQuick
 import Quickshell
 import qs.services
 import qs.modules.shared
+import qs.modules.desktop.bar
 ShellRoot {
+    id: root
+    function find(item, name) {
+        if (item.objectName === name) return item;
+        for (const child of item.children ?? []) {
+            const match = find(child, name);
+            if (match) return match;
+        }
+        return null;
+    }
+    PanelWindow {
+        implicitWidth: 1200; implicitHeight: Appearance.sizes.barHeight
+        exclusiveZone: 0
+        ConfiguredBarContent { id: bar; anchors.fill: parent }
+    }
     Timer {
         interval: 200; repeat: true; running: true
         onTriggered: {
@@ -107,6 +122,16 @@ ShellRoot {
                 console.error("BAR_PERSISTENCE_FAILED",
                     JSON.stringify(raw), JSON.stringify(restored));
             } else {
+                // Check the rendered strip on a cold start, before opening the
+                // editor: reading the persisted model alone misses visibility loops.
+                const clock = root.find(bar, "bar-presenter-my-clock");
+                const workspaces = root.find(bar, "bar-presenter-my-workspaces");
+                if (!clock?.visible || clock.width <= 0 || !clock.moduleItem?.visible ||
+                    !workspaces?.visible || workspaces.width <= 0 || BarLayout.editing) {
+                    console.error("BAR_PERSISTENCE_FAILED cold-start modules hidden");
+                    Qt.quit();
+                    return;
+                }
                 console.log("BAR_PERSISTENCE_RELOADED");
             }
             Qt.quit();

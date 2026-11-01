@@ -13,10 +13,16 @@ Item {
     property bool editing: false
     property real spaceSize: 24
     property bool separatorBefore: false
+    property bool joinedBefore: false
+    property bool joinedAfter: false
     readonly property var moduleItem: loader.item
     readonly property var previewItem: loader.item?.previewItem ?? loader.item
-    readonly property bool present: editing || (loader.item?.visible ?? false)
-    readonly property bool fallback: editing && !(loader.item?.visible && loader.item.implicitWidth > 0)
+    // Item.visible includes ancestor visibility. The tile binds its own visibility
+    // to present, so reading the child's visible here would latch a loading tile
+    // hidden forever. Availability is module state, independent of its parents.
+    readonly property bool moduleAvailable: loader.item !== null && (loader.item.available ?? true)
+    readonly property bool present: editing || moduleAvailable
+    readonly property bool fallback: editing && !(moduleAvailable && loader.item.implicitWidth > 0)
     implicitWidth: fallback ? 140 : present ? (loader.item?.implicitWidth ?? 0) : 0
     implicitHeight: Appearance.sizes.barHeight
     Loader {
@@ -28,6 +34,8 @@ Item {
             item.editing = Qt.binding(() => root.editing);
             item.spaceSize = Qt.binding(() => root.spaceSize);
             item.separatorBefore = Qt.binding(() => root.separatorBefore);
+            item.joinedBefore = Qt.binding(() => root.joinedBefore);
+            item.joinedAfter = Qt.binding(() => root.joinedAfter);
         }
     }
     RowLayout {
