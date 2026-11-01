@@ -10,7 +10,7 @@ import qs.modules.desktop.quickPanels
 
 RippleButton {
     id:root
-    implicitWidth: row.implicitWidth+20
+    implicitWidth: row.implicitWidth
     implicitHeight: row.implicitHeight+10
     buttonRadius: Appearance.rounding.full
     toggled: GlobalStates.sidebarRightOpen || QuickPanelState.section !== ""

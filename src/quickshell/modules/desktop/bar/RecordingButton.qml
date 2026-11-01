@@ -12,7 +12,7 @@ RippleButton {
     id: root
     property color foreground: Appearance.colors.colOnLayer2
     implicitHeight: 26
-    implicitWidth: ScreenRecorder.active ? recordingContent.implicitWidth + 20 : implicitHeight
+    implicitWidth: ScreenRecorder.active ? recordingContent.implicitWidth + (surfaceVisible ? Appearance.sizes.barModulePadding * 2 : 0) : implicitHeight
     padding: 0
     buttonRadius: height / 2
     colBackground: ScreenRecorder.active ? Appearance.colors.colLayer2 : "transparent"

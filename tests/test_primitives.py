@@ -63,7 +63,18 @@ ShellRoot {
     const surface=root.find(module,"bar-module-surface");
     root.expect(surface,"module bypasses shared surface: "+module.widgetType);
     root.expect(Math.abs(surface.radius-Math.min(surface.width,surface.height)/2)<.1,"pill has flat ends: "+module.widgetType);
+    root.expect(surface.y>=Appearance.sizes.barModuleInset&&surface.y+surface.height<=module.height-Appearance.sizes.barModuleInset,"surface fills the bar height: "+module.widgetType);
+    const content=module.moduleItem.contentItem;
+    root.expect(content.x===Appearance.sizes.barModulePadding&&module.width-content.x-content.width===Appearance.sizes.barModulePadding,"module bypasses shared padding: "+module.widgetType);
+    let preview=module.previewItem;
+    if(preview instanceof Loader)preview=preview.item;
+    const layout=preview instanceof RowLayout||preview instanceof ColumnLayout?preview:preview?.children.find(child=>child instanceof RowLayout||child instanceof ColumnLayout);
+    if(layout&&module.width>0&&layout.width>0){
+     const left=layout.mapToItem(module.moduleItem,0,0).x;
+     root.expect(Math.abs(left-Appearance.sizes.barModulePadding)<.1&&Math.abs(module.width-left-layout.width-Appearance.sizes.barModulePadding)<.1,"content adds private padding: "+module.widgetType+" "+left+"/"+(module.width-left-layout.width));
+    }
     if(String(surface.color)!==String(Appearance.colors.colLayer1))return;
+    root.expect(surface.color.a<1,"normal module surface is opaque: "+module.widgetType);
     Config.options.bar.borderless=true;root.phase=2;return;
    }
    if(root.phase===2){

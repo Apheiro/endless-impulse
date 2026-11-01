@@ -11,7 +11,7 @@ import QtQuick.Layouts
 MouseArea {
     id: root
     property bool hovered: false
-    implicitWidth: rowLayout.implicitWidth + 10 * 2
+    implicitWidth: rowLayout.implicitWidth
     implicitHeight: Appearance.sizes.barHeight
 
     acceptedButtons: Qt.LeftButton | Qt.RightButton

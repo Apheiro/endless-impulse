@@ -396,7 +396,7 @@ Singleton {
         property real statusIconWidth: 30
         property real statusIconHeight: 28
         property real statusIconSpacing: 6
-        property real barModulePadding: 6
+        property real barModulePadding: 10
         property real barModuleInset: 4
         property real baseBarHeight: 40
         property real barHeight: Config.options.bar.cornerStyle === 1 ? 

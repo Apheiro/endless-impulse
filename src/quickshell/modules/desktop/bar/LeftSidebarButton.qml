@@ -15,8 +15,8 @@ RippleButton {
     property bool animeEnabled: Config.options.policies.weeb !== 0
     visible: aiChatEnabled || translatorEnabled || animeEnabled
 
-    property real buttonPadding: 5
-    implicitWidth: distroIcon.width + buttonPadding * 2
+    readonly property real buttonPadding: Appearance.sizes.barModulePadding
+    implicitWidth: distroIcon.width + (surfaceVisible ? buttonPadding * 2 : 0)
     implicitHeight: distroIcon.height + buttonPadding * 2
     buttonRadius: Appearance.rounding.full
     colBackgroundHover: Appearance.colors.colLayer1Hover
