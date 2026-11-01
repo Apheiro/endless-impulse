@@ -1,18 +1,19 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
-import Qt5Compat.GraphicalEffects
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
 
 MouseArea {
     id: root
     required property SystemTrayItem item
     property bool targetMenuOpen: false
+    readonly property real iconSize: 18
 
     signal menuOpened(qsWindow: var)
     signal menuClosed()
@@ -73,26 +74,16 @@ MouseArea {
         visible: !Config.options.tray.monochromeIcons
         source: root.item.icon
         anchors.centerIn: parent
-        width: parent.width
-        height: parent.height
+        width: Math.min(root.iconSize, parent.width)
+        height: Math.min(root.iconSize, parent.height)
     }
 
     Loader {
         active: Config.options.tray.monochromeIcons
         anchors.fill: trayIcon
-        sourceComponent: Item {
-            Desaturate {
-                id: desaturatedIcon
-                visible: false // There's already color overlay
-                anchors.fill: parent
-                source: trayIcon
-                desaturation: 0.8 // 1.0 means fully grayscale
-            }
-            ColorOverlay {
-                anchors.fill: desaturatedIcon
-                source: desaturatedIcon
-                color: Appearance.colors.colOnLayer0
-            }
+        sourceComponent: ColorTint {
+            source: trayIcon
+            tintColor: Appearance.colors.colPrimary
         }
     }
 

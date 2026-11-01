@@ -1,5 +1,6 @@
 pragma ComponentBehavior: Bound
 
+import qs.modules.shared.primitives.common
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -7,12 +8,19 @@ import Quickshell.Wayland
 import Quickshell.Hyprland
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 Scope {
     id: bar
     property bool showBarBackground: Config.options.bar.showBackground
+
+    IpcHandler {
+        target: "barEditor"
+        function open(): void { BarLayout.begin(Hyprland.focusedMonitor?.name); }
+        function close(): void { BarLayout.cancel(); }
+        function state(): string { return JSON.stringify({editing: BarLayout.editing, screen: BarLayout.screenName, customized: BarLayout.customized, moduleCount: BarLayout.saved.items.length, moduleTypes: BarLayout.saved.items.map(item => item.type), centerKey: BarLayout.saved.centerKey}); }
+    }
 
     Variants {
         // For each monitor
@@ -51,16 +59,26 @@ Scope {
                     }
                 }
                 property bool superShow: false
-                property bool mustShow: hoverRegion.containsMouse || superShow
+                property bool mustShow: hoverRegion.containsMouse || superShow || ScreenRecorder.active || barContent.editing || barContent.contextOpen
                 exclusionMode: ExclusionMode.Ignore
                 exclusiveZone: (Config?.options.bar.autoHide.enable && (!mustShow || !Config?.options.bar.autoHide.pushWindows)) ? 0 :
                     Appearance.sizes.baseBarHeight + (Config.options.bar.cornerStyle === 1 ? Appearance.sizes.hyprlandGapsOut : 0)
                 WlrLayershell.namespace: "quickshell:bar"
-                implicitHeight: Appearance.sizes.barHeight + Appearance.rounding.screenRounding
+                implicitHeight: barContent.implicitHeight + Appearance.rounding.screenRounding
                 mask: Region {
                     item: hoverMaskRegion
+                    Region { item: barContent.editorSurface; intersection: Intersection.Combine }
+                    Region { item: barContent.contextSurface; intersection: Intersection.Combine }
                 }
                 color: "transparent"
+                WlrLayershell.keyboardFocus: (barContent.editing || barContent.contextOpen) ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+                onVisibleChanged: if (!visible && barContent.editing) BarLayout.cancel()
+                readonly property bool editorActive: barContent.editing || barContent.contextOpen
+                onEditorActiveChanged: {
+                    if (editorActive) GlobalFocusGrab.addDismissable(barRoot);
+                    else GlobalFocusGrab.removeDismissable(barRoot);
+                }
+                Connections { target: GlobalFocusGrab; function onDismissed() { if (barContent.editing) BarLayout.cancel(); } }
 
                 // Positioning
                 anchors {
@@ -81,6 +99,8 @@ Scope {
                 }
                 Component.onDestruction: {
                     GlobalFocusGrab.removePersistent(barRoot);
+                    GlobalFocusGrab.removeDismissable(barRoot);
+                    if (barContent.editing) BarLayout.cancel();
                 }
 
                 MouseArea  {
@@ -95,16 +115,19 @@ Scope {
                     Item {
                         id: hoverMaskRegion
                         anchors {
-                            fill: barContent
+                            left: barContent.left
+                            right: barContent.right
+                            top: Config.options.bar.bottom ? undefined : barContent.top
+                            bottom: Config.options.bar.bottom ? barContent.bottom : undefined
                             topMargin: -Config.options.bar.autoHide.hoverRegionWidth
                             bottomMargin: -Config.options.bar.autoHide.hoverRegionWidth
                         }
+                        height: Appearance.sizes.barHeight + Config.options.bar.autoHide.hoverRegionWidth * 2
                     }
 
                     BarContent {
                         id: barContent
                         
-                        implicitHeight: Appearance.sizes.barHeight
                         anchors {
                             right: parent.right
                             left: parent.left
@@ -151,7 +174,7 @@ Scope {
                             bottom: undefined
                         }
                         height: Appearance.rounding.screenRounding
-                        active: showBarBackground && Config.options.bar.cornerStyle === 0 // Hug
+                        active: showBarBackground && Config.options.bar.cornerStyle === 0 && !barContent.editing && !barContent.contextOpen // Hug
 
                         states: State {
                             name: "bottom"

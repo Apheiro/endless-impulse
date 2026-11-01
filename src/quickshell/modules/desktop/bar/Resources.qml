@@ -1,4 +1,4 @@
-import qs.modules.common
+import qs.modules.shared
 import qs.services
 import QtQuick
 import QtQuick.Layouts

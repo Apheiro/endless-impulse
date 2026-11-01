@@ -1,11 +1,12 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Services.SystemTray
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 Item {
     id: root

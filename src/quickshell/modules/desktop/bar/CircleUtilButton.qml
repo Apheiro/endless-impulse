@@ -1,9 +1,11 @@
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared.primitives.common
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 
 RippleButton {
     id: button
+    surfaceVisible: false
 
     required default property Item content
     property bool extraActiveCondition: false

@@ -1,14 +1,15 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 MaterialSymbol {
     id: root
     readonly property bool showUnreadCount: Config.options.bar.indicators.notifications.showUnreadCount
     text: Notifications.silent ? "notifications_paused" : "notifications"
     iconSize: Appearance.font.pixelSize.larger
-    color: rightSidebarButton.colText
+    color: Appearance.colors.colOnLayer0
 
     Rectangle {
         id: notifPing
