@@ -4,8 +4,8 @@ import shutil
 import subprocess
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "dots/.config/quickshell/ii/modules/common/functions/ShortcutSymbols.js"
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "src/quickshell/modules/shared/functions/ShortcutSymbols.js"
 
 
 @unittest.skipUnless(shutil.which("node"), "Node is needed for the shared JavaScript checks")

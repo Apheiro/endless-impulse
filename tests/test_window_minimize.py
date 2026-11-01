@@ -8,8 +8,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location('window_minimize', ROOT / 'dots/.config/quickshell/ii/scripts/hyprland/minimize.py')
+ROOT = Path(__file__).resolve().parents[1]
+spec = importlib.util.spec_from_file_location('window_minimize', ROOT / 'src/quickshell/scripts/hyprland/minimize.py')
 minimize = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(minimize)
 

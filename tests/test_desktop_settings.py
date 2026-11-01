@@ -11,8 +11,8 @@ import time
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[2]
-SCRIPT = ROOT / "dots/.config/quickshell/ii/scripts/hyprland/desktop.py"
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPT = ROOT / "src/quickshell/scripts/hyprland/desktop.py"
 spec = importlib.util.spec_from_file_location("desktop_settings", SCRIPT)
 desktop = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(desktop)
@@ -168,7 +168,7 @@ class DesktopSettingsTests(unittest.TestCase):
         desktop.atomic(desktop.LUA, "hl.config({fixture = 2})\n")
         desktop.atomic(desktop.STATE / "last-good.lua", "hl.config({fixture = 1})\n")
         desktop.atomic(desktop.STATE / "preview-session", "old-session\n" + str(time.time() + 1000) + "\n")
-        module = ROOT / "dots/.config/hypr/hyprland/services/desktop.lua"
+        module = ROOT / "config/xdg/config/hypr/hyprland/services/desktop.lua"
         script = 'hl = {config = function(value) assert(value.fixture == 1) end}; dofile(' + desktop.lua_value(str(module)) + ').load()'
         result = subprocess.run(["lua", "-e", script], capture_output=True, text=True,
             env=dict(os.environ, XDG_CONFIG_HOME=str(desktop.CONFIG), XDG_STATE_HOME=str(base / "state"), HYPRLAND_INSTANCE_SIGNATURE="new-session"))

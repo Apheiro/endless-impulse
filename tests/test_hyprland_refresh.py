@@ -8,8 +8,8 @@ import subprocess
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SERVICE = ROOT / "dots/.config/quickshell/ii/services/HyprlandData.qml"
+ROOT = Path(__file__).resolve().parents[1]
+SERVICE = ROOT / "src/quickshell/services/HyprlandData.qml"
 
 FAKE_HYPRCTL = '''#!/usr/bin/env python3
 import json, os, sys, time
@@ -39,16 +39,16 @@ class HyprlandRefreshTests(unittest.TestCase):
     def test_full_shell_type_graph_loads(self):
         with tempfile.TemporaryDirectory(prefix="dots-shell-types-") as temporary:
             base = Path(temporary)
-            source = ROOT / "dots/.config/quickshell/ii"
-            for name in ("modules", "services", "panelFamilies", "assets", "scripts", "defaults", "translations", "GlobalStates.qml"):
+            source = ROOT / "src/quickshell"
+            for name in ("modules", "services", "shellVariants", "assets", "scripts", "defaults", "translations", "GlobalStates.qml"):
                 (base / name).symlink_to(source / name, target_is_directory=(source / name).is_dir())
             (base / "shell.qml").write_text('''//@ pragma UseQApplication
 import QtQuick
 import Quickshell
-import "panelFamilies"
+import "shellVariants"
 ShellRoot {
-    property Component primaryPanels: Component { ArtificialImpulseFamily {} }
-    property Component alternatePanels: Component { WaffleFamily {} }
+    property Component primaryPanels: Component { DesktopShell {} }
+    property Component alternatePanels: Component { WindowsStyleShell {} }
     Timer { interval: 300; running: true; onTriggered: { console.log("SHELL_TYPES_OK"); Qt.quit(); } }
 }
 ''')

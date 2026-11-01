@@ -7,8 +7,8 @@ import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 
-ROOT = Path(__file__).resolve().parents[2]
-RENDERER = ROOT / "dots/.config/quickshell/ii/scripts/math/render-latex.mjs"
+ROOT = Path(__file__).resolve().parents[1]
+RENDERER = ROOT / "src/quickshell/scripts/math/render-latex.mjs"
 
 
 class MathRendererTests(unittest.TestCase):
@@ -17,7 +17,7 @@ class MathRendererTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         output = Path(self.temp.name) / "formula.svg"
         request = dict(expression=expression, output=str(output), foreground="#abcdef", **options)
-        env = dict(os.environ, NODE_OPTIONS=f"--require={ROOT / 'sdata/tests/no-network.cjs'}")
+        env = dict(os.environ, NODE_OPTIONS=f"--require={ROOT / 'tests/no-network.cjs'}")
         result = subprocess.run(["node", str(RENDERER)], input=json.dumps(request),
                                 text=True, capture_output=True, env=env, timeout=15)
         return result, output

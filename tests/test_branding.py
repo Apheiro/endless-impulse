@@ -6,8 +6,8 @@ import subprocess
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SCRIPTS = ROOT / "dots/.config/quickshell/ii/scripts"
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "src/quickshell/scripts"
 spec = importlib.util.spec_from_file_location("branding", SCRIPTS / "shell/branding.py")
 branding = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(branding)

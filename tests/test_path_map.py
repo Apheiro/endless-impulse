@@ -6,8 +6,8 @@ import subprocess
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "dots/.config/quickshell/ii"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "src/quickshell"
 spec = importlib.util.spec_from_file_location("path_map", SOURCE / "scripts/shell/path_map.py")
 catalog = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(catalog)
@@ -90,5 +90,5 @@ assert.equal(context.flatten(groups, {}, 'nothing').length, 0);
 assert.equal(groups[0].children.length, 2);
 assert.equal(context.flatten(groups, {}, '').length, 2);
 '''
-        result = subprocess.run([shutil.which("node"), "-e", script, str(SOURCE / "modules/common/functions/PathTree.js")], capture_output=True, text=True, timeout=5)
+        result = subprocess.run([shutil.which("node"), "-e", script, str(SOURCE / "modules/shared/functions/PathTree.js")], capture_output=True, text=True, timeout=5)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

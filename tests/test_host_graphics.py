@@ -3,8 +3,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location("graphics", ROOT / "nix/host-graphics.py")
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("graphics", ROOT / "packaging/nix/host-graphics.py")
 graphics = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(graphics)
 

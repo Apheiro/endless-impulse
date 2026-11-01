@@ -1,4 +1,4 @@
-"""Run with: python3 -m unittest discover -s sdata/tests -v"""
+"""Run with: python3 -m unittest discover -s tests -v"""
 import importlib.util
 import json
 import os
@@ -8,9 +8,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[2]
+ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
-    "shortcuts", ROOT / "dots/.config/quickshell/ii/scripts/hyprland/shortcuts.py")
+    "shortcuts", ROOT / "src/quickshell/scripts/hyprland/shortcuts.py")
 shortcuts = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(shortcuts)
 
@@ -98,10 +98,10 @@ end
 hl = { dsp = proxy, env = function() end, bind = original,
        define_submap = function(name, callback) callback() end }
 require = function() return {} end
-dofile(root .. "/dots/.config/hypr/hyprland/variables.lua")
-local shortcuts = dofile(root .. "/dots/.config/hypr/hyprland/services/shortcuts.lua")
+dofile(root .. "/config/xdg/config/hypr/hyprland/variables.lua")
+local shortcuts = dofile(root .. "/config/xdg/config/hypr/hyprland/services/shortcuts.lua")
 shortcuts.start()
-dofile(root .. "/dots/.config/hypr/hyprland/keybinds.lua")
+dofile(root .. "/config/xdg/config/hypr/hyprland/keybinds.lua")
 shortcuts.finish()
 assert(hl.bind == original)
 print(count, remapped)

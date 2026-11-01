@@ -4,7 +4,7 @@ import subprocess
 import sys
 import unittest
 
-SCRIPTS = Path(__file__).resolve().parents[2] / "dots/.config/quickshell/ii/scripts"
+SCRIPTS = Path(__file__).resolve().parents[1] / "src/quickshell/scripts"
 
 
 class PythonRuntimeTests(unittest.TestCase):

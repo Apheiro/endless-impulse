@@ -10,8 +10,8 @@ import tempfile
 import time
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "dots/.config/quickshell/ii"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "src/quickshell"
 
 
 @unittest.skipUnless(os.environ.get("WAYLAND_DISPLAY"), "Quickshell needs a Wayland connection")
@@ -52,8 +52,16 @@ else: print('ok')
             (base / "shell.qml").write_text('''//@ pragma UseQApplication
 import QtQuick
 import Quickshell
+import Quickshell.Io
 import qs.services
+import qs.modules.settings
+import Quickshell.Wayland
 ShellRoot {
+    Process {
+        id: externalRevert
+        stdout: StdioCollector {}
+    }
+    DesktopPreviewPrompt { id: confirmation; screen: Quickshell.screens[0]; WlrLayershell.keyboardFocus: WlrKeyboardFocus.None }
     Component.onCompleted: DesktopSettings.refresh()
     Timer {
         interval: 100; running: true; repeat: true
@@ -74,8 +82,18 @@ ShellRoot {
                 DesktopSettings.put("options", "decoration:rounding", 25);
                 DesktopSettings.preview(); phase++;
             } else if (phase === 3 && DesktopSettings.transaction) {
-                DesktopSettings.revert(); phase++;
+                DesktopSettings.revert();
+                if (confirmation.visible) { console.error("REVERT_PROMPT_STILL_VISIBLE"); Qt.quit(); return; }
+                phase++;
             } else if (phase === 4 && !DesktopSettings.transaction && DesktopSettings.changes === 0) {
+                if (confirmation.visible) { console.error("REVERT_PROMPT_REOPENED"); Qt.quit(); return; }
+                DesktopSettings.put("options", "decoration:rounding", 26);
+                DesktopSettings.preview(); phase++;
+            } else if (phase === 5 && DesktopSettings.transaction) {
+                externalRevert.command = ["python3", Quickshell.shellPath("scripts/hyprland/desktop.py"), "revert", DesktopSettings.transaction.token];
+                externalRevert.running = true; phase++;
+            } else if (phase === 6 && !DesktopSettings.transaction && DesktopSettings.changes === 0) {
+                if (confirmation.visible) { console.error("EXTERNAL_REVERT_PROMPT_REMAINED"); Qt.quit(); return; }
                 console.log("DESKTOP_WORKFLOW_OK"); Qt.quit();
             }
         }
