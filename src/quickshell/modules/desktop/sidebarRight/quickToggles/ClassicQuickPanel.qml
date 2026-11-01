@@ -1,11 +1,12 @@
+import qs.modules.shared.primitives.common
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Bluetooth
 
-import qs.modules.ii.sidebarRight.quickToggles.classicStyle
+import qs.modules.desktop.sidebarRight.quickToggles.classicStyle
 
 AbstractQuickPanel {
     id: root

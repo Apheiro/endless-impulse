@@ -1,11 +1,12 @@
 pragma ComponentBehavior: Bound
 
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import qs.services
 
 Rectangle {

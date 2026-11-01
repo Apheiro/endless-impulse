@@ -1,7 +1,9 @@
+pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -9,13 +11,13 @@ import Quickshell
 import Quickshell.Bluetooth
 import Quickshell.Hyprland
 
-import qs.modules.ii.sidebarRight.quickToggles
-import qs.modules.ii.sidebarRight.quickToggles.classicStyle
+import qs.modules.desktop.sidebarRight.quickToggles
+import qs.modules.desktop.sidebarRight.quickToggles.classicStyle
 
-import qs.modules.ii.sidebarRight.bluetoothDevices
-import qs.modules.ii.sidebarRight.nightLight
-import qs.modules.ii.sidebarRight.volumeMixer
-import qs.modules.ii.sidebarRight.wifiNetworks
+import qs.modules.desktop.sidebarRight.bluetoothDevices
+import qs.modules.desktop.sidebarRight.nightLight
+import qs.modules.desktop.sidebarRight.volumeMixer
+import qs.modules.desktop.sidebarRight.wifiNetworks
 
 Item {
     id: root
@@ -28,6 +30,11 @@ Item {
     property bool showNightLightDialog: false
     property bool showWifiDialog: false
     property bool editMode: false
+
+    function openAdvanced(section, detail) {
+        GlobalStates.sidebarRightOpen = false;
+        SettingsNavigation.open(section, detail);
+    }
 
     Connections {
         target: GlobalStates
@@ -126,31 +133,8 @@ Item {
     }
 
     ToggleDialog {
-        shownPropertyString: "showBluetoothDialog"
-        dialog: BluetoothDialog {}
-        onShownChanged: {
-            if (!shown) {
-                Bluetooth.defaultAdapter.discovering = false;
-            } else {
-                Bluetooth.defaultAdapter.enabled = true;
-                Bluetooth.defaultAdapter.discovering = true;
-            }
-        }
-    }
-
-    ToggleDialog {
         shownPropertyString: "showNightLightDialog"
         dialog: NightLightDialog {}
-    }
-
-    ToggleDialog {
-        shownPropertyString: "showWifiDialog"
-        dialog: WifiDialog {}
-        onShownChanged: {
-            if (!shown) return;
-            Network.enableWifi();
-            Network.rescanWifi();
-        }
     }
 
     component ToggleDialog: Loader {
@@ -190,19 +174,19 @@ Item {
         Connections {
             target: quickPanelImplLoader.item
             function onOpenAudioOutputDialog() {
-                root.showAudioOutputDialog = true;
+                root.openAdvanced("audio", "outputs");
             }
             function onOpenAudioInputDialog() {
-                root.showAudioInputDialog = true;
+                root.openAdvanced("audio", "inputs");
             }
             function onOpenBluetoothDialog() {
-                root.showBluetoothDialog = true;
+                root.openAdvanced("bluetooth");
             }
             function onOpenNightLightDialog() {
                 root.showNightLightDialog = true;
             }
             function onOpenWifiDialog() {
-                root.showWifiDialog = true;
+                root.openAdvanced("network", "wifi");
             }
         }
     }

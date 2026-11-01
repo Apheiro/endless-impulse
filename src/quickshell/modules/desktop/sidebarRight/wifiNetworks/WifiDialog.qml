@@ -1,8 +1,10 @@
+import qs.modules.shared.primitives.dialogs
+import qs.modules.shared.primitives.common
 import qs
 import qs.services
 import qs.services.network
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -50,7 +52,7 @@ WindowDialog {
         DialogButton {
             buttonText: Translation.tr("Details")
             onClicked: {
-                Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Config.options.apps.networkEthernet : Config.options.apps.network}`]);
+                SettingsNavigation.open("network", "wifi");
                 GlobalStates.sidebarRightOpen = false;
             }
         }

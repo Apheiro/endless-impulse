@@ -1,8 +1,10 @@
+import qs.modules.shared.primitives.dialogs
+import qs.modules.shared.primitives.common
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -60,7 +62,7 @@ WindowDialog {
         DialogButton {
             buttonText: Translation.tr("Details")
             onClicked: {
-                Quickshell.execDetached(["bash", "-c", `${Config.options.apps.bluetooth}`]);
+                SettingsNavigation.open("bluetooth");
                 GlobalStates.sidebarRightOpen = false;
             }
         }

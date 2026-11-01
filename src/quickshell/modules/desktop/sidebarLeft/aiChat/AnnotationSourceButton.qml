@@ -1,9 +1,10 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 
 import qs
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 RippleButton {
     id: root

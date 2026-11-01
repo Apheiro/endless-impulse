@@ -1,8 +1,9 @@
+import qs.modules.shared.primitives.common
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
-import qs.modules.ii.sidebarRight.quickToggles
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
+import qs.modules.desktop.sidebarRight.quickToggles
 import qs
 import QtQuick
 import Quickshell
@@ -10,11 +11,12 @@ import Quickshell.Io
 import Quickshell.Hyprland
 
 QuickToggleButton {
+    id:root
     toggled: Network.wifiStatus !== "disabled"
     buttonIcon: Network.materialSymbol
     onClicked: Network.toggleWifi()
     altAction: () => {
-        Quickshell.execDetached(["bash", "-c", `${Network.ethernet ? Config.options.apps.networkEthernet : Config.options.apps.network}`])
+        NetworkControl.open(root.QsWindow.window?.screen?.name, Network.ethernet?"devices":"wifi")
         GlobalStates.sidebarRightOpen = false
     }
     StyledToolTip {

@@ -1,9 +1,10 @@
+import qs.modules.shared.primitives.common
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
-import qs.modules.ii.sidebarLeft.anime
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
+import qs.modules.desktop.sidebarLeft.anime
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -233,7 +234,7 @@ Item {
                     bottomMargin: 20 + (root.pullLoading ? 0 : Math.max(0, (root.normalizedPullDistance - 0.5) * 50))
                     Behavior on bottomMargin {
                         NumberAnimation {
-                            duration: 200
+                            duration: Appearance.animationDuration(200)
                             easing.type: Easing.BezierSpline
                             easing.bezierCurve: Appearance.animationCurves.expressiveFastSpatial
                         }

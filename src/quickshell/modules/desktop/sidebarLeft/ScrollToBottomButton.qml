@@ -1,6 +1,7 @@
+import qs.modules.shared.primitives.common
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 

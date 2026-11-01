@@ -1,7 +1,8 @@
+import qs.modules.shared.primitives.common
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import Quickshell.Io
 import Quickshell
@@ -86,7 +87,10 @@ Scope { // Scope
         
         sourceComponent: PanelWindow { // Window
             id: panelWindow
-            visible: GlobalStates.sidebarLeftOpen
+            visible: reveal.visible
+            contentItem.clip: true
+            SidebarReveal { id: reveal; opened: GlobalStates.sidebarLeftOpen }
+            readonly property bool wantsFocus: visible && GlobalStates.sidebarLeftOpen
             
             property bool extend: false
             property real sidebarWidth: panelWindow.extend ? Appearance.sizes.sidebarWidthExtended : Appearance.sizes.sidebarWidth
@@ -98,10 +102,10 @@ Scope { // Scope
 
             exclusionMode: ExclusionMode.Normal
             exclusiveZone: root.pin ? sidebarWidth : 0
-            implicitWidth: Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin
+            implicitWidth: Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin + Appearance.sizes.sidebarOvershootMargin
             WlrLayershell.namespace: "quickshell:sidebarLeft"
             // Hyprland 0.49: OnDemand is Exclusive, Exclusive just breaks click-outside-to-close
-            WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+            WlrLayershell.keyboardFocus: GlobalStates.sidebarLeftOpen ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
             color: "transparent"
 
             anchors {
@@ -111,11 +115,15 @@ Scope { // Scope
             }
 
             mask: Region {
-                item: sidebarLeftBackground
+                x: Math.round(sidebarLeftBackground.x - (1 - reveal.progress) * (Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin))
+                y: Math.round(sidebarLeftBackground.y)
+                width: Math.round(sidebarLeftBackground.width)
+                height: Math.round(sidebarLeftBackground.height)
+                radius: sidebarLeftBackground.radius
             }
 
-            onVisibleChanged: {
-                if (visible) {
+            onWantsFocusChanged: {
+                if (wantsFocus) {
                     GlobalFocusGrab.addDismissable(panelWindow);
                 } else {
                     GlobalFocusGrab.removeDismissable(panelWindow);
@@ -131,10 +139,13 @@ Scope { // Scope
             // Content
             StyledRectangularShadow {
                 target: sidebarLeftBackground
+                transform: Translate { x: -(1 - reveal.progress) * (Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin) }
                 radius: sidebarLeftBackground.radius
             }
             Rectangle {
                 id: sidebarLeftBackground
+                enabled: GlobalStates.sidebarLeftOpen
+                transform: Translate { x: -(1 - reveal.progress) * (Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin) }
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.topMargin: Appearance.sizes.hyprlandGapsOut

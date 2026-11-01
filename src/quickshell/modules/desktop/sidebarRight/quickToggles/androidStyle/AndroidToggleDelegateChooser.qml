@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -13,7 +13,6 @@ DelegateChooser {
     required property real baseCellWidth
     required property real baseCellHeight
     required property real spacing
-    required property int startingIndex
     signal openAudioOutputDialog()
     signal openAudioInputDialog()
     signal openBluetoothDialog()
@@ -25,7 +24,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "antiFlashbang"; AndroidAntiFlashbangToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -41,7 +39,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "audio"; AndroidAudioToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -57,7 +54,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "bluetooth"; AndroidBluetoothToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -73,7 +69,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "cloudflareWarp"; AndroidCloudflareWarpToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -86,7 +81,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "colorPicker"; AndroidColorPickerToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -99,7 +93,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "darkMode"; AndroidDarkModeToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -112,7 +105,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "easyEffects"; AndroidEasyEffectsToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -125,7 +117,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "gameMode"; AndroidGameModeToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -138,7 +129,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "idleInhibitor"; AndroidIdleInhibitorToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -151,7 +141,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "mic"; AndroidMicToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -167,7 +156,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "musicRecognition"; AndroidMusicRecognition {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -180,7 +168,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "network"; AndroidNetworkToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -196,7 +183,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "nightLight"; AndroidNightLightToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -212,7 +198,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "notifications"; AndroidNotificationToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -225,7 +210,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "onScreenKeyboard"; AndroidOnScreenKeyboardToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -238,7 +222,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "powerProfile"; AndroidPowerProfileToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1
@@ -251,7 +234,6 @@ DelegateChooser {
     DelegateChoice { roleValue: "screenSnip"; AndroidScreenSnipToggle {
         required property int index
         required property var modelData
-        buttonIndex: root.startingIndex + index
         buttonData: modelData
         editMode: root.editMode
         expandedSize: modelData.size > 1

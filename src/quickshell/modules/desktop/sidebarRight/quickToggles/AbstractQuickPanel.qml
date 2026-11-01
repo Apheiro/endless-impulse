@@ -1,5 +1,5 @@
 import QtQuick
-import qs.modules.common
+import qs.modules.shared
 
 Rectangle {
     id: root

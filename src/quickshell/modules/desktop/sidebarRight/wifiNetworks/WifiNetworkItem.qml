@@ -1,6 +1,8 @@
+import qs.modules.shared.primitives.dialogs
+import qs.modules.shared.primitives.common
 import qs
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import qs.services
 import qs.services.network
 import QtQuick

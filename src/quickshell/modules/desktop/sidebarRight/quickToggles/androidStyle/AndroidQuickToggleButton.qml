@@ -1,16 +1,16 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.models.quickToggles
-import qs.modules.common.functions
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.models.quickToggles
+import qs.modules.shared.functions
+import qs.modules.shared.widgets
 
 GroupButton {
     id: root
     
     // Info to be passed to by repeater
-    required property int buttonIndex
     required property var buttonData
     required property bool expandedSize
     required property real baseCellWidth
@@ -178,6 +178,28 @@ GroupButton {
         }
     }
 
+    // Resolve by identity against the latest list: row indices change during edits.
+    function editToggle(type, action, offset = 0) {
+        const toggles = Array.from(Config.options.sidebar.quickToggles.android.toggles,
+            toggle => ({ type: toggle.type, size: toggle.size }));
+        const index = toggles.findIndex(toggle => toggle.type === type);
+        if (action === "enabled") {
+            if (index < 0) toggles.push({ type: type, size: 1 });
+            else toggles.splice(index, 1);
+        } else if (index < 0) {
+            return;
+        } else if (action === "size") {
+            toggles[index].size = toggles[index].size > 1 ? 1 : 2;
+        } else if (action === "move") {
+            const target = index + offset;
+            if (target < 0 || target >= toggles.length) return;
+            [toggles[index], toggles[target]] = [toggles[target], toggles[index]];
+        } else {
+            return;
+        }
+        Config.options.sidebar.quickToggles.android.toggles = toggles;
+    }
+
     MouseArea { // Blocking MouseArea for edit interactions
         id: editModeInteraction
         visible: root.editMode
@@ -185,57 +207,28 @@ GroupButton {
         cursorShape: Qt.PointingHandCursor
         hoverEnabled: true
         acceptedButtons: Qt.AllButtons
+        property string pressedType: ""
+        property bool held: false
 
-        function toggleEnabled() {
-            const index = root.buttonIndex;
-            const toggleList = Config.options.sidebar.quickToggles.android.toggles;
-            const buttonType = root.buttonData.type;
-            if (!toggleList.find(toggle => toggle.type === buttonType)) {
-                toggleList.push({ type: buttonType, size: 1 });
-            } else {
-                toggleList.splice(index, 1);
-            }
+        onPressed: event => {
+            // A model update may reuse this delegate before the mouse is released.
+            pressedType = root.buttonData.type;
+            held = false;
+            if (event.button === Qt.RightButton) root.editToggle(pressedType, "size");
         }
-
-        function toggleSize() {
-            const index = root.buttonIndex;
-            const toggleList = Config.options.sidebar.quickToggles.android.toggles;
-            const buttonType = root.buttonData.type;
-            if (!toggleList.find(toggle => toggle.type === buttonType)) return;
-            toggleList[index].size = 3 - toggleList[index].size; // Alternate between 1 and 2
+        onReleased: event => {
+            if (event.button === Qt.LeftButton && !held)
+                root.editToggle(pressedType, "enabled");
+            pressedType = "";
         }
-
-        function movePositionBy(offset) {
-            const index = root.buttonIndex;
-            const toggleList = Config.options.sidebar.quickToggles.android.toggles;
-            const buttonType = root.buttonData.type;
-            const targetIndex = index + offset;
-            if (!toggleList.find(toggle => toggle.type === buttonType)) return;
-            if (targetIndex < 0 || targetIndex >= toggleList.length) return;
-            const temp = toggleList[index];
-            toggleList[index] = toggleList[targetIndex];
-            toggleList[targetIndex] = temp;
+        onCanceled: pressedType = ""
+        onPressAndHold: event => {
+            if (event.button !== Qt.LeftButton) return;
+            held = true;
+            root.editToggle(pressedType, "size");
         }
-
-        onReleased: (event) => {
-            if (event.button === Qt.LeftButton)
-                toggleEnabled();
-        }
-        onPressed: (event) => {
-            if (event.button === Qt.RightButton) toggleSize();
-        }
-        onPressAndHold: (event) => { // Also toggle size
-            toggleSize();
-        }
-        onWheel: (event) => {
-            const index = root.buttonIndex;
-            const toggleList = Config.options.sidebar.quickToggles.android.toggles;
-            const buttonType = root.buttonData.type;
-            if (event.angleDelta.y < 0) { // Move to right
-                movePositionBy(1);
-            } else if (event.angleDelta.y > 0) { // Move to left
-                movePositionBy(-1);
-            }
+        onWheel: event => {
+            root.editToggle(root.buttonData.type, "move", event.angleDelta.y < 0 ? 1 : -1);
             event.accepted = true;
         }
     }

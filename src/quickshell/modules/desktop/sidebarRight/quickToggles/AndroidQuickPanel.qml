@@ -1,12 +1,13 @@
+import qs.modules.shared.primitives.common
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Bluetooth
 
-import qs.modules.ii.sidebarRight.quickToggles.androidStyle
+import qs.modules.desktop.sidebarRight.quickToggles.androidStyle
 
 AbstractQuickPanel {
     id: root
@@ -80,14 +81,6 @@ AbstractQuickPanel {
                     id: toggleRow
                     required property int index
                     property var modelData: root.toggleRows[index]
-                    property int startingIndex: {
-                        const rows = root.toggleRows;
-                        let sum = 0;
-                        for (let i = 0; i < index; i++) {
-                            sum += rows[i].length;
-                        }
-                        return sum;
-                    }
                     spacing: root.spacing
 
                     Repeater {
@@ -96,7 +89,6 @@ AbstractQuickPanel {
                             objectProp: "type"
                         }
                         delegate: AndroidToggleDelegateChooser {
-                            startingIndex: toggleRow.startingIndex
                             editMode: root.editMode
                             baseCellWidth: root.baseCellWidth
                             baseCellHeight: root.baseCellHeight
@@ -148,7 +140,6 @@ AbstractQuickPanel {
                                 objectProp: "type"
                             }
                             delegate: AndroidToggleDelegateChooser {
-                                startingIndex: -1
                                 editMode: root.editMode
                                 baseCellWidth: root.baseCellWidth
                                 baseCellHeight: root.baseCellHeight

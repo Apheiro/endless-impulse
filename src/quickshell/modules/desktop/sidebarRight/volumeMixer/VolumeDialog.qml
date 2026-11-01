@@ -1,8 +1,9 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.dialogs
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -31,7 +32,7 @@ WindowDialog {
         DialogButton {
             buttonText: Translation.tr("Details")
             onClicked: {
-                Quickshell.execDetached(["bash", "-c", `${Config.options.apps.volumeMixer}`]);
+                SettingsNavigation.open("audio", "playback");
                 GlobalStates.sidebarRightOpen = false;
             }
         }
