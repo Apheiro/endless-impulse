@@ -1,0 +1,2 @@
+# Access for the active local session; no membership in the broad input group.
+SUBSYSTEM=="misc", KERNEL=="uinput", TAG+="uaccess"
