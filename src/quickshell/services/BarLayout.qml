@@ -52,11 +52,20 @@ Singleton {
     function canCenter(item) {
         return !!item && !["flex", "spacer", "separator"].includes(item.type);
     }
+    // JsonAdapter restores JSON arrays as Qt sequence wrappers. Array.isArray()
+    // returns false for those lists even though they are iterable, so convert
+    // them before deciding whether a persisted layout is an older format.
+    function asArray(value) {
+        if (Array.isArray(value)) return value;
+        if (value && typeof value !== "string" && typeof value.length === "number")
+            return Array.from(value);
+        return [];
+    }
     // Read old three-zone preferences without rewriting them until Save.
     function migrate(value) {
-        const left = Array.isArray(value?.left) ? value.left : [];
-        const center = Array.isArray(value?.center) ? value.center : [];
-        const right = Array.isArray(value?.right) ? value.right : [];
+        const left = asArray(value?.left);
+        const center = asArray(value?.center);
+        const right = asArray(value?.right);
         const used = new Set([...left, ...center, ...right].map(item => item?.key));
         function gap(name) {
             let key = name;
@@ -68,8 +77,8 @@ Singleton {
         return {version: 2, items: [...left, gap("layout-flex-before"), ...center, gap("layout-flex-after"), ...right], centerKey: anchor?.key ?? ""};
     }
     function normalize(value) {
-        const source = Array.isArray(value?.items)
-            ? {items: value.items, centerKey: value.centerKey}
+        const source = value?.items && typeof value.items.length === "number"
+            ? {items: asArray(value.items), centerKey: value.centerKey}
             : migrate(value);
         const items = [], keys = new Set(), types = new Set();
         for (const item of source.items) {
