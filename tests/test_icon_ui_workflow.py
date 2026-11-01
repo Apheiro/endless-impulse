@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 import unittest
 
-SOURCE = Path(__file__).resolve().parents[2] / "dots/.config/quickshell/ii"
+SOURCE = Path(__file__).resolve().parents[1] / "src/quickshell"
 
 
 @unittest.skipUnless(os.environ.get("WAYLAND_DISPLAY"), "Quickshell needs Wayland")
@@ -24,6 +24,9 @@ class IconWorkflowTests(unittest.TestCase):
             (other / "48x48/apps").mkdir(parents=True)
             (other / "index.theme").write_text((icons / "index.theme").read_text().replace("Name=Base", "Name=Other"))
             (other / "48x48/apps/folder.svg").write_text((icons / "48x48/apps/folder.svg").read_text().replace("blue", "red"))
+            third = base / "data/icons/Third"
+            (third / "48x48/apps").mkdir(parents=True)
+            (third / "index.theme").write_text((icons / "index.theme").read_text().replace("Name=Base", "Name=Third"))
             appdir = base / "data/applications"
             appdir.mkdir(parents=True)
             (appdir / "demo.desktop").write_text("[Desktop Entry]\nName=Demo\nType=Application\nIcon=folder\nExec=true\n")
@@ -33,10 +36,19 @@ class IconWorkflowTests(unittest.TestCase):
             fixture = '''import QtQuick
 import Quickshell
 import Quickshell.Io
+import Quickshell.Wayland
+import qs.modules.settings
 import qs.services
 ShellRoot {
     property int phase: 0
     property int ticks: 0
+    PanelWindow {
+        implicitWidth:960;implicitHeight:850;exclusiveZone:0
+        WlrLayershell.namespace:"quickshell:icon-fallback-test"
+        WlrLayershell.keyboardFocus:WlrKeyboardFocus.None
+        mask:Region{}
+        IconsConfig{id:page;anchors.fill:parent}
+    }
     Process {
         id: externalWriter
         command: ["python3", Quickshell.shellPath("scripts/icons/themes.py"), "apply"]
@@ -48,17 +60,23 @@ ShellRoot {
     Timer {
         interval: 100; running: true; repeat: true
         onTriggered: {
-            if (++parent.ticks > 180) { console.error("ICON_WORKFLOW_TIMEOUT", parent.phase, IconTheme.message); Qt.quit(); return; }
+            if (++parent.ticks > 180) { console.error("ICON_WORKFLOW_TIMEOUT", parent.phase, IconTheme.message, JSON.stringify(IconTheme.paths.filter(path=>!path.exists))); Qt.quit(); return; }
             if (!IconTheme.loaded || IconTheme.busy) return;
             if (IconTheme.failed) { console.error("ICON_WORKFLOW_FAILED", IconTheme.message); Qt.quit(); return; }
             switch (parent.phase) {
             case 0:
-                IconTheme.preview("Base"); parent.phase++; break;
+                page.selectedTheme="Base";
+                page.addFallback("Other");page.addFallback("Third");page.moveFallback(1,-1);
+                if (JSON.stringify(page.selectedFallbacks)!==JSON.stringify(["Third","Other"])) {console.error("ICON_BACKUP_ORDER_FAILED");Qt.quit();return;}
+                page.selectedFallbacks=page.selectedFallbacks.filter(theme=>theme!=="Third");
+                IconTheme.preview("Base", page.selectedFallbacks); parent.phase++; break;
             case 1:
                 if (IconTheme.previewTheme !== "Base" || !IconTheme.previewIcons.folder) return;
-                IconTheme.apply({theme: "Base"}); parent.phase++; break;
+                IconTheme.preview("Base", ["Other"]);
+                IconTheme.apply({theme: "Base", fallbacks: ["Other"]}); parent.phase++; break;
             case 2:
                 if (IconTheme.paths.some(p => !p.exists)) return;
+                if (JSON.stringify(IconTheme.fallbacks)!==JSON.stringify(["Other"])) {console.error("ICON_FALLBACKS_NOT_APPLIED");Qt.quit();return;}
                 IconTheme.apply({theme: "Base", application: "demo.desktop", source: "folder"}); parent.phase++; break;
             case 3:
                 if (!IconTheme.overrides["demo.desktop"]) return;

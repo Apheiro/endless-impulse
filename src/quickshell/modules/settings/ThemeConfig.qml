@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -232,6 +234,50 @@ SettingsPage {
                 Config.options.appearance.transparency.enable = checked;
             }
         }
+
+        ConfigSwitch {
+            objectName: "transparency-xray-control"
+            buttonIcon: "wallpaper"
+            text: Translation.tr("Wallpaper-only blur (Xray)")
+            checked: Config.options.appearance.transparency.xray
+            onClicked: Config.options.appearance.transparency.xray = checked
+        }
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("On: blur the wallpaper behind panels. Off: include the windows behind them. Requires transparency and blur to be enabled.")
+            color: Appearance.colors.colSubtext
+            font.pixelSize: Appearance.font.pixelSize.small
+            wrapMode: Text.WordWrap
+        }
+
+    }
+
+    SettingsSection {
+        icon: "animation"
+        title: Translation.tr("Animations")
+        Layout.fillWidth: true
+
+        SettingsRange {
+            objectName: "animation-speed-control"
+            text: Translation.tr("Global animation speed")
+            value: Config.options.appearance.animationSpeed
+            from: 0.25
+            to: 3
+            stepSize: 0.05
+            decimals: 2
+            suffix: "×"
+            stopIndicatorValues: [1]
+            onEdited: nextValue => Config.options.appearance.animationSpeed = nextValue
+        }
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("1× is the original speed. Higher values make interface animations faster. Applies immediately to panels, menus, controls, windows and workspaces.")
+            color: Appearance.colors.colSubtext
+            font.pixelSize: Appearance.font.pixelSize.small
+            wrapMode: Text.WordWrap
+        }
+        AnimationTimings { objectName: "individual-animation-timings" }
+
     }
 
     SettingsSection {
@@ -280,15 +326,17 @@ SettingsPage {
                 }
             }
         }
-        ConfigSpinBox {
+        SettingsRange {
             icon: "loupe"
             text: Translation.tr("Preferred wallpaper zoom (%)")
             value: Config.options.background.parallax.workspaceZoom * 100
             from: 10
             to: 200
+            suffix: "%"
+            decimals: 0
             stepSize: 1
-            onValueChanged: {
-                Config.options.background.parallax.workspaceZoom = value / 100;
+            onEdited: nextValue => {
+                Config.options.background.parallax.workspaceZoom = nextValue / 100;
             }
         }
     }
@@ -342,37 +390,42 @@ SettingsPage {
             }
         }
 
-        ConfigSpinBox {
+        SettingsRange {
             icon: "invert_colors"
             text: Translation.tr("Terminal: Harmony (%)")
             value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony * 100
             from: 0
             to: 100
+            suffix: "%"
+            decimals: 0
             stepSize: 10
-            onValueChanged: {
-                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony = value / 100;
+            onEdited: nextValue => {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmony = nextValue / 100;
             }
         }
-        ConfigSpinBox {
+        SettingsRange {
             icon: "gradient"
             text: Translation.tr("Terminal: Harmonize threshold")
             value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold
             from: 0
             to: 100
+            decimals: 0
             stepSize: 10
-            onValueChanged: {
-                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold = value;
+            onEdited: nextValue => {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.harmonizeThreshold = nextValue;
             }
         }
-        ConfigSpinBox {
+        SettingsRange {
             icon: "format_color_text"
             text: Translation.tr("Terminal: Foreground boost (%)")
             value: Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost * 100
             from: 0
             to: 100
+            suffix: "%"
+            decimals: 0
             stepSize: 10
-            onValueChanged: {
-                Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost = value / 100;
+            onEdited: nextValue => {
+                Config.options.appearance.wallpaperTheming.terminalGenerationProps.termFgBoost = nextValue / 100;
             }
         }
     }

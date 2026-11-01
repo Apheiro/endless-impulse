@@ -39,7 +39,7 @@ def ini(path):
     return parser
 
 
-def themes():
+def themes(include_hidden=False):
     found = {}
     for base in roots():
         if not base.is_dir():
@@ -51,7 +51,7 @@ def themes():
             if not info.has_section("Icon Theme"):
                 continue
             section = info["Icon Theme"]
-            if section.get("Hidden", "false").lower() == "true" or not section.get("Directories"):
+            if (not include_hidden and section.get("Hidden", "false").lower() == "true") or not section.get("Directories"):
                 continue
             found[path.name] = {"id": path.name, "name": section.get("Name", path.name), "path": str(path)}
     return sorted(found.values(), key=lambda t: t["name"].casefold())
@@ -66,7 +66,22 @@ def read_store():
     return {"theme": ini(CONFIG / "kdeglobals").get("Icons", "Theme", fallback="breeze"), "overrides": {}}
 
 
-def icon_map(theme):
+def fallback_themes(value, theme, installed=None):
+    if not isinstance(value, list) or any(not isinstance(name, str) for name in value):
+        raise ValueError("Backup icon themes must be a list of installed theme names.")
+    result = []
+    for name in value:
+        if name in (theme, "hicolor") or name in result:
+            continue
+        if not name or name == OVERLAY or Path(name).name != name or "," in name or "\n" in name:
+            raise ValueError("Invalid backup icon theme.")
+        if installed is not None and name not in installed:
+            raise ValueError(f"Backup icon theme is no longer installed: {name}")
+        result.append(name)
+    return result
+
+
+def icon_map(theme, fallbacks=()):
     """Resolve at shell preview size; toolkits keep their own size-aware loaders."""
     result, visited = {}, set()
 
@@ -100,8 +115,13 @@ def icon_map(theme):
                         if file.suffix.lower() in EXTENSIONS and file.is_file():
                             result.setdefault(file.stem, file.as_uri())
         for parent in parents:
-            visit(parent.strip())
-    visit(theme)
+            if parent.strip() != "hicolor":
+                visit(parent.strip())
+    if theme != "hicolor":
+        visit(theme)
+    for fallback in fallbacks:
+        if fallback != "hicolor":
+            visit(fallback)
     visit("hicolor")
     for share in shares():
         folder = share / "pixmaps"
@@ -233,7 +253,8 @@ def snapshot():
     store = read_store()
     available = themes()
     base = store.get("theme", "breeze")
-    mapping = icon_map(OVERLAY if STORE.exists() and (ROOT / "index.theme").exists() else base)
+    fallbacks = fallback_themes(store.get("fallbacks", []), base)
+    mapping = icon_map(OVERLAY if STORE.exists() and (ROOT / "index.theme").exists() else base, fallbacks)
     app_list = applications()
     aliases = {}
     for identity, override in store.get("overrides", {}).items():
@@ -249,7 +270,7 @@ def snapshot():
         paths.append({"name": "GNOME / GSettings", "path": str(CONFIG / "dconf"), "exists": True})
     paths += [{"name": "Artificial Impulse", "path": str(STORE), "exists": STORE.exists()}, {"name": "Icon overlay", "path": str(ROOT / "index.theme"), "exists": (ROOT / "index.theme").exists()}]
     paths += [{"name": "Application · " + Path(path).stem, "path": path, "exists": Path(path).exists()} for path in store.get("desktopFiles", {})]
-    return {"ok": True, "theme": base, "themes": available, "icons": mapping, "applications": app_list, "aliases": aliases, "overrides": store.get("overrides", {}), "paths": paths, "colorPaths": color_paths()}
+    return {"ok": True, "theme": base, "fallbacks": fallbacks, "themes": available, "backupThemes": themes(True), "icons": mapping, "applications": app_list, "aliases": aliases, "overrides": store.get("overrides", {}), "paths": paths, "colorPaths": color_paths()}
 
 
 def apply(payload):
@@ -257,6 +278,7 @@ def apply(payload):
     theme = payload.get("theme", store.get("theme"))
     if theme not in {t["id"] for t in themes()}:
         raise ValueError("Choose an installed icon theme.")
+    fallbacks = fallback_themes(payload.get("fallbacks", store.get("fallbacks", [])), theme, {t["id"] for t in themes(True)})
     overrides = dict(store.get("overrides", {}))
     old_files = {Path(value["path"]) for value in overrides.values()}
     app_id = payload.get("application")
@@ -276,7 +298,7 @@ def apply(payload):
                 path = Path(source)
             else:
                 from urllib.parse import unquote, urlparse
-                url = icon_map(theme).get(source)
+                url = icon_map(theme, fallbacks).get(source)
                 if not url:
                     raise ValueError("Icon name was not found in the selected theme.")
                 path = Path(unquote(urlparse(url).path))
@@ -288,7 +310,8 @@ def apply(payload):
             destination = ROOT / "scalable/apps" / filename
             updates[destination] = path.read_bytes()
             overrides[app_id] = {"path": str(destination), "original": original, "source": source}
-    updates[ROOT / "index.theme"] = f"[Icon Theme]\nName=Artificial Impulse\nComment=Personal icon overrides\nInherits={theme},hicolor\nDirectories=scalable/apps\n\n[scalable/apps]\nSize=48\nType=Scalable\nMinSize=8\nMaxSize=512\nContext=Applications\n"
+    inheritance = ",".join(dict.fromkeys([theme, *fallbacks, "hicolor"]))
+    updates[ROOT / "index.theme"] = f"[Icon Theme]\nName=Artificial Impulse\nComment=Personal icon overrides\nInherits={inheritance}\nDirectories=scalable/apps\n\n[scalable/apps]\nSize=48\nType=Scalable\nMinSize=8\nMaxSize=512\nContext=Applications\n"
     desktop_overrides = {}
     for app in applications():
         if app["id"] in overrides:
@@ -303,7 +326,7 @@ def apply(payload):
         updates[path] = edit_ini(path.read_text() if path.exists() else "", section, key, OVERLAY)
     for _, path, key, separator in legacy_targets():
         updates[path] = edit_property(path.read_text(), key, separator)
-    next_store = {"theme": theme, "overrides": overrides, "desktopFiles": desktop_overrides}
+    next_store = {"theme": theme, "fallbacks": fallbacks, "overrides": overrides, "desktopFiles": desktop_overrides}
     updates[STORE] = json.dumps(next_store, indent=2) + "\n"
     backup = STATE / "artificial-impulse/icon-backups" / (time.strftime("%Y%m%d-%H%M%S") + "-" + str(time.time_ns()))
     backup.mkdir(parents=True)
@@ -315,6 +338,8 @@ def apply(payload):
             (backup / str(index)).write_bytes(content)
     (backup / "manifest.json").write_text(json.dumps(manifest, indent=2))
     try:
+        # Kirigami requires declared directories even when there are no custom images.
+        ROOT.joinpath("scalable/apps").mkdir(parents=True, exist_ok=True)
         for path, content in updates.items():
             atomic(path, content)
         for path, meta in restores.items():
@@ -364,11 +389,13 @@ def main():
         if action == "snapshot":
             result = snapshot()
         elif action == "preview":
-            theme = json.load(sys.stdin).get("theme")
+            payload = json.load(sys.stdin)
+            theme = payload.get("theme")
             if theme not in {t["id"] for t in themes()}:
                 raise ValueError("Choose an installed icon theme.")
-            mapping = icon_map(theme)
-            result = {"ok": True, "previewTheme": theme, "previewIcons": {name: mapping.get(name, "") for name in ("folder", "applications-system", "network-wireless", "user-trash")}}
+            fallbacks = fallback_themes(payload.get("fallbacks", []), theme, {t["id"] for t in themes(True)})
+            mapping = icon_map(theme, fallbacks)
+            result = {"ok": True, "previewTheme": theme, "previewKey": json.dumps([theme, fallbacks], separators=(",", ":"), ensure_ascii=False), "previewIcons": {name: mapping.get(name, "") for name in ("folder", "applications-system", "network-wireless", "user-trash")}}
         elif action == "apply":
             STATE.joinpath("artificial-impulse").mkdir(parents=True, exist_ok=True)
             with (STATE / "artificial-impulse/icons.lock").open("w") as lock:

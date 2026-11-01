@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell
-import qs.modules.common.functions
+import qs.modules.shared.functions
 pragma Singleton
 pragma ComponentBehavior: Bound
 
@@ -13,6 +13,10 @@ Singleton {
     property QtObject rounding
     property QtObject font
     property QtObject sizes
+    readonly property real animationSpeed: Math.max(0.25, Math.min(3, Number(Config.options.appearance.animationSpeed) || 1))
+    function animationDurationFor(name) { return animationDuration(Config.options.appearance.animationDurations[name]); }
+    function animationDuration(milliseconds) { return Math.max(0, Math.round(milliseconds / animationSpeed)); }
+
     property string syntaxHighlightingTheme
 
     // Transparency. The quadratic functions were derived from analysis of hand-picked transparency values.
@@ -249,6 +253,7 @@ Singleton {
     }
 
     animationCurves: QtObject {
+        readonly property list<real> sidebarSlide: [0.725, 0.265, 0.135, 1.325, 1, 1]
         readonly property list<real> expressiveFastSpatial: [0.42, 1.67, 0.21, 0.90, 1, 1] // Default, 350ms
         readonly property list<real> expressiveDefaultSpatial: [0.38, 1.21, 0.22, 1.00, 1, 1] // Default, 500ms
         readonly property list<real> expressiveSlowSpatial: [0.39, 1.29, 0.35, 0.98, 1, 1] // Default, 650ms
@@ -261,10 +266,10 @@ Singleton {
         readonly property list<real> standard: [0.2, 0, 0, 1, 1, 1]
         readonly property list<real> standardAccel: [0.3, 0, 1, 1, 1, 1]
         readonly property list<real> standardDecel: [0, 0, 0, 1, 1, 1]
-        readonly property real expressiveFastSpatialDuration: 350
-        readonly property real expressiveDefaultSpatialDuration: 500
-        readonly property real expressiveSlowSpatialDuration: 650
-        readonly property real expressiveEffectsDuration: 200
+        readonly property real expressiveFastSpatialDuration: root.animationDurationFor("smallMove")
+        readonly property real expressiveDefaultSpatialDuration: root.animationDurationFor("move")
+        readonly property real expressiveSlowSpatialDuration: root.animationDurationFor("slowMove")
+        readonly property real expressiveEffectsDuration: root.animationDurationFor("effects")
     }
 
     animation: QtObject {
@@ -272,7 +277,7 @@ Singleton {
             property int duration: animationCurves.expressiveDefaultSpatialDuration
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.expressiveDefaultSpatial
-            property int velocity: 650
+            property int velocity: Math.round(650 * root.animationSpeed)
             property Component numberAnimation: Component {
                 NumberAnimation {
                     duration: root.animation.elementMove.duration
@@ -286,7 +291,7 @@ Singleton {
             property int duration: animationCurves.expressiveFastSpatialDuration
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.expressiveFastSpatial
-            property int velocity: 650
+            property int velocity: Math.round(650 * root.animationSpeed)
             property Component numberAnimation: Component {
                 NumberAnimation {
                     duration: root.animation.elementMoveSmall.duration
@@ -297,10 +302,10 @@ Singleton {
         }
 
         property QtObject elementMoveEnter: QtObject {
-            property int duration: 400
+            property int duration: root.animationDurationFor("enter")
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.emphasizedDecel
-            property int velocity: 650
+            property int velocity: Math.round(650 * root.animationSpeed)
             property Component numberAnimation: Component {
                 NumberAnimation {
                     alwaysRunToEnd: true
@@ -312,10 +317,10 @@ Singleton {
         }
 
         property QtObject elementMoveExit: QtObject {
-            property int duration: 200
+            property int duration: root.animationDurationFor("exit")
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.emphasizedAccel
-            property int velocity: 650
+            property int velocity: Math.round(650 * root.animationSpeed)
             property Component numberAnimation: Component {
                 NumberAnimation {
                     alwaysRunToEnd: true
@@ -330,7 +335,7 @@ Singleton {
             property int duration: animationCurves.expressiveEffectsDuration
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.expressiveEffects
-            property int velocity: 850
+            property int velocity: Math.round(850 * root.animationSpeed)
             property Component colorAnimation: Component { ColorAnimation {
                 duration: root.animation.elementMoveFast.duration
                 easing.type: root.animation.elementMoveFast.type
@@ -345,10 +350,10 @@ Singleton {
         }
 
         property QtObject elementResize: QtObject {
-            property int duration: 300
+            property int duration: root.animationDurationFor("resize")
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.emphasized
-            property int velocity: 650
+            property int velocity: Math.round(650 * root.animationSpeed)
             property Component numberAnimation: Component {
                 NumberAnimation {
                     alwaysRunToEnd: true
@@ -360,10 +365,10 @@ Singleton {
         }
 
         property QtObject clickBounce: QtObject {
-            property int duration: 400
+            property int duration: root.animationDurationFor("bounce")
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: animationCurves.expressiveDefaultSpatial
-            property int velocity: 850
+            property int velocity: Math.round(850 * root.animationSpeed)
             property Component numberAnimation: Component { NumberAnimation {
                 alwaysRunToEnd: true
                 duration: root.animation.clickBounce.duration
@@ -373,18 +378,26 @@ Singleton {
         }
         
         property QtObject scroll: QtObject {
-            property int duration: 200
+            property int duration: root.animationDurationFor("scroll")
             property int type: Easing.BezierSpline
             property list<real> bezierCurve: root.animationCurves.standardDecel
         }
 
         property QtObject menuDecel: QtObject {
-            property int duration: 350
+            property int duration: root.animationDurationFor("menu")
             property int type: Easing.OutExpo
         }
     }
 
     sizes: QtObject {
+        property real textInputHorizontalPadding: 10
+        property real textInputVerticalPadding: 7
+        property real textInputMinimumHeight: 36
+        property real statusIconWidth: 30
+        property real statusIconHeight: 28
+        property real statusIconSpacing: 6
+        property real barModulePadding: 6
+        property real barModuleInset: 4
         property real baseBarHeight: 40
         property real barHeight: Config.options.bar.cornerStyle === 1 ? 
             (baseBarHeight + root.sizes.hyprlandGapsOut * 2) : baseBarHeight
@@ -403,6 +416,7 @@ Singleton {
         property real osdWidth: 180
         property real searchWidthCollapsed: 210
         property real searchWidth: 360
+        property real sidebarOvershootMargin: Math.ceil(Math.max(sidebarWidth, sidebarWidthExtended) * 0.12) + elevationMargin
         property real sidebarWidth: 460
         property real sidebarWidthExtended: 750
         property real baseVerticalBarWidth: 46

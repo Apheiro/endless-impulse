@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-SCRIPT = Path(__file__).resolve().parents[2] / "dots/.config/quickshell/ii/scripts/icons/themes.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "src/quickshell/scripts/icons/themes.py"
 
 
 class IconThemeTests(unittest.TestCase):
@@ -135,6 +135,37 @@ class IconThemeTests(unittest.TestCase):
                 self.m.apply(payload)
         self.assertFalse(self.m.STORE.exists())
         self.assertIn("Theme=Base", (self.m.CONFIG / "kdeglobals").read_text())
+
+    def test_ordered_backups_preview_resolution_and_valid_empty_overlay(self):
+        self.theme("BackupOne")
+        self.theme("BackupTwo")
+        self.write(self.m.DATA / "icons/BackupOne/48x48/apps/missing.svg", b"first backup")
+        self.write(self.m.DATA / "icons/BackupTwo/48x48/apps/missing.svg", b"second backup")
+        self.write(self.m.DATA / "icons/hicolor/48x48/apps/missing.svg", b"last fallback")
+        result=self.m.apply({"theme":"Base", "fallbacks":["BackupTwo","BackupOne","BackupTwo","Base","hicolor"]})
+        self.assertEqual(result["fallbacks"],["BackupTwo","BackupOne"])
+        self.assertTrue(result["icons"]["missing"].endswith("BackupTwo/48x48/apps/missing.svg"))
+        self.assertIn("Inherits=Base,BackupTwo,BackupOne,hicolor",(self.m.ROOT/"index.theme").read_text())
+        self.assertTrue((self.m.ROOT/"scalable/apps").is_dir())
+        self.assertTrue(self.m.icon_map("Base",["BackupOne","BackupTwo"])["missing"].endswith("BackupOne/48x48/apps/missing.svg"))
+        # An application-only edit keeps the fallback order.
+        result=self.m.apply({"theme":"Base", "application":"demo.desktop", "source":"missing"})
+        self.assertEqual(result["fallbacks"],["BackupTwo","BackupOne"])
+        self.assertEqual(Path(result["overrides"]["demo.desktop"]["path"]).read_bytes(),b"second backup")
+
+    def test_hidden_theme_can_be_used_as_backup_without_becoming_a_primary_choice(self):
+        self.theme("HiddenBackup")
+        index=self.m.DATA/"icons/HiddenBackup/index.theme"
+        index.write_text(index.read_text().replace("Name=HiddenBackup", "Name=HiddenBackup\nHidden=true"))
+        self.assertNotIn("HiddenBackup",[theme["id"] for theme in self.m.themes()])
+        self.assertIn("HiddenBackup",[theme["id"] for theme in self.m.snapshot()["backupThemes"]])
+        self.assertEqual(self.m.apply({"theme":"Base","fallbacks":["HiddenBackup"]})["fallbacks"],["HiddenBackup"])
+
+    def test_invalid_backups_do_not_write_files(self):
+        for fallbacks in ("Other", ["missing"], ["../Other"], ["ArtificialImpulse"], [1]):
+            with self.assertRaises(ValueError):self.m.apply({"theme":"Base","fallbacks":fallbacks})
+        self.assertFalse(self.m.STORE.exists())
+        self.assertFalse(self.m.ROOT.exists())
 
     def test_failed_write_restores_all_previous_files(self):
         before = (self.m.CONFIG / "kdeglobals").read_bytes()
