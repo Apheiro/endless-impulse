@@ -23,7 +23,10 @@ class ShellControlTests(unittest.TestCase):
         self.executable = self.base / "qs"
         self.executable.write_text("#!/bin/sh\nexit 0\n")
         self.executable.chmod(0o755)
-        env = patch.dict(os.environ, {"XDG_STATE_HOME": str(self.base / "state")})
+        env = patch.dict(os.environ, {
+            "XDG_STATE_HOME": str(self.base / "state"),
+            "DOTS_SHELL_LAUNCHER": "",
+        })
         env.start()
         self.addCleanup(env.stop)
         control.register(str(self.config / "shell.qml"), str(self.executable))
