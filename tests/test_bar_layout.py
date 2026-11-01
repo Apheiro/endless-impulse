@@ -42,7 +42,7 @@ ShellRoot {
  property var liveFrame:null
  property var menuOwner:null
  property int livePhase:0
- TestCase { id:pointer;name:"BarPointer";when:false }
+ TestCase { id:pointer;parent:host.contentItem;name:"BarPointer";when:false }
  Component.onCompleted:{Config.options.bar.autoHide.enable=true;Config.options.bar.autoHide.pushWindows=false;}
  function expect(condition,message){if(!condition)throw new Error(message);}
  function find(item,name){if(!item)return null;if(item.objectName===name)return item;for(const child of [...(item.children||[]),...(item.resources||[])]){const result=find(child,name);if(result)return result;}if(item.contentItem&&!Array.from(item.children||[]).includes(item.contentItem))return find(item.contentItem,name);return null;}
