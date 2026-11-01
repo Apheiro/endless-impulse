@@ -6,8 +6,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-ROOT = Path(__file__).resolve().parents[2]
-SPEC = importlib.util.spec_from_file_location("shell_control", ROOT / "dots/.config/quickshell/ii/scripts/shell/control.py")
+ROOT = Path(__file__).resolve().parents[1]
+SPEC = importlib.util.spec_from_file_location("shell_control", ROOT / "src/quickshell/scripts/shell/control.py")
 control = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(control)
 
@@ -56,6 +56,27 @@ class ShellControlTests(unittest.TestCase):
             self.assertEqual(run.call_args_list[0].args[0][-1], "kill")
             self.assertEqual(run.call_args.args[0], [str(launcher), "--no-duplicate", "-d"])
             self.assertEqual(run.call_args.kwargs["env"]["DOTS_SHELL_SOURCE"], str(self.config))
+
+    def test_stop_targets_registered_source_without_relaunching(self):
+        with patch.object(control.subprocess, "run") as run:
+            run.return_value.returncode = 0
+            self.assertEqual(control.main(["stop"]), 0)
+            run.assert_called_once_with([str(self.executable), "-p", str(self.config), "kill"], timeout=10)
+
+    def test_settings_reuses_existing_window_with_exact_section(self):
+        with patch.object(control.subprocess, "run") as run:
+            run.return_value.returncode = 0
+            self.assertEqual(control.main(["settings", "audio/profiles"]), 0)
+            run.assert_called_once()
+            self.assertEqual(run.call_args.args[0][-3:], ["settings", "page", "audio/profiles"])
+
+    def test_settings_launch_selects_section_if_no_window_exists(self):
+        from types import SimpleNamespace
+        with patch.object(control.subprocess, "run") as run:
+            run.side_effect = [SimpleNamespace(returncode=1), SimpleNamespace(returncode=0)]
+            self.assertEqual(control.main(["settings", "network"]), 0)
+            self.assertEqual(run.call_args.kwargs["env"]["DOTS_SETTINGS_PAGE"], "network")
+            self.assertEqual(run.call_args.args[0][:3], [str(self.executable), "-p", str(self.config / "settings.qml")])
 
     def test_invalid_context_is_rejected(self):
         control.context_path().write_text('{"executable":"qs","config":"relative"}')

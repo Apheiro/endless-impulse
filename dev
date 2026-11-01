@@ -2,20 +2,32 @@
 set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$root"
-command -v nix >/dev/null || { echo 'Install Nix first. See nix/README.md.' >&2; exit 1; }
-export DOTS_SHELL_SOURCE="$root/dots/.config/quickshell/ii"
+command -v nix >/dev/null || { echo 'Install Nix first. See packaging/nix/README.md.' >&2; exit 1; }
+export DOTS_SHELL_SOURCE="$root/src/quickshell"
 nix_cmd=(nix --extra-experimental-features 'nix-command flakes')
 action="${1:-run}"
 if (($#)); then shift; fi
 case "$action" in
   run) exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@" ;;
   settings) exec "${nix_cmd[@]}" run "$root#settings" -- --no-duplicate "$@" ;;
-  stop) exec "${nix_cmd[@]}" run "$root#default" -- kill "$@" ;;
+  stop)
+    if python3 "$root/src/quickshell/scripts/shell/control.py" health; then
+      exec python3 "$root/src/quickshell/scripts/shell/control.py" stop
+    fi
+    exec "${nix_cmd[@]}" run "$root#default" -- kill "$@"
+    ;;
   restart)
-    "${nix_cmd[@]}" run "$root#default" -- kill
+    # Prepare the replacement before stopping the desktop. After a checkout move,
+    # its source path differs from the running shell's registered path.
+    "${nix_cmd[@]}" build "$root#default" --no-link
+    if python3 "$root/src/quickshell/scripts/shell/control.py" health; then
+      python3 "$root/src/quickshell/scripts/shell/control.py" stop
+    else
+      "${nix_cmd[@]}" run "$root#default" -- kill || true
+    fi
     exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@"
     ;;
   build) exec "${nix_cmd[@]}" build "$root#default" "$@" ;;
-  check) exec "${nix_cmd[@]}" develop "$root" --command python3 -m unittest discover -s sdata/tests -v "$@" ;;
+  check) exec "${nix_cmd[@]}" develop "$root" --command python3 -m unittest discover -s tests -v "$@" ;;
   *) echo 'Usage: ./dev [run|settings|stop|restart|build|check]' >&2; exit 2 ;;
 esac

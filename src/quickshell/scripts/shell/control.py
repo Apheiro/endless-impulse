@@ -52,10 +52,18 @@ def main(arguments):
         return result.returncode
     if len(arguments) >= 2 and arguments[0] == "ipc":
         return subprocess.run(ipc_command(arguments[1:]), timeout=10).returncode
-    if arguments in (["restart"], ["settings"]):
+    if arguments == ["stop"]:
         context = read_context()
-        config = context["config"]
-        environment = dict(os.environ, DOTS_SHELL_SOURCE=config)
+        return subprocess.run([context["executable"], "-p", context["config"], "kill"], timeout=10).returncode
+    if arguments == ["restart"] or arguments[:1] == ["settings"]:
+        context = read_context()
+        config = Path(context["config"])
+        environment = dict(os.environ, DOTS_SHELL_SOURCE=str(config))
+        if arguments[:1] == ["settings"] and len(arguments) > 1:
+            section = arguments[1]
+            existing = subprocess.run([context["executable"], "-p", str(config / "settings.qml"), "ipc", "call", "settings", "page", section], capture_output=True, timeout=3)
+            if existing.returncode == 0: return 0
+            environment["DOTS_SETTINGS_PAGE"] = section
         branding = Path(config) / "scripts/shell/branding.py"
         if branding.is_file():
             runpy.run_path(str(branding))["migrate"](environment)
@@ -67,7 +75,7 @@ def main(arguments):
             launcher = launcher.with_name("dots-hyperland-settings") if launcher else None
             command = [str(launcher)] if launcher and launcher.is_file() else [context["executable"], "-p", str(Path(config) / "settings.qml")]
         return subprocess.run([*command, "--no-duplicate", "-d"], env=environment, timeout=15).returncode
-    raise ValueError("Usage: dots-shell health | ipc TARGET FUNCTION [ARGS...] | restart | settings")
+    raise ValueError("Usage: dots-shell health | ipc TARGET FUNCTION [ARGS...] | stop | restart | settings")
 
 
 if __name__ == "__main__":
