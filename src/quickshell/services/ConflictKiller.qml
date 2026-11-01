@@ -1,0 +1,45 @@
+pragma Singleton
+
+import qs.modules.shared
+import qs.modules.shared.functions
+import QtQuick
+import Quickshell
+import Quickshell.Io
+
+Singleton {
+    id: root
+
+    property string killDialogQmlPath: FileUtils.trimFileProtocol(Quickshell.shellPath("killDialog.qml"))
+
+    function load() {
+        // dummy to force init
+    }
+
+    Connections {
+        target: Config
+        function onReadyChanged() {
+            if (Config.ready) checkConflictsProc.running = true
+        }
+    }
+
+    Process {
+        id: checkConflictsProc
+        // kded6 may own the shared tray registry; killing it loses app registrations.
+        // Quickshell can consume that registry without owning the watcher itself.
+        command: ["bash", "-c", "pidof mako dunst || true"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const output = this.text;
+                const conflictingNotifications = output.trim().length > 0;
+                var openDialog = false;
+                if (conflictingNotifications) {
+                    if (!Config.options.conflictKiller.autoKillNotificationDaemons) openDialog = true;
+                    else Quickshell.execDetached(["killall", "mako", "dunst"])
+                }
+                if (openDialog) {
+                    Quickshell.execDetached(["qs", "-p", root.killDialogQmlPath])
+                }
+            }
+        }
+    }
+}
