@@ -1,15 +1,17 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 ColumnLayout {
     id: root
     required property var field
     required property var value
+    property string controlName: ""
     signal edited(var nextValue)
     Layout.fillWidth: true
     spacing: 6
@@ -25,7 +27,9 @@ ColumnLayout {
         Layout.fillWidth: true
         sourceComponent: root.field.type === "bool" ? switchControl
             : root.field.type === "enum" ? choiceControl
-            : root.field.type === "int" ? integerControl : textControl
+            : root.field.type === "int" ? integerControl
+            : root.field.type === "float" ? rangeControl
+            : root.field.type === "gradient" ? gradientControl : textControl
     }
     Component {
         id: switchControl
@@ -57,6 +61,7 @@ ColumnLayout {
             implicitHeight: 40
             SpinBox {
                 id: spin
+                objectName: root.controlName
                 width: Math.min(parent.width, 260)
                 height: parent.height
                 from: root.field.minimum
@@ -81,6 +86,24 @@ ColumnLayout {
                 }
                 onValueModified: root.edited(value)
             }
+        }
+    }
+    Component {
+        id: rangeControl
+        SettingsRange {
+            from: root.field.minimum
+            to: root.field.maximum
+            value: Number(root.value ?? root.field.default)
+            stepSize: 0.01
+            decimals: 2
+            onEdited: value => root.edited(value)
+        }
+    }
+    Component {
+        id: gradientControl
+        GradientColorField {
+            value: String(root.value ?? root.field.default)
+            onEdited: value => root.edited(value)
         }
     }
     Component {

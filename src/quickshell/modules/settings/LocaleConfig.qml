@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -57,7 +59,7 @@ SettingsPage {
             tooltip: Translation.tr("You'll need to enter your Gemini API key first.\nType /key on the sidebar for instructions.")
 
             ConfigRow {
-                MaterialTextArea {
+                MaterialTextField {
                     id: localeInput
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Locale code, e.g. fr_FR, de_DE, zh_CN...")

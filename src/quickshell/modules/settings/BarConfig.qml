@@ -1,11 +1,36 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 SettingsPage {
     forceWidth: true
+
+    SettingsSection {
+        icon: "view_week"
+        title: Translation.tr("Panel layout")
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("Right-click an empty area of the horizontal bar and choose Edit bar. Arrange panels freely with fixed or flexible spaces; pin a panel to keep it exactly centered.")
+            wrapMode: Text.WordWrap
+            color: Appearance.colors.colSubtext
+        }
+        RowLayout {
+            Layout.fillWidth: true
+            RippleButtonWithIcon { materialIcon: "edit"; mainText: Translation.tr("Edit bar"); enabled: !Config.options.bar.vertical; onClicked: BarLayout.requestEditor() }
+            RippleButtonWithIcon { materialIcon: "restart_alt"; mainText: Translation.tr("Restore original layout"); enabled: BarLayout.customized; onClicked: BarLayout.restoreSaved() }
+        }
+        StyledText {
+            Layout.fillWidth: true
+            text: BarLayout.saved.items.map(item => BarLayout.info(item.type).name + (item.key === BarLayout.saved.centerKey ? " ⊙" : "")).join(" · ")
+            wrapMode: Text.WordWrap
+            font.pixelSize: Appearance.font.pixelSize.smaller
+            color: Appearance.colors.colSubtext
+        }
+    }
 
     SettingsSection {
         icon: "notifications"

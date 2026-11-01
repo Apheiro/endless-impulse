@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -39,11 +41,11 @@ SettingsPage {
         icon: "point_scan"
         title: Translation.tr("Overlay: Crosshair")
 
-        MaterialTextArea {
+        MaterialTextField {
             Layout.fillWidth: true
             placeholderText: Translation.tr("Crosshair code (in Valorant's format)")
             text: Config.options.crosshair.code
-            wrapMode: TextEdit.Wrap
+            wrapMode: TextInput.NoWrap
             onTextChanged: {
                 Config.options.crosshair.code = text;
             }
@@ -78,11 +80,11 @@ SettingsPage {
         icon: "point_scan"
         title: Translation.tr("Overlay: Floating Image")
 
-        MaterialTextArea {
+        MaterialTextField {
             Layout.fillWidth: true
             placeholderText: Translation.tr("Image source")
             text: Config.options.overlay.floatingImage.imageSource
-            wrapMode: TextEdit.Wrap
+            wrapMode: TextInput.NoWrap
             onTextChanged: {
                 Config.options.overlay.floatingImage.imageSource = text;
             }
@@ -187,21 +189,11 @@ SettingsPage {
         icon: "file_open"
         title: Translation.tr("Save paths")
 
-        MaterialTextArea {
-            Layout.fillWidth: true
-            placeholderText: Translation.tr("Video Recording Path")
-            text: Config.options.screenRecord.savePath
-            wrapMode: TextEdit.Wrap
-            onTextChanged: {
-                Config.options.screenRecord.savePath = text;
-            }
-        }
-
-        MaterialTextArea {
+        MaterialTextField {
             Layout.fillWidth: true
             placeholderText: Translation.tr("Screenshot Path (leave empty to just copy)")
             text: Config.options.screenSnip.savePath
-            wrapMode: TextEdit.Wrap
+            wrapMode: TextInput.NoWrap
             onTextChanged: {
                 Config.options.screenSnip.savePath = text;
             }

@@ -1,18 +1,19 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
-Rectangle {
+SettingsCard {
     id: root
     property string title
     property string icon: ""
+    property bool showHeader: true
     default property alias contentData: sectionContent.data
 
     Layout.fillWidth: true
     implicitHeight: sectionLayout.implicitHeight + 32
-    radius: Appearance.rounding.large
-    color: Appearance.m3colors.m3surfaceContainer
 
     ColumnLayout {
         id: sectionLayout
@@ -25,6 +26,7 @@ Rectangle {
         spacing: 16
 
         RowLayout {
+            visible: root.showHeader
             Layout.fillWidth: true
             spacing: 10
             MaterialSymbol {

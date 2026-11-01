@@ -1,12 +1,12 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common.widgets
+import qs.modules.shared.widgets
 
 SettingsPage {
     Component.onCompleted: { if (!DesktopSettings.loaded) DesktopSettings.refresh(); }
-    DesktopSettingsHeader {}
     Repeater {
         model: ["Layout", "Borders", "Opacity", "Blur", "Shadows", "Animations"]
         delegate: SettingsSection {

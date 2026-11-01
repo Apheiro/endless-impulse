@@ -1,5 +1,6 @@
+import qs.modules.shared.primitives.settings
 import QtQuick
-import qs.modules.common.widgets
+import qs.modules.shared.widgets
 
 ContentPage {
     forceWidth: true

@@ -8,12 +8,45 @@ import subprocess
 import tempfile
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2]
-SOURCE = ROOT / "dots/.config/quickshell/ii"
+ROOT = Path(__file__).resolve().parents[1]
+SOURCE = ROOT / "src/quickshell"
 
 
 @unittest.skipUnless(os.environ.get("WAYLAND_DISPLAY"), "Quickshell needs a Wayland connection")
 class SettingsNavigationTests(unittest.TestCase):
+    def test_outside_click_dismissal(self):
+        with tempfile.TemporaryDirectory(prefix="dots-settings-dismiss-") as temporary:
+            base = Path(temporary)
+            for name in ("modules", "services", "assets", "scripts", "defaults", "translations", "GlobalStates.qml"):
+                (base / name).symlink_to(SOURCE / name)
+            text = (SOURCE / "settings.qml").read_text().replace("property bool allowShowing: true", "property bool allowShowing: false")
+            text = text.rstrip()[:-1] + '''
+    Timer {
+        interval: 300; running: true
+        onTriggered: {
+            if (settingsFocusGrab.active || settingsFocusGrab.windows.length !== 1 || settingsFocusGrab.windows[0] !== root) {
+                console.error("SETTINGS_DISMISS_FAILED"); Qt.quit(); return;
+            }
+            console.log("SETTINGS_OUTSIDE_CLICK");
+            settingsFocusGrab.cleared();
+            console.log("SETTINGS_DISMISS_REQUESTED");
+        }
+    }
+    Timer { interval: 2000; running: true; onTriggered: { console.error("SETTINGS_DISMISS_FAILED timeout"); Qt.quit(); } }
+}
+'''
+            (base / "shell.qml").write_text(text)
+            env = dict(os.environ, DOTS_SHELL_SOURCE=str(base), XDG_CONFIG_HOME=str(base / "config"),
+                       XDG_STATE_HOME=str(base / "state"), XDG_CACHE_HOME=str(base / "cache"))
+            launcher = env.get("DOTS_TEST_LAUNCHER")
+            result = subprocess.run([launcher] if launcher else [shutil.which("quickshell"), "-p", str(base)],
+                                    env=env, capture_output=True, text=True, timeout=8)
+            logs = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 0, logs)
+            self.assertIn("SETTINGS_DISMISS_REQUESTED", logs)
+            for error in ("SETTINGS_DISMISS_FAILED", "TypeError:", "ReferenceError:", "Cannot assign", "Unable to assign"):
+                self.assertNotIn(error, logs)
+
     def test_all_pages_and_filtered_navigation(self):
         with tempfile.TemporaryDirectory(prefix="dots-settings-test-") as temporary:
             base = Path(temporary)
@@ -29,12 +62,18 @@ class SettingsNavigationTests(unittest.TestCase):
                 {"id": "|CTRL+SUPER+F1", "default": "CTRL + SUPER + F1", "submap": "", "description": "Window: Focus", "category": "Window", "count": 2}
             ]))
             text = (SOURCE / "settings.qml").read_text().replace("    property bool allowShowing: true", "    property bool allowShowing: false", 1)
+            text = text.replace("active: root.visible", "active: false")
             text = text.replace("WlrKeyboardFocus.OnDemand", "WlrKeyboardFocus.None").replace("quickshell:settings", "quickshell:settings-test")
             text = text.rstrip()[:-1] + '''
     Timer {
         interval: 80
         running: true
         onTriggered: {
+            if (root.selectedPage.component !== "AudioConfig.qml" || AudioControl.section !== "profiles") { console.error("SETTINGS_DEEP_LINK_FAILED"); Qt.quit(); return; }
+            root.selectSection("network/wifi");
+            if (root.selectedPage.component !== "NetworkConfig.qml" || NetworkControl.page !== "wifi") { console.error("SETTINGS_DEEP_LINK_FAILED"); Qt.quit(); return; }
+            root.currentPage = 0;
+            console.log("SETTINGS_DEEP_LINK_OK");
             DesktopSettings.fields = __DESKTOP_FIELDS__;
             DesktopSettings.values = __DESKTOP_VALUES__;
             const supported = {};
@@ -59,6 +98,9 @@ class SettingsNavigationTests(unittest.TestCase):
         repeat: true
         property int visited: 0
         property bool checkedShortcutEditor: false
+        property bool checkedRecording: false
+        property int dependencyPhase: 0
+        property real dependencyHeight: 0
         property int mapPhase: 0
         property real expandedMapHeight: 0
         property int shortcutPhase: 0
@@ -112,6 +154,51 @@ class SettingsNavigationTests(unittest.TestCase):
                 root.allowShowing = false;
                 checkedShortcutEditor = true;
             }
+            if (root.selectedPage.component === "RecordingConfig.qml" && !checkedRecording) {
+                if (!ScreenRecorder.loaded || ScreenRecorder.busy) return;
+                pageLoader.item.advanced = true;
+                function findEditor(item) {
+                    if (item.objectName === "recorder-value-fps") return item;
+                    for (const child of item.children || []) { const found = findEditor(child); if (found) return found; }
+                    return null;
+                }
+                const fpsEditor = findEditor(pageLoader.item);
+                if (!fpsEditor) return;
+                fpsEditor.value = 144;
+                fpsEditor.valueModified();
+                if (pageLoader.item.draft.fps !== 144 || !pageLoader.item.dirty) {
+                    console.error("RECORDER_EDIT_FAILED"); Qt.quit(); return;
+                }
+                pageLoader.item.reset();
+                checkedRecording = true;
+                return;
+            }
+            if (root.selectedPage.component === "About.qml" && dependencyPhase < 4) {
+                const map = pageLoader.item.dependencyMap;
+                if (DependencyInfo.busy || !DependencyInfo.groups.length) return;
+                if (DependencyInfo.error || DependencyInfo.catalog.total < 40) { console.error("DEPENDENCY_MAP_FAILED"); Qt.quit(); return; }
+                if (dependencyPhase === 0) {
+                    root.allowShowing = true;
+                    const distroY = pageLoader.item.distroSection.mapToItem(pageLoader.item, 0, 0).y;
+                    if (distroY >= map.mapToItem(pageLoader.item, 0, 0).y) { console.error("ABOUT_DISTRO_ORDER_FAILED"); Qt.quit(); return; }
+                    map.toggle("group:runtime");
+                } else if (dependencyPhase === 1) {
+                    if (!map.rows.some(row => row.node.package === "quickshell")) { console.error("DEPENDENCY_MAP_EXPAND_FAILED"); Qt.quit(); return; }
+                    dependencyHeight = map.implicitHeight;
+                    map.expanded = {};
+                } else if (dependencyPhase === 2) {
+                    if (map.implicitHeight >= dependencyHeight || map.rows.length !== DependencyInfo.groups.length) { console.error("DEPENDENCY_MAP_COLLAPSE_FAILED"); Qt.quit(); return; }
+                    map.query = "wireplumber";
+                } else {
+                    if (!map.rows.some(row => row.node.package === "wireplumber")) { console.error("DEPENDENCY_MAP_SEARCH_FAILED"); Qt.quit(); return; }
+                    if (DependencyInfo.groups.some(group => group.children.some(node => node.retired || node.id.startsWith("legacy:") || node.id.startsWith("replaced:")))) { console.error("DEPENDENCY_MAP_RETIRED_FAILED"); Qt.quit(); return; }
+                    map.query = "";
+                    map.showSources = true;
+                    console.log("DEPENDENCY_MAP_OK", DependencyInfo.catalog.total);
+                }
+                dependencyPhase++;
+                return;
+            }
             if (root.selectedPage.component === "About.qml" && mapPhase < 4) {
                 const map = pageLoader.item.installationMap;
                 if (!InstallationPaths.loaded || InstallationPaths.busy) return;
@@ -144,6 +231,11 @@ class SettingsNavigationTests(unittest.TestCase):
                 mapPhase++;
                 return;
             }
+            if (["MonitorsConfig.qml", "HyprlandConfig.qml", "InputConfig.qml"].includes(root.selectedPage.component)) {
+                if (!desktopActions.active || !desktopActions.item || desktopActions.parent === pageLoader.item) {
+                    console.error("DESKTOP_ACTIONS_NOT_PINNED"); Qt.quit(); return;
+                }
+            }
             console.log("SETTINGS_PAGE_OK", root.selectedPage.component);
             visited++;
             if (visited < root.pages.length) {
@@ -158,8 +250,9 @@ class SettingsNavigationTests(unittest.TestCase):
             ];
             for (const [query, expected] of checks) {
                 navigationSearch.text = query;
-                const match = root.pages.findIndex((page, index) => catalog.matches(index, query));
-                if (match < 0 || root.pages[match].component !== expected) {
+                // A query can legitimately match multiple sections (e.g. blur and Xray).
+                const match = root.pages.findIndex((page, index) => page.component === expected && catalog.matches(index, query));
+                if (match < 0) {
                     console.error("SETTINGS_SEARCH_FAILED", query);
                     Qt.quit(); return;
                 }
@@ -211,7 +304,7 @@ class SettingsNavigationTests(unittest.TestCase):
 '''
             text = text.replace("__DESKTOP_FIELDS__", json.dumps(schema.FIELDS)).replace("__DESKTOP_VALUES__", json.dumps({field["key"]: field["default"] for field in schema.FIELDS}))
             (base / "settings.qml").write_text(text)
-            environment = dict(os.environ, DOTS_SHELL_SOURCE=str(base),
+            environment = dict(os.environ, DOTS_SHELL_SOURCE=str(base), DOTS_SETTINGS_PAGE="audio/profiles",
                                HYPRLAND_INSTANCE_SIGNATURE="isolated-settings-test",
                                XDG_CONFIG_HOME=str(base / "config"), XDG_STATE_HOME=str(base / "state"),
                                XDG_CACHE_HOME=str(base / "cache"))
@@ -220,9 +313,11 @@ class SettingsNavigationTests(unittest.TestCase):
             result = subprocess.run(command, env=environment, capture_output=True, text=True, timeout=20)
             logs = result.stdout + result.stderr
             self.assertEqual(result.returncode, 0, logs)
-            self.assertIn("SETTINGS_NAVIGATION_OK 17", logs)
+            self.assertIn("SETTINGS_NAVIGATION_OK 21", logs)
             self.assertIn("SETTINGS_MONITOR_OK", logs)
+            self.assertIn("SETTINGS_DEEP_LINK_OK", logs)
             self.assertIn("PATH_MAP_OK", logs)
+            self.assertIn("DEPENDENCY_MAP_OK", logs)
             self.assertNotIn("SETTINGS_FAILED", logs)
             self.assertNotIn("ReferenceError:", logs)
             self.assertNotIn("TypeError:", logs)

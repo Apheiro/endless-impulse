@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {

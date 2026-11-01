@@ -1,36 +1,21 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 SettingsPage {
     forceWidth: true
     property alias installationMap: installationMap
+    property alias dependencyMap: dependencyMap
+    property alias distroSection: distroSection
 
     SettingsSection {
-        icon: "memory"
-        title: "Artificial Impulse"
-
-        StyledText {
-            Layout.fillWidth: true
-            text: Translation.tr("A fork of illogical-impulse.")
-            wrapMode: Text.WordWrap
-        }
-        RippleButtonWithIcon {
-            materialIcon: "code"
-            mainText: Translation.tr("Project repository")
-            onClicked: Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland")
-        }
-    }
-    SettingsSection {
-        icon: "account_tree"
-        title: Translation.tr("Installation map")
-        InstallationMap { id: installationMap }
-    }
-    SettingsSection {
+        id: distroSection
+        objectName: "about-distribution"
         icon: "box"
         title: Translation.tr("Distro")
 
@@ -98,6 +83,32 @@ SettingsPage {
 
         }
 
+    }
+    SettingsSection {
+        icon: "memory"
+        title: "Artificial Impulse"
+
+        StyledText {
+            Layout.fillWidth: true
+            text: Translation.tr("A fork of illogical-impulse.")
+            wrapMode: Text.WordWrap
+        }
+        RippleButtonWithIcon {
+            materialIcon: "code"
+            mainText: Translation.tr("Project repository")
+            onClicked: Qt.openUrlExternally("https://github.com/Apheiro/dots-hyperland")
+        }
+    }
+    SettingsSection {
+        objectName: "about-dependencies"
+        icon: "hub"
+        title: Translation.tr("Dependency map")
+        DependencyMap { id: dependencyMap }
+    }
+    SettingsSection {
+        icon: "account_tree"
+        title: Translation.tr("Installation map")
+        InstallationMap { id: installationMap }
     }
 
 }

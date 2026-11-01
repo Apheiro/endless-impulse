@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -30,26 +32,30 @@ SettingsPage {
         }
         ConfigRow {
             enabled: Config.options.audio.protection.enable
-            ConfigSpinBox {
+            SettingsRange {
                 icon: "arrow_warm_up"
                 text: Translation.tr("Max allowed increase")
                 value: Config.options.audio.protection.maxAllowedIncrease
                 from: 0
                 to: 100
+                suffix: "%"
+                decimals: 0
                 stepSize: 2
-                onValueChanged: {
-                    Config.options.audio.protection.maxAllowedIncrease = value;
+                onEdited: nextValue => {
+                    Config.options.audio.protection.maxAllowedIncrease = nextValue;
                 }
             }
-            ConfigSpinBox {
+            SettingsRange {
                 icon: "vertical_align_top"
                 text: Translation.tr("Volume limit")
                 value: Config.options.audio.protection.maxAllowed
                 from: 0
                 to: 154 // pavucontrol allows up to 153%
+                suffix: "%"
+                decimals: 0
                 stepSize: 2
-                onValueChanged: {
-                    Config.options.audio.protection.maxAllowed = value;
+                onEdited: nextValue => {
+                    Config.options.audio.protection.maxAllowed = nextValue;
                 }
             }
         }

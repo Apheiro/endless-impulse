@@ -1,13 +1,18 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 SettingsSection {
+    id: root
+    property bool compact: false
+    showHeader: !compact
     title: Translation.tr("Apply changes")
     icon: "tune"
     StyledText {
+        visible: !root.compact
         Layout.fillWidth: true
         wrapMode: Text.WordWrap
         text: DesktopSettings.transaction

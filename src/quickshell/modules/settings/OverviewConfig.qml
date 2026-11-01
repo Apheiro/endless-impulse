@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -129,29 +131,29 @@ SettingsPage {
             title: Translation.tr("Prefixes")
             ConfigRow {
                 uniform: true
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Action")
                     text: Config.options.search.prefix.action
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.action = text;
                     }
                 }
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Clipboard")
                     text: Config.options.search.prefix.clipboard
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.clipboard = text;
                     }
                 }
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Emojis")
                     text: Config.options.search.prefix.emojis
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.emojis = text;
                     }
@@ -160,29 +162,29 @@ SettingsPage {
 
             ConfigRow {
                 uniform: true
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Math")
                     text: Config.options.search.prefix.math
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.math = text;
                     }
                 }
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Shell command")
                     text: Config.options.search.prefix.shellCommand
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.shellCommand = text;
                     }
                 }
-                MaterialTextArea {
+                MaterialTextField {
                     Layout.fillWidth: true
                     placeholderText: Translation.tr("Web search")
                     text: Config.options.search.prefix.webSearch
-                    wrapMode: TextEdit.Wrap
+                    wrapMode: TextInput.NoWrap
                     onTextChanged: {
                         Config.options.search.prefix.webSearch = text;
                     }
@@ -191,11 +193,11 @@ SettingsPage {
         }
         ContentSubsection {
             title: Translation.tr("Web search")
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Base URL")
                 text: Config.options.search.engineBaseUrl
-                wrapMode: TextEdit.Wrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.search.engineBaseUrl = text;
                 }

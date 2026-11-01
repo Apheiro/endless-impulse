@@ -1,13 +1,16 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.dialogs
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Hyprland
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import "../common/functions/ShortcutSymbols.js" as ShortcutSymbols
+import qs.modules.shared
+import qs.modules.shared.widgets
+import "../shared/functions/ShortcutSymbols.js" as ShortcutSymbols
 
 SettingsPage {
     id: root

@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -21,11 +23,11 @@ SettingsPage {
             title: Translation.tr("Main font")
             tooltip: Translation.tr("Used for general UI text")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name (e.g., Google Sans Flex)")
                 text: Config.options.appearance.fonts.main
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.main = text;
                 }
@@ -36,11 +38,11 @@ SettingsPage {
             title: Translation.tr("Numbers font")
             tooltip: Translation.tr("Used for displaying numbers")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name")
                 text: Config.options.appearance.fonts.numbers
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.numbers = text;
                 }
@@ -51,11 +53,11 @@ SettingsPage {
             title: Translation.tr("Title font")
             tooltip: Translation.tr("Used for headings and titles")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name")
                 text: Config.options.appearance.fonts.title
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.title = text;
                 }
@@ -66,11 +68,11 @@ SettingsPage {
             title: Translation.tr("Monospace font")
             tooltip: Translation.tr("Used for code and terminal")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name (e.g., JetBrains Mono NF)")
                 text: Config.options.appearance.fonts.monospace
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.monospace = text;
                 }
@@ -81,11 +83,11 @@ SettingsPage {
             title: Translation.tr("Nerd font icons")
             tooltip: Translation.tr("Font used for Nerd Font icons")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name (e.g., JetBrains Mono NF)")
                 text: Config.options.appearance.fonts.iconNerd
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.iconNerd = text;
                 }
@@ -96,11 +98,11 @@ SettingsPage {
             title: Translation.tr("Reading font")
             tooltip: Translation.tr("Used for reading large blocks of text")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name (e.g., Readex Pro)")
                 text: Config.options.appearance.fonts.reading
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.reading = text;
                 }
@@ -111,11 +113,11 @@ SettingsPage {
             title: Translation.tr("Expressive font")
             tooltip: Translation.tr("Used for decorative/expressive text")
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family name (e.g., Space Grotesk)")
                 text: Config.options.appearance.fonts.expressive
-                wrapMode: TextEdit.NoWrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.appearance.fonts.expressive = text;
                 }

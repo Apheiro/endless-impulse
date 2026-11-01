@@ -5,8 +5,8 @@ QtObject {
     // Keep navigation, descriptions and search terms together. Config keys stay unchanged.
     readonly property var pages: [
         { group: Translation.tr("Appearance"), name: Translation.tr("Wallpaper & colors"), icon: "palette", component: "ThemeConfig.qml",
-          description: Translation.tr("Wallpaper, color scheme, transparency and application themes."),
-          keywords: "theme dark light wallpaper color transparency parallax terminal qt fondo colores tema transparencia esquinas" },
+          description: Translation.tr("Wallpaper, color scheme, transparency, animation speed, Xray and application themes."),
+          keywords: "theme dark light wallpaper color transparency parallax terminal qt fondo colores tema transparencia esquinas xray blur desenfoque animation speed animations animaciones velocidad" },
         { group: Translation.tr("Appearance"), name: Translation.tr("Icons"), icon: "interests", component: "IconsConfig.qml",
           description: Translation.tr("System icon themes, application overrides and environment configuration files."), keywords: "icons theme gtk qt kde applications overrides environment paths iconos tema aplicaciones entornos rutas" },
         { group: Translation.tr("Appearance"), name: Translation.tr("Typography"), icon: "text_fields", component: "FontsConfig.qml",
@@ -27,18 +27,23 @@ QtObject {
           description: Translation.tr("Tiling, borders, gaps, opacity, blur, shadows and animations."), keywords: "hyprland windows gaps border rounding blur shadow opacity animation ventanas bordes espacios efectos desenfoque sombras" },
         { group: Translation.tr("System"), name: Translation.tr("Keyboard & mouse"), icon: "keyboard_alt", component: "InputConfig.qml",
           description: Translation.tr("Keyboard layouts, repeat rate, pointer behavior, touchpad and individual devices."), keywords: "input keyboard mouse touchpad layout repeat sensitivity device teclado raton distribucion repeticion sensibilidad dispositivos" },
+        { group: Translation.tr("System"), name: Translation.tr("Sound"), icon: "volume_up", component: "AudioConfig.qml", description: Translation.tr("Applications, devices, profiles and advanced PipeWire routing."), keywords: "audio sound pipewire volume applications sonido volumen dispositivos" },
+        { group: Translation.tr("System"), name: Translation.tr("Network"), icon: "lan", component: "NetworkConfig.qml", description: Translation.tr("Wi-Fi, Ethernet, saved connections, IP addresses, DNS and routes."), keywords: "wifi ethernet network vpn internet red redes conexiones dns" },
+        { group: Translation.tr("System"), name: Translation.tr("Bluetooth"), icon: "bluetooth", component: "BluetoothConfig.qml", description: Translation.tr("Pairing, connected devices, adapters and device permissions."), keywords: "bluetooth devices pairing wireless dispositivos emparejar" },
         { group: Translation.tr("System"), name: Translation.tr("Sound & power"), icon: "battery_charging_full", component: "SystemConfig.qml",
           description: Translation.tr("Volume protection, battery warnings, sounds and resource monitoring."), keywords: "audio battery suspend resources polling sound power energia bateria sonido volumen recursos" },
         { group: Translation.tr("System"), name: Translation.tr("Language & time"), icon: "language", component: "LocaleConfig.qml",
           description: Translation.tr("Interface language, translations and clock format."), keywords: "locale translation time clock language idioma traduccion hora formato segundos" },
         { group: Translation.tr("System"), name: Translation.tr("Lock & privacy"), icon: "lock", component: "SecurityConfig.qml",
           description: Translation.tr("Lock screen, authentication, content policies and clipboard privacy."), keywords: "lock password keyring privacy ai policy safety security bloqueo clave privacidad seguridad" },
+        { group: Translation.tr("Tools & services"), name: Translation.tr("Recording"), icon: "videocam", component: "RecordingConfig.qml",
+          description: Translation.tr("GPU Screen Recorder, video quality, audio tracks, filenames, replay and streaming."), keywords: "recording video gpu screen recorder fps format date paths audio replay stream grabacion video grabar fecha hora rutas" },
         { group: Translation.tr("Tools & services"), name: Translation.tr("Capture & overlays"), icon: "screenshot_region", component: "CaptureConfig.qml",
           description: Translation.tr("Screen capture, region selection, crosshair, floating images and save locations."), keywords: "screenshot record capture overlay crosshair lens image path captura grabacion imagen rutas" },
         { group: Translation.tr("Tools & services"), name: Translation.tr("Online services"), icon: "cloud", component: "ServicesConfig.qml",
           description: Translation.tr("Weather location, music recognition, AI instructions and network requests."), keywords: "weather gps fahrenheit music recognition ai prompt network clima musica inteligencia red ubicacion" },
         { group: Translation.tr("Tools & services"), name: Translation.tr("About"), icon: "info", component: "About.qml",
-          description: Translation.tr("Project details, system information and an interactive map of installation paths."), keywords: "about version distro help credits paths folders files tree map cache state acerca version sistema ayuda rutas carpetas archivos arbol mapa" }
+          description: Translation.tr("Project details, system information and interactive installation paths and a transparent dependency map."), keywords: "about version distro help credits paths folders files tree map cache state acerca version sistema ayuda rutas carpetas archivos arbol mapa dependencies packages dependencias paquetes servicios" }
     ]
 
     function normalize(text) {

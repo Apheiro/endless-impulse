@@ -1,9 +1,11 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 SettingsPage {
     id: root
@@ -47,7 +49,6 @@ SettingsPage {
         DesktopSettings.putMonitor(selected.name, {x: Math.round(x), y: Math.round(y)});
     }
 
-    DesktopSettingsHeader {}
     SettingsSection {
         title: Translation.tr("Display arrangement")
         icon: "desktop_windows"

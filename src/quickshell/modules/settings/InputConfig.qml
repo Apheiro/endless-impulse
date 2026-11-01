@@ -1,15 +1,15 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common.widgets
+import qs.modules.shared.widgets
 
 SettingsPage {
     id: root
     property int selectedDevice: 0
     readonly property var device: DesktopSettings.devices[selectedDevice] ?? null
     Component.onCompleted: { if (!DesktopSettings.loaded) DesktopSettings.refresh(); }
-    DesktopSettingsHeader {}
     Repeater {
         model: ["Keyboard", "Pointer", "Touchpad"]
         delegate: SettingsSection {

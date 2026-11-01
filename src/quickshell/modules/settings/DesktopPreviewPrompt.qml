@@ -1,13 +1,14 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Wayland
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 PanelWindow {
-    visible: DesktopSettings.transaction !== null
+    visible: DesktopSettings.transaction !== null && !DesktopSettings.resolvingTransaction
     implicitWidth: Math.max(240, Math.min(520, screen.width - 32))
     implicitHeight: content.implicitHeight + 40
     exclusiveZone: 0

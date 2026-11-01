@@ -1,13 +1,15 @@
+import qs.modules.shared.primitives.settings
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Widgets
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 import Qt5Compat.GraphicalEffects
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 import Quickshell.Hyprland
 
 SettingsPage {
@@ -179,63 +181,67 @@ SettingsPage {
                 }
             }
 
-            MaterialTextArea {
+            MaterialTextField {
                 Layout.fillWidth: true
                 placeholderText: Translation.tr("Font family")
                 text: Config.options.background.widgets.clock.digital.font.family
-                wrapMode: TextEdit.Wrap
+                wrapMode: TextInput.NoWrap
                 onTextChanged: {
                     Config.options.background.widgets.clock.digital.font.family = text;
                 }
             }
 
-            ConfigSlider {
+            SettingsRange {
                 text: Translation.tr("Font weight")
                 value: Config.options.background.widgets.clock.digital.font.weight
-                usePercentTooltip: false
-                buttonIcon: "format_bold"
+                decimals: 0
+                stepSize: 1
+                icon: "format_bold"
                 from: 1
                 to: 1000
                 stopIndicatorValues: [350]
-                onValueChanged: {
-                    Config.options.background.widgets.clock.digital.font.weight = value;
+                onEdited: nextValue => {
+                    Config.options.background.widgets.clock.digital.font.weight = nextValue;
                 }
             }
 
-            ConfigSlider {
+            SettingsRange {
                 text: Translation.tr("Font size")
                 value: Config.options.background.widgets.clock.digital.font.size
-                usePercentTooltip: false
-                buttonIcon: "format_size"
+                decimals: 0
+                stepSize: 1
+                icon: "format_size"
                 from: 50
                 to: 700
                 stopIndicatorValues: [90]
-                onValueChanged: {
-                    Config.options.background.widgets.clock.digital.font.size = value;
+                onEdited: nextValue => {
+                    Config.options.background.widgets.clock.digital.font.size = nextValue;
                 }
             }
 
-            ConfigSlider {
+            SettingsRange {
                 text: Translation.tr("Font width")
                 value: Config.options.background.widgets.clock.digital.font.width
-                usePercentTooltip: false
-                buttonIcon: "fit_width"
+                decimals: 0
+                stepSize: 1
+                icon: "fit_width"
                 from: 25
                 to: 125
                 stopIndicatorValues: [100]
-                onValueChanged: {
-                    Config.options.background.widgets.clock.digital.font.width = value;
+                onEdited: nextValue => {
+                    Config.options.background.widgets.clock.digital.font.width = nextValue;
                 }
             }
-            ConfigSlider {
+            SettingsRange {
                 text: Translation.tr("Font roundness")
                 value: Config.options.background.widgets.clock.digital.font.roundness
-                usePercentTooltip: false
-                buttonIcon: "line_curve"
+                decimals: 0
+                stepSize: 1
+                icon: "line_curve"
                 from: 0
                 to: 100
-                onValueChanged: {
-                    Config.options.background.widgets.clock.digital.font.roundness = value;
+                onEdited: nextValue => {
+                    Config.options.background.widgets.clock.digital.font.roundness = nextValue;
                 }
             }
         }

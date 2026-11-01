@@ -3,6 +3,7 @@
 //@ pragma Env QT_QUICK_CONTROLS_STYLE=Basic
 //@ pragma Env QT_QUICK_FLICKABLE_WHEEL_DECELERATION=10000
 
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
@@ -10,10 +11,11 @@ import QtQuick.Window
 import Quickshell
 import Quickshell.Wayland
 import Quickshell.Hyprland
+import Quickshell.Io
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions as CF
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions as CF
 import "modules/settings" as Settings
 
 PanelWindow {
@@ -34,6 +36,13 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell:settings"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
+
+    HyprlandFocusGrab {
+        id: settingsFocusGrab
+        windows: previewPrompt.visible ? [root, previewPrompt] : [root]
+        active: root.visible
+        onCleared: Qt.quit()
+    }
 
     function sizeForScreen(screenWidth, screenHeight, reserved) {
         return Qt.size(
@@ -58,10 +67,23 @@ PanelWindow {
         openingTimeout.stop();
     }
 
+    function selectSection(section) {
+        if (!section) return;
+        const components = {audio: "AudioConfig.qml", network: "NetworkConfig.qml", bluetooth: "BluetoothConfig.qml"};
+        const parts = section.split("/");
+        const component = components[parts[0]] || parts[0];
+        if (parts[0] === "audio" && parts[1]) AudioControl.section = parts[1];
+        if (parts[0] === "network" && parts[1]) NetworkControl.page = parts[1];
+        const index = pages.findIndex(page => page.component === component);
+        if (index >= 0) currentPage = index;
+    }
+    IpcHandler { target: "settings"; function page(section: string) { root.selectSection(section); } }
+
     Settings.SettingsCatalog { id: catalog }
-    Settings.DesktopPreviewPrompt { screen: root.screen }
+    Settings.DesktopPreviewPrompt { id: previewPrompt; screen: root.screen }
 
     Component.onCompleted: {
+        selectSection(Quickshell.env("DOTS_SETTINGS_PAGE"));
         if (HyprlandData.monitors.some(monitor => monitor.focused)) finishOpening();
         else openingTimeout.start();
         MaterialThemeLoader.reapplyTheme();
@@ -84,7 +106,7 @@ PanelWindow {
     Rectangle {
         anchors.fill: parent
         radius: Appearance.rounding.large
-        color: Appearance.m3colors.m3background
+        color: Appearance.colors.colLayer0
     }
 
     function movePage(offset) {
@@ -256,7 +278,9 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 radius: Appearance.rounding.large
-                color: Appearance.m3colors.m3surfaceContainerLow
+                color: "transparent"
+                border.width: 1
+                border.color: Appearance.colors.colLayer0Border
 
                 ColumnLayout {
                     anchors.fill: parent
@@ -290,6 +314,14 @@ PanelWindow {
                         Layout.fillWidth: true
                         implicitHeight: 1
                         color: Appearance.m3colors.m3outlineVariant
+                    }
+                    Loader {
+                        id: desktopActions
+                        Layout.fillWidth: true
+                        Layout.margins: 12
+                        active: Config.ready && (["MonitorsConfig.qml", "HyprlandConfig.qml", "InputConfig.qml"].includes(root.selectedPage.component) || DesktopSettings.changes > 0 || DesktopSettings.transaction !== null)
+                        visible: active
+                        sourceComponent: Settings.DesktopSettingsHeader { compact: true }
                     }
                     Loader {
                         id: pageLoader
