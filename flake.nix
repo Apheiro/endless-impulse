@@ -17,12 +17,18 @@
       packages = eachSystem (system:
         let pkgs = import nixpkgs { inherit system; };
         in rec {
-          default = pkgs.callPackage ./nix/package.nix { source = self; inherit shapes; };
+          default = pkgs.callPackage ./packaging/nix/package.nix { source = self; inherit shapes; };
           math-runtime = default.passthru.mathRuntime;
         });
       apps = eachSystem (system: {
         default = { type = "app"; program = "${self.packages.${system}.default}/bin/dots-hyperland"; };
         settings = { type = "app"; program = "${self.packages.${system}.default}/bin/dots-hyperland-settings"; };
+        services = let pkgs = import nixpkgs { inherit system; }; in {
+          type = "app";
+          program = "${pkgs.writeShellScript "artificial-impulse-services" ''
+            exec ${pkgs.python3}/bin/python3 ${self}/packaging/nix/services.py "$@"
+          ''}";
+        };
       });
       devShells = eachSystem (system:
         let pkgs = import nixpkgs { inherit system; };
