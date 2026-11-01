@@ -2,10 +2,10 @@
 cd "$(dirname "$0")"
 # Use REPO_ROOT instead of base - when scripts are sourced they do not need export to inherit vars
 REPO_ROOT="$(pwd)"
-source ./sdata/lib/environment-variables.sh
-source ./sdata/lib/functions.sh
-source ./sdata/lib/package-installers.sh
-source ./sdata/lib/dist-determine.sh
+source ./installer/lib/environment-variables.sh
+source ./installer/lib/functions.sh
+source ./installer/lib/package-installers.sh
+source ./installer/lib/dist-determine.sh
 
 prevent_sudo_or_root
 set -e
@@ -51,12 +51,12 @@ case $1 in
   # Correct subcommand
   install|uninstall|exp-update|exp-merge|resetfirstrun|checkdeps|virtmon)
     SUBCMD_NAME=$1
-    SUBCMD_DIR=./sdata/subcmd-$1
+    SUBCMD_DIR=./installer/commands/$1
     shift;;
-  # Correct subcommand but not using ./sdata/subcmd-$1
+  # Correct subcommand but not using ./installer/commands/$1
   install-deps|install-setups|install-files)
     SUBCMD_NAME=$1
-    SUBCMD_DIR=./sdata/subcmd-install
+    SUBCMD_DIR=./installer/commands/install
     shift;;
   # Wrong subcommand
   *)printf "${STY_RED}Unknown subcommand \"$1\".${STY_RST}\n";showhelp_global;exit 1;;
