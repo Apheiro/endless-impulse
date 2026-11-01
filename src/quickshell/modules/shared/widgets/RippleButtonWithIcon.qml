@@ -1,10 +1,12 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 RippleButton {
     id: buttonWithIconRoot
+    readonly property color foregroundColor: toggled ? Appearance.m3colors.m3onPrimary : Appearance.colors.colOnLayer0
     property string nerdIcon
     property string materialIcon
     property bool materialIconFill: true
@@ -14,7 +16,7 @@ RippleButton {
             visible: text !== ""
             text: buttonWithIconRoot.mainText
             font.pixelSize: Appearance.font.pixelSize.small
-            color: Appearance.colors.colOnSecondaryContainer
+            color: buttonWithIconRoot.foregroundColor
         }
     }
     implicitHeight: 35
@@ -33,7 +35,7 @@ RippleButton {
                 sourceComponent: MaterialSymbol {
                     text: buttonWithIconRoot.materialIcon
                     iconSize: Appearance.font.pixelSize.larger
-                    color: Appearance.colors.colOnSecondaryContainer
+                    color: buttonWithIconRoot.foregroundColor
                     fill: buttonWithIconRoot.materialIconFill ? 1 : 0
                 }
             }
@@ -45,7 +47,7 @@ RippleButton {
                     text: buttonWithIconRoot.nerdIcon
                     font.pixelSize: Appearance.font.pixelSize.larger
                     font.family: Appearance.font.family.iconNerd
-                    color: Appearance.colors.colOnSecondaryContainer
+                    color: buttonWithIconRoot.foregroundColor
                 }
             }
         }

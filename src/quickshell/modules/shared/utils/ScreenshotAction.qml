@@ -1,9 +1,9 @@
 pragma ComponentBehavior: Bound
 pragma Singleton
-import qs.modules.common
-import qs.modules.common.utils
-import qs.modules.common.functions
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.utils
+import qs.modules.shared.functions
+import qs.modules.shared.widgets
 import qs.services
 import QtQuick
 import QtQuick.Controls

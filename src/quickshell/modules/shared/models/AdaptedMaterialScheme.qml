@@ -1,6 +1,6 @@
 import QtQuick
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.functions
 
 /**
  * Material color scheme adapted to a given color. It's incomplete but enough for what we need...

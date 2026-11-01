@@ -1,10 +1,10 @@
 pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
-import qs.modules.common.functions
-import qs.modules.common.utils
+import qs.modules.shared.functions
+import qs.modules.shared.utils
 import qs.services
-import qs.modules.common
+import qs.modules.shared
 import ".."
 
 NestableObject {

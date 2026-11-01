@@ -1,9 +1,10 @@
+import qs.modules.shared.primitives.common
 import qs.services
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.functions
 
 // From https://github.com/caelestia-dots/shell with modifications.
 // License: GPLv3

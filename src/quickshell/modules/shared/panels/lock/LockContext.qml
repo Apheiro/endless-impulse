@@ -1,5 +1,5 @@
 import qs
-import qs.modules.common
+import qs.modules.shared
 import QtQuick
 import Quickshell
 import Quickshell.Io

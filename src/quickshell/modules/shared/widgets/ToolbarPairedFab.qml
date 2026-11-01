@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
-import qs.modules.common
+import qs.modules.shared
 
 Item {
     id: root

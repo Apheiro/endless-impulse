@@ -6,10 +6,10 @@ import QtQuick.Layouts
 import Quickshell
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
-import qs.modules.waffle.looks
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
+import qs.modules.windowsStyle.looks
 
 Item {
     id: root

@@ -3,7 +3,7 @@ pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.modules.common.functions
+import qs.modules.shared.functions
 
 Singleton {
     id: root
@@ -105,6 +105,22 @@ Singleton {
             }
 
             property JsonObject appearance: JsonObject {
+                property real animationSpeed: 1.25
+                property var compositorAnimationDurations: ({})
+                property JsonObject animationDurations: JsonObject {
+                    property int move: 500
+                    property int smallMove: 350
+                    property int slowMove: 650
+                    property int enter: 400
+                    property int exit: 200
+                    property int effects: 200
+                    property int resize: 300
+                    property int bounce: 400
+                    property int scroll: 200
+                    property int menu: 350
+                    property int sidebarOpen: 600
+                    property int sidebarClose: 600
+                }
                 property bool extraBackgroundTint: true
                 property int fakeScreenRounding: 2 // 0: None | 1: Always | 2: When not fullscreen
                 property JsonObject fonts: JsonObject {
@@ -117,6 +133,7 @@ Singleton {
                     property string expressive: "Space Grotesk"
                 }
                 property JsonObject transparency: JsonObject {
+                    property bool xray: true
                     property bool enable: false
                     property bool automatic: true
                     property real backgroundTransparency: 0.11
@@ -150,15 +167,15 @@ Singleton {
             }
 
             property JsonObject apps: JsonObject {
-                property string bluetooth: "kcmshell6 kcm_bluetooth"
+                property string bluetooth: "python3 '" + Quickshell.shellPath("scripts/shell/control.py").replace(/'/g, "'\\''") + "' ipc bluetooth open"
                 property string changePassword: "kitty -1 --hold=yes fish -i -c 'passwd'"
-                property string network: "kcmshell6 kcm_networkmanagement"
+                property string network: "python3 '" + Quickshell.shellPath("scripts/shell/control.py").replace(/'/g, "'\\''") + "' ipc network open"
                 property string manageUser: "kcmshell6 kcm_users"
-                property string networkEthernet: "kcmshell6 kcm_networkmanagement"
+                property string networkEthernet: "python3 '" + Quickshell.shellPath("scripts/shell/control.py").replace(/'/g, "'\\''") + "' ipc network open"
                 property string taskManager: "plasma-systemmonitor --page-name Processes"
                 property string terminal: "kitty -1" // This is only for shell actions
                 property string update: "kitty -1 --hold=yes fish -i -c 'pkexec pacman -Syu'"
-                property string volumeMixer: `~/.config/hypr/hyprland/scripts/launch_first_available.sh "pavucontrol-qt" "pavucontrol"`
+                property string volumeMixer: "python3 '" + Quickshell.shellPath("scripts/shell/control.py").replace(/'/g, "'\\''") + "' settings audio"
             }
 
             property JsonObject background: JsonObject {
@@ -224,6 +241,8 @@ Singleton {
             }
 
             property JsonObject bar: JsonObject {
+                property var layout: null // null preserves the original layout until customized
+
                 property JsonObject autoHide: JsonObject {
                     property bool enable: false
                     property int hoverRegionWidth: 2
@@ -237,7 +256,7 @@ Singleton {
                 property int cornerStyle: 0 // 0: Hug | 1: Float | 2: Plain rectangle
                 property bool floatStyleShadow: true // Show shadow behind bar when cornerStyle == 1 (Float)
                 property bool borderless: false // true for no grouping of items
-                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/ii/assets/icons
+                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/artificial-impulse/assets/icons
                 property bool showBackground: true
                 property bool verbose: true
                 property bool vertical: false

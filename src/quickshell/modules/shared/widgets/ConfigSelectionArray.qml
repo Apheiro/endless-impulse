@@ -1,9 +1,9 @@
 import QtQuick
 import QtQuick.Layouts
 import qs.services
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
 
 Flow {
     id: root

@@ -1,8 +1,8 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.functions
 
 Process {
     id: screenshotProc

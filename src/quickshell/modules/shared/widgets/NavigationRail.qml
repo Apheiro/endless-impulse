@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.widgets
 
 ColumnLayout { // Window content with navigation rail and content pane
     id: root

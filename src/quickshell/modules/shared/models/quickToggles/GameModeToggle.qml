@@ -1,6 +1,6 @@
 import QtQuick
 import Quickshell.Io
-import qs.modules.common.models.hyprland
+import qs.modules.shared.models.hyprland
 import qs.services
 
 QuickToggleModel {

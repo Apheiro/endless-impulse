@@ -1,7 +1,8 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.functions
 
 ToolbarButton {
     colBackground: ColorUtils.transparentize(Appearance.colors.colPrimaryContainer)

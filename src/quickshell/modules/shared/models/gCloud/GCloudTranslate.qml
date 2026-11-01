@@ -1,7 +1,7 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import qs.modules.common.functions
-import qs.modules.common.utils
+import qs.modules.shared.functions
+import qs.modules.shared.utils
 import qs.services
 import ".."
 

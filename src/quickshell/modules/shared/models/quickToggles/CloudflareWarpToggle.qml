@@ -1,8 +1,8 @@
 import QtQuick
 import qs.services
-import qs.modules.common
-import qs.modules.common.functions
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.functions
+import qs.modules.shared.widgets
 import Quickshell
 import Quickshell.Io
 

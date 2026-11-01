@@ -1,6 +1,7 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Layouts
-import qs.modules.common
+import qs.modules.shared
 
 ToolbarButton {
     id: iconBtn

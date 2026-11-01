@@ -1,5 +1,6 @@
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared.primitives.common
+import qs.modules.shared
+import qs.modules.shared.functions
 import Qt5Compat.GraphicalEffects
 import qs.services
 import QtQuick

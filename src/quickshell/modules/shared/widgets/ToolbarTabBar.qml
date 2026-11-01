@@ -1,6 +1,7 @@
 pragma ComponentBehavior: Bound
-import qs.modules.common
-import qs.modules.common.models
+import qs.modules.shared.primitives.common
+import qs.modules.shared
+import qs.modules.shared.models
 import qs.services
 import QtQuick
 import QtQuick.Controls

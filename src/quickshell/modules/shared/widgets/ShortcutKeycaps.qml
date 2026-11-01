@@ -1,9 +1,10 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import "../functions/ShortcutSymbols.js" as ShortcutSymbols
 import qs.services
-import qs.modules.common
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.functions
 
 Item {
     id: root

@@ -1,3 +1,4 @@
+import qs.modules.shared
 import QtQuick
 
 // idx1 is the "leading" indicator position, idx2 is the "following" one
@@ -13,13 +14,13 @@ QtObject {
 
     Behavior on idx1 {
         NumberAnimation {
-            duration: root.idx1Duration
+            duration: Appearance.animationDuration(root.idx1Duration)
             easing.type: Easing.OutSine
         }
     }
     Behavior on idx2 {
         NumberAnimation {
-            duration: root.idx2Duration
+            duration: Appearance.animationDuration(root.idx2Duration)
             easing.type: Easing.OutSine
         }
     }

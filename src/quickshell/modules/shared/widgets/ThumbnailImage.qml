@@ -1,9 +1,10 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import Quickshell
 import Quickshell.Io
-import qs.modules.common
-import qs.modules.common.widgets
-import qs.modules.common.functions
+import qs.modules.shared
+import qs.modules.shared.widgets
+import qs.modules.shared.functions
 
 /**
  * Thumbnail image. It currently generates to the right place at the right size, but does not handle metadata/maintenance on modification.

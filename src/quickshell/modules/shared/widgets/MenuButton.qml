@@ -1,4 +1,5 @@
-import qs.modules.common
+import qs.modules.shared.primitives.common
+import qs.modules.shared
 import QtQuick
 
 RippleButton {

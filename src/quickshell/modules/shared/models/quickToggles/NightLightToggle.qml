@@ -2,9 +2,9 @@ import QtQuick
 import Quickshell
 import qs
 import qs.services
-import qs.modules.common
-import qs.modules.common.functions
-import qs.modules.common.widgets
+import qs.modules.shared
+import qs.modules.shared.functions
+import qs.modules.shared.widgets
 
 QuickToggleModel {
     property bool auto: Config.options.light.night.automatic
