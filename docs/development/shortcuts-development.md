@@ -9,13 +9,13 @@ are outside this editor's scope.
 ## Development and testing
 
 Use a test user/session with the project's dependencies and configurations.
-The updated `dots/.config/hypr/hyprland.lua` and
-`dots/.config/hypr/hyprland/services/shortcuts.lua` must be deployed together to
+The updated `config/xdg/config/hypr/hyprland.lua` and
+`config/xdg/config/hypr/hyprland/services/shortcuts.lua` must be deployed together to
 that user's Hyprland configuration. Reload Hyprland in that test session, then
 launch Settings directly from the repository:
 
 ```bash
-quickshell -p ./dots/.config/quickshell/ii/settings.qml
+quickshell -p ./src/quickshell/settings.qml
 ```
 
 Running the QML alone does not activate the Lua integration. The page explains
@@ -41,7 +41,7 @@ persistence after reload and Restore default. The user is the principal tester.
 - Python 3 handles persistence and reload; libxkbcommon validates keysyms.
 
 ```bash
-python3 -m unittest discover -s sdata/tests -v
+python3 -m unittest discover -s tests -v
 ```
 
 Tests use temporary directories, inert Lua dispatchers and mocked reloads; they

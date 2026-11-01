@@ -1,0 +1,86 @@
+# Audio panel
+
+Right-clicking the speaker opens a compact panel at the upper-right of its monitor, with master
+volume, mute and application volumes. Left-clicking opens the notification sidebar; the customizable audio button’s menu action opens Settings → Sound.
+Sound, network and Bluetooth share one quick-panel window. Switching fades out
+the current content, resizes the same frame, then fades in the latest selection.
+Content is clipped and temporarily non-interactive during the transition.
+Escape, the close button or clicking outside closes the quick panel.
+
+Advanced sound settings group Applications, Devices and Advanced controls:
+
+- **Playback / Recording:** individual application volume, mute, channel levels
+  and device routing. Recording lists applications already capturing audio.
+- **Outputs / Inputs:** volume, mute, channel levels, default device and available
+  ports. Monitor sources are hidden until requested. Input meters are opt-in
+  and stop when the panel closes.
+- **Profiles:** hardware/Bluetooth profiles and per-port latency offsets in ms.
+- **Connections:** explicit native PipeWire port links, passive links and unlinking;
+  audio ports by default, optionally MIDI/video/other ports.
+- **Advanced:** runtime forced sample rate/quantum (0 restores automatic), plus a
+  searchable inspector for graph objects, properties and parameters.
+
+The panel uses `services/AudioControl.qml`, native Quickshell PipeWire peak
+meters and `scripts/audio/control.py` (Python standard library). `pactl` controls
+Pulse-compatible devices/streams/profiles through pipewire-pulse. `pw-dump`,
+`pw-link` and `pw-metadata` expose the native graph and runtime clock. WirePlumber
+continues managing policy, Bluetooth and automatic connections. No pavucontrol
+process is launched by the Artificial Impulse audio panel.
+
+It requires a running host PipeWire, pipewire-pulse and WirePlumber session.
+Nix bundles the client tools; it does not start another audio server. On Arch,
+`pipewire`, `pipewire-pulse`, `wireplumber` and `libpulse` supply them. Fedora
+uses `pipewire-utils`, `pipewire-pulseaudio`, `pulseaudio-utils` and `wireplumber`.
+
+Opening the panel reads state without changing defaults, profiles or levels.
+Helpers run asynchronously, coalesce slider requests and validate object serials
+before mutations to avoid acting on a recycled ID after hotplug. Updates subscribe
+to Pulse events and refresh every four seconds while open; closing stops polling.
+The existing default output volume protection remains active. Boost is opt-in.
+
+Volume/default/profile persistence follows the host session manager. Explicit port
+links and forced clock values are runtime changes: this interface does not generate
+WirePlumber startup rules or install DSP effects. Use EasyEffects for processing.
+The graph inspector displays other native objects read-only.
+
+Agent checks cover read-only panel startup, all seven pages, stable refresh,
+argument validation and stale object identities. Hardware/Bluetooth behavior and
+subjective audio latency remain for the user's acceptance testing.
+
+## EasyEffects awareness
+
+Application destinations show the actual linked processing route, for example
+`EasyEffects → AZ09`, or `Yeti X → EasyEffects` for recording inputs. Routes are
+traced through EasyEffects-owned graph nodes; the system default is never used
+as a guessed endpoint. Multiple destinations are listed; disconnected processors
+show no connected device. Existing routing and EasyEffects settings are not changed.
+
+The system default selectors distinguish routing defaults from processing. They
+omit EasyEffects virtual devices as new default choices, retaining an already
+selected virtual default with a visible hint so existing settings stay unchanged.
+Virtual cards have a processing label and no default-device star. If an
+EasyEffects sink bypasses channel volume (`monitor.channel-volumes=false`), the
+panel replaces its volume/channel controls with a hint to adjust the final output.
+An explicitly enabled virtual volume remains adjustable. The helper also rejects
+ineffective virtual-volume writes, without changing the PipeWire property.
+
+## Control synchronization
+
+The bar wheel and panel sliders use the same asynchronous Pulse-compatible write
+path. The wheel resolves the current default output, clamps to 0–100% (respecting
+the configured limit), and coalesces rapid steps. Existing per-application sliders
+continue controlling their own streams. Default output readouts use the same
+maximum-channel value as the panel.
+
+Slider requests retain their displayed value until a snapshot taken after the
+latest successful write confirms it. Earlier snapshots and confirmations cannot
+roll back a newer drag. Failed writes restore the actual value; disconnected
+objects and unconfirmed requests expire, allowing external changes to take over.
+Channel sliders share this reconciliation too.
+
+Subscriptions ignore client/module events generated by the queries themselves.
+Refresh remains clickable during queries; a slow breathing ring indicates activity
+without changing the button's enabled opacity on every short query.
+
+Waffle audio device settings also open the native Settings page. Neither the
+main panel nor the Waffle audio shortcut requires pavucontrol/pavucontrol-qt.

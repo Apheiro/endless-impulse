@@ -38,7 +38,7 @@ failures are retried with backoff; recovery logs stay in the state directory.
 From a terminal or TTY, an active preview can also be reverted without finding its token:
 
 ```bash
-python3 dots/.config/quickshell/ii/scripts/hyprland/desktop.py recover
+python3 src/quickshell/scripts/hyprland/desktop.py recover
 ```
 
 Run this from the repository with the same user and Hyprland session environment.
@@ -55,3 +55,12 @@ IPC mutations in these tests use temporary directories and a simulated composito
 The settings navigation test loads every page with representative controls and
 checks that opening them leaves the draft empty. Real mode changes remain a manual
 hardware acceptance test.
+
+The action bar stays fixed above the scrolling content of the monitor, window and
+input pages. It remains available across categories while a draft or preview is
+pending. Revert/confirm dismiss the separate preview prompt while resolving; active
+previews synchronize across Settings instances.
+
+Border colors use Qt Quick ColorDialog with alpha support, editable gradient stops
+and a 0–360° angle. Manual Hyprland RGBA syntax remains available. Color selection
+updates only the desktop draft until Test changes and Keep changes are used.
