@@ -5,7 +5,11 @@ It reads the current compositor state asynchronously. Editing controls only chan
 a shared draft. Test changes, then keep or revert them within 20 seconds.
 
 Monitors can be dragged in the diagram, positioned relative to another display or
-edited with logical coordinates. While dragging a display, the page does not scroll. Resolution and refresh rate come from advertised
+edited with logical coordinates. While dragging a display, the page does not scroll.
+`MonitorGeometry.js` sweeps its logical rectangle against other enabled displays,
+blocking overlap and fast jumps through them while allowing sliding along edges.
+The diagram uses rotated, scaled dimensions and writes only the draft on release.
+Resolution and refresh rate come from advertised
 modes. Scale must produce whole logical pixels; rotation and reflection are supported.
 Device controls write only fields explicitly edited; unchanged values remain inherited.
 
@@ -63,11 +67,11 @@ The action bar stays fixed above the scrolling content of the monitor, window an
 input pages. It remains available across categories while a draft or preview is
 pending. Revert/confirm dismiss the separate preview prompt while resolving; active
 previews synchronize across Settings instances.
-
-Border colors use Qt Quick ColorDialog with alpha support, editable gradient stops
-and a 0–360° angle. Manual Hyprland RGBA syntax remains available. Color selection
-updates only the desktop draft until Test changes and Keep changes are used.
 Resolution clicks queue behind in-flight queries and dismiss the prompt
 immediately. Failed responses still synchronize transaction state; neither the
 countdown nor the detached guard loops on a failed restoration. These rules apply
 to Monitors, Windows & effects, and Keyboard & mouse through `DesktopSettings`.
+
+Border colors use Qt Quick ColorDialog with alpha support, editable gradient stops
+and a 0–360° angle. Manual Hyprland RGBA syntax remains available. Color selection
+updates only the desktop draft until Test changes and Keep changes are used.

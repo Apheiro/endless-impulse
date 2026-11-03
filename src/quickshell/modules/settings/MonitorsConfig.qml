@@ -6,6 +6,7 @@ import QtQuick.Layouts
 import qs.services
 import qs.modules.shared
 import qs.modules.shared.widgets
+import "MonitorGeometry.js" as MonitorGeometry
 
 SettingsPage {
     id: root
@@ -60,6 +61,7 @@ SettingsPage {
         }
         Rectangle {
             id: canvas
+            objectName: "monitor-arrangement-canvas"
             Layout.fillWidth: true
             implicitHeight: 260
             radius: Appearance.rounding.small
@@ -72,6 +74,7 @@ SettingsPage {
                 model: root.displays
                 delegate: Rectangle {
                     id: tile
+                    objectName: "monitor-tile-" + modelData.name
                     required property var modelData
                     readonly property var rect: root.rectangle(modelData.name)
                     property real offsetX: 0
@@ -95,26 +98,37 @@ SettingsPage {
                         elide: Text.ElideRight
                     }
                     MouseArea {
+                        objectName: "monitor-drag-" + tile.modelData.name
                         anchors.fill: parent
                         preventStealing: true
                         cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
                         property point start
+                        property var origin: null
+                        property var dragPosition: null
+                        property real dragScale: 1
                         onPressed: mouse => {
                             root.draggingMonitor = true;
                             root.selectedName = tile.modelData.name;
                             start = mapToItem(canvas, mouse.x, mouse.y);
+                            origin = Object.assign({}, tile.rect);
+                            dragPosition = Object.assign({}, origin);
+                            dragScale = canvas.diagramScale;
                         }
                         onPositionChanged: mouse => {
                             if (!pressed) return;
                             const point = mapToItem(canvas, mouse.x, mouse.y);
-                            tile.offsetX = point.x - start.x;
-                            tile.offsetY = point.y - start.y;
+                            const target = {x: origin.x + (point.x - start.x) / dragScale,
+                                y: origin.y + (point.y - start.y) / dragScale};
+                            const obstacles = root.displays.filter(display => display.name !== tile.modelData.name)
+                                .map(display => root.rectangle(display.name));
+                            dragPosition = MonitorGeometry.move(Object.assign({}, origin, dragPosition), target, obstacles);
+                            tile.offsetX = (dragPosition.x - origin.x) * dragScale;
+                            tile.offsetY = (dragPosition.y - origin.y) * dragScale;
                         }
                         onReleased: {
                             if (Math.abs(tile.offsetX) + Math.abs(tile.offsetY) > 3) {
                                 DesktopSettings.putMonitor(tile.modelData.name, {
-                                    x: Math.round(tile.rect.x + tile.offsetX / canvas.diagramScale),
-                                    y: Math.round(tile.rect.y + tile.offsetY / canvas.diagramScale)});
+                                    x: Math.round(dragPosition.x), y: Math.round(dragPosition.y)});
                             }
                             tile.offsetX = 0;
                             tile.offsetY = 0;
