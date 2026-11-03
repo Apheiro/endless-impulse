@@ -9,13 +9,20 @@ import Quickshell.Io
 
 Singleton {
     id: root
-    // property string cliphistBinary: FileUtils.trimFileProtocol(`${Directories.home}/.cargo/bin/stash`)
-    property string cliphistBinary: "cliphist"
     property real pasteDelay: 0.05
-    property string pressPasteCommand: "ydotool key -d 1 29:1 47:1 47:0 29:0"
     property bool sloppySearch: Config.options?.search.sloppy ?? false
     property real scoreThreshold: 0.2
     property list<string> entries: []
+    property list<string> historyEntries: []
+    readonly property string latestEntry: historyEntries[0] ?? ""
+    property list<string> pinned: []
+    property int removableCount: 0
+    property string error: ""
+    property var queue: []
+    property bool inFlight: false
+    property bool refreshPending: false
+    readonly property bool busy: inFlight || queue.length > 0
+    readonly property string helper: Quickshell.shellPath("scripts/clipboard/history.py")
     readonly property var preparedEntries: entries.map(a => ({
         name: Fuzzy.prepare(`${a.replace(/^\s*\S+\s+/, "")}`),
         entry: a
@@ -43,71 +50,40 @@ Singleton {
     }
 
     function entryIsImage(entry) {
-        return !!(/^\d+\t\[\[.*binary data.*\d+x\d+.*\]\]$/.test(entry))
+        return /^\[\[.*binary data.*\d+x\d+.*\]\]$/.test(StringUtils.cleanCliphistEntry(entry));
     }
 
+    function entryId(entry) { return entry.split("\t")[0]; }
+    function isPinned(entry) { return pinned.includes(entryId(entry)); }
+    function cacheCommand(entry, path) { return ["python3", helper, "cache", entryId(entry), path]; }
     function refresh() {
-        readProc.buffer = []
-        readProc.running = true
+        if (busy) { refreshPending = true; return; }
+        request("list");
     }
-
-    function copy(entry) {
-        if (root.cliphistBinary.includes("cliphist")) // Classic cliphist
-            Quickshell.execDetached(["bash", "-c", `printf '${StringUtils.shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy`]);
-        else { // Stash
-            const entryNumber = entry.split("\t")[0];
-            Quickshell.execDetached(["bash", "-c", `${root.cliphistBinary} decode ${entryNumber} | wl-copy`]);
-        }
+    function request(action, payload = {}) {
+        queue = [...queue, {action, payload}];
+        drain();
     }
-
-    function paste(entry) {
-        if (root.cliphistBinary.includes("cliphist")) // Classic cliphist
-            Quickshell.execDetached(["bash", "-c", `printf '${StringUtils.shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy && wl-paste`]);
-        else { // Stash
-            const entryNumber = entry.split("\t")[0];
-            Quickshell.execDetached(["bash", "-c", `${root.cliphistBinary} decode ${entryNumber} | wl-copy; ${root.pressPasteCommand}`]);
-        }
+    function drain() {
+        if (inFlight || !queue.length) return;
+        const next = queue[0];
+        queue = queue.slice(1);
+        inFlight = true;
+        worker.payload = JSON.stringify(next.payload);
+        worker.received = false;
+        worker.stdinEnabled = next.action !== "list";
+        worker.command = ["python3", helper, next.action];
+        error = "";
+        worker.running = true;
     }
-
+    function copy(entry) { Quickshell.execDetached(["python3", helper, "copy", entryId(entry)]); }
+    function paste(entry) { Quickshell.execDetached(["python3", helper, "paste", entryId(entry)]); }
+    function togglePin(entry) { request(isPinned(entry) ? "unpin" : "pin", {entry: entryId(entry)}); }
+    function deleteEntry(entry) { request("delete", {entry: entryId(entry)}); }
+    function clearUnpinned() { request("clear"); }
     function superpaste(count, isImage = false) {
-        // Find entries
-        const targetEntries = entries.filter(entry => {
-            if (!isImage) return true;
-            return entryIsImage(entry);
-        }).slice(0, count)
-        const pasteCommands = [...targetEntries].reverse().map(entry => `printf '${StringUtils.shellSingleQuoteEscape(entry)}' | ${root.cliphistBinary} decode | wl-copy && sleep ${root.pasteDelay} && ${root.pressPasteCommand}`)
-        // Act
-        Quickshell.execDetached(["bash", "-c", pasteCommands.join(` && sleep ${root.pasteDelay} && `)]);
-    }
-
-    Process {
-        id: deleteProc
-        property string entry: ""
-        command: ["bash", "-c", `echo '${StringUtils.shellSingleQuoteEscape(deleteProc.entry)}' | ${root.cliphistBinary} delete`]
-        function deleteEntry(entry) {
-            deleteProc.entry = entry;
-            deleteProc.running = true;
-            deleteProc.entry = "";
-        }
-        onExited: (exitCode, exitStatus) => {
-            root.refresh();
-        }
-    }
-
-    function deleteEntry(entry) {
-        deleteProc.deleteEntry(entry);
-    }
-
-    Process {
-        id: wipeProc
-        command: [root.cliphistBinary, "wipe"]
-        onExited: (exitCode, exitStatus) => {
-            root.refresh();
-        }
-    }
-
-    function wipe() {
-        wipeProc.running = true;
+        request("superpaste", {entries: historyEntries.filter(entry => !isImage || entryIsImage(entry))
+            .slice(0, count).map(entryId), delay: pasteDelay});
     }
 
     Connections {
@@ -127,23 +103,33 @@ Singleton {
     }
 
     Process {
-        id: readProc
-        property list<string> buffer: []
-
-        command: [root.cliphistBinary, "list"]
-
-        stdout: SplitParser {
-            onRead: (line) => {
-                readProc.buffer.push(line)
+        id: worker
+        property string payload: ""
+        property bool received: false
+        onStarted: {
+            if (stdinEnabled) { write(payload); stdinEnabled = false; }
+        }
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const result = JSON.parse(text);
+                    worker.received = true;
+                    if (!result.ok) { root.error = result.error; return; }
+                    root.entries = result.entries;
+                    root.historyEntries = result.historyEntries;
+                    root.pinned = result.pinned;
+                    root.removableCount = result.removableCount;
+                } catch (error) { root.error = "Could not read clipboard history."; }
             }
         }
-
-        onExited: (exitCode, exitStatus) => {
-            if (exitCode === 0) {
-                root.entries = readProc.buffer
-            } else {
-                console.error("[Cliphist] Failed to refresh with code", exitCode, "and status", exitStatus)
+        onExited: {
+            root.inFlight = false;
+            if (!received) root.error = "Could not start the clipboard helper.";
+            if (root.refreshPending) {
+                root.refreshPending = false;
+                root.queue = [...root.queue, {action: "list", payload: {}}];
             }
+            Qt.callLater(root.drain);
         }
     }
 

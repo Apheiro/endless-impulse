@@ -17,16 +17,10 @@ Rectangle {
     property string blurText: "Image hidden"
 
     property string imageDecodePath: Directories.cliphistDecode
-    property string imageDecodeFileName: `${entryNumber}`
+    property string imageDecodeFileName: Cliphist.entryId(entry)
     property string imageDecodeFilePath: `${imageDecodePath}/${imageDecodeFileName}`
     property string source
 
-    property int entryNumber: {
-        if (!root.entry)
-            return 0;
-        const match = root.entry.match(/^(\d+)\t/);
-        return match ? parseInt(match[1]) : 0;
-    }
     property int imageWidth: {
         if (!root.entry)
             return 0;
@@ -54,12 +48,12 @@ Rectangle {
 
     Process {
         id: decodeImageProcess
-        command: ["bash", "-c", `[ -f ${imageDecodeFilePath} ] || echo '${StringUtils.shellSingleQuoteEscape(root.entry)}' | ${Cliphist.cliphistBinary} decode > '${imageDecodeFilePath}'`]
+        command: Cliphist.cacheCommand(root.entry, root.imageDecodeFilePath)
         onExited: (exitCode, exitStatus) => {
             if (exitCode === 0) {
                 root.source = imageDecodeFilePath;
             } else {
-                console.error("[CliphistImage] Failed to decode image for entry:", root.entry);
+                console.error("[CliphistImage] Failed to decode clipboard image");
                 root.source = "";
             }
         }

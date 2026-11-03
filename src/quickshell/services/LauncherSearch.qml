@@ -112,12 +112,6 @@ Singleton {
                 Hyprland.dispatch(`hl.dsp.global("quickshell:wallpaperSelectorToggle")`)
             }
         },
-        {
-            action: "wipeclipboard",
-            execute: () => {
-                Cliphist.wipe();
-            }
-        },
     ]
 
     // Combined built-in and user actions
@@ -180,7 +174,8 @@ Singleton {
                 if (mightBlurImage) {
                     shouldBlurImage = shouldBlurImage && (root.containsUnsafeLink(array[index - 1]) || root.containsUnsafeLink(array[index + 1]));
                 }
-                const type = `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
+                const pinned = Cliphist.isPinned(entry);
+                const type = pinned ? Translation.tr("Saved") : `#${entry.match(/^\s*(\S+)/)?.[1] || ""}`;
                 return resultComp.createObject(null, {
                     rawValue: entry,
                     name: StringUtils.cleanCliphistEntry(entry),
@@ -197,13 +192,18 @@ Singleton {
                                 Cliphist.copy(entry);
                             }
                         }), resultComp.createObject(null, {
+                            name: pinned ? Translation.tr("Unsave") : Translation.tr("Save"),
+                            iconName: pinned ? "keep_off" : "keep",
+                            iconType: LauncherSearchResult.IconType.Material,
+                            execute: () => Cliphist.togglePin(entry)
+                        }), ...(!pinned ? [resultComp.createObject(null, {
                             name: Translation.tr("Delete"),
                             iconName: "delete",
                             iconType: LauncherSearchResult.IconType.Material,
                             execute: () => {
                                 Cliphist.deleteEntry(entry);
                             }
-                        })],
+                        })] : [])],
                     blurImage: shouldBlurImage
                 });
             }).filter(Boolean);

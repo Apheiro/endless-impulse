@@ -240,7 +240,7 @@ Singleton {
      * @returns { string }
      */
     function cleanCliphistEntry(str: string): string {
-        return str.replace(/^\d+\t/, "");
+        return str.replace(/^(?:\d+|saved-[0-9a-f]{64})\t/, "");
     }
 
     /**

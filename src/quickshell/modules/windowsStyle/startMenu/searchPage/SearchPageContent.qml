@@ -7,6 +7,7 @@ import qs
 import qs.services
 import qs.modules.shared
 import qs.modules.shared.functions
+import qs.modules.shared.widgets
 import qs.modules.windowsStyle.looks
 
 BodyRectangle {
@@ -29,6 +30,13 @@ BodyRectangle {
             context: root.context
             Layout.fillWidth: true
             Layout.fillHeight: false
+        }
+
+        Loader {
+            Layout.fillWidth: true
+            active: root.searchText.startsWith(Config.options.search.prefix.clipboard)
+            visible: active
+            sourceComponent: ClipboardHistoryTools {}
         }
 
         SearchResults {

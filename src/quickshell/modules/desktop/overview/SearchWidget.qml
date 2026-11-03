@@ -160,6 +160,15 @@ Item { // Wrapper
                 color: Appearance.colors.colOutlineVariant
             }
 
+            Loader {
+                Layout.fillWidth: true
+                Layout.leftMargin: 16
+                Layout.rightMargin: 16
+                active: root.searchingText.startsWith(Config.options.search.prefix.clipboard)
+                visible: active
+                sourceComponent: ClipboardHistoryTools {}
+            }
+
             ListView { // App results
                 id: appResults
                 visible: root.showResults

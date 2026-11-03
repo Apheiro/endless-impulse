@@ -65,6 +65,7 @@ Singleton {
             add("data", entry[0], entry[1], entry[2], [tr("State")], entry[3]);
         add("data", tr("Desktop state"), state + "/artificial-impulse", tr("Recovery information and integration state"), ["Hyprland", tr("Backups")]);
         add("data", tr("Display recovery"), state + "/artificial-impulse/desktop", tr("Display previews, last good configuration and backups"), [tr("Monitors")]);
+        add("data", tr("Saved clipboard"), data + "/artificial-impulse/clipboard", tr("Saved copies kept when clipboard history is cleared"), [tr("Clipboard"), tr("Saved")]);
         add("data", tr("Icon backups"), state + "/artificial-impulse/icon-backups", tr("Configuration copies made before applying icon changes"), [tr("Icons")]);
         add("data", "minimized.json", state + "/artificial-impulse/minimized.json", tr("Original workspaces of minimized windows"), [tr("Dock")], "file");
         add("data", "runtime.json", state + "/dots-hyperland/runtime.json", tr("Active shell source and launcher"), [tr("Runtime")], "file");
