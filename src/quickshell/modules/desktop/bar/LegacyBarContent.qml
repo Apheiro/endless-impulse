@@ -38,7 +38,7 @@ Item { // Bar content region
         }
     }
     // Background
-    Rectangle {
+    PanelSurface {
         id: barBackground
         anchors {
             fill: parent
@@ -47,7 +47,6 @@ Item { // Bar content region
         color: Config.options.bar.showBackground ? Appearance.colors.colLayer0 : "transparent"
         radius: Config.options.bar.cornerStyle === 1 ? Math.min(width, height) / 2 : 0
         border.width: Config.options.bar.cornerStyle === 1 ? 1 : 0
-        border.color: Appearance.colors.colLayer0Border
     }
 
     FocusedScrollMouseArea { // Left side | scroll to change brightness

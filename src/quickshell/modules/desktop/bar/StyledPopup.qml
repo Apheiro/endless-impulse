@@ -59,7 +59,7 @@ LazyLoader {
             target: popupBackground
         }
 
-        Rectangle {
+        PanelSurface {
             id: popupBackground
             readonly property real margin: 10
             anchors {
@@ -74,9 +74,6 @@ LazyLoader {
             color: Appearance.m3colors.m3surfaceContainer
             radius: Appearance.rounding.small
             children: [root.contentItem]
-
-            border.width: 1
-            border.color: Appearance.colors.colLayer0Border
         }
     }
 }

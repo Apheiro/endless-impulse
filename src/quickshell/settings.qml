@@ -103,10 +103,9 @@ PanelWindow {
         onTriggered: root.finishOpening()
     }
 
-    Rectangle {
+    PanelSurface {
         anchors.fill: parent
-        radius: Appearance.rounding.large
-        color: Appearance.colors.colLayer0
+        border.width: 0
     }
 
     function movePage(offset) {

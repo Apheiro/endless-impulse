@@ -133,8 +133,9 @@ Item {
             }
         }
 
-        Rectangle { // The dialog
+        PanelSurface { // The dialog
             id: dialog
+            border.width: 0
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter

@@ -94,8 +94,8 @@ ColumnLayout {
         RowLayout {
             id:checkpointRow;anchors{fill:parent;margins:9}
             StyledText{Layout.fillWidth:true;text:Translation.tr("Keep this connection? Reverting in ")+Math.max(0,Math.ceil((NetworkControl.state.checkpoint.expires||0)-root.now))+" s";wrapMode:Text.WordWrap;color:Appearance.colors.colPrimary}
-            RippleButtonWithIcon{materialIcon:"undo";mainText:Translation.tr("Revert");onClicked:NetworkControl.command("rollback")}
-            RippleButtonWithIcon{materialIcon:"check";mainText:Translation.tr("Keep");onClicked:NetworkControl.command("keep")}
+            RippleButtonWithIcon{materialIcon:"undo";mainText:Translation.tr("Revert");enabled:!NetworkControl.busy;onClicked:NetworkControl.command("rollback")}
+            RippleButtonWithIcon{materialIcon:"check";mainText:Translation.tr("Keep");enabled:!NetworkControl.busy;onClicked:NetworkControl.command("keep")}
         }
     }
     StyledText{Layout.fillWidth:true;visible:NetworkControl.message.length>0;text:NetworkControl.message;textFormat:Text.PlainText;wrapMode:Text.WordWrap;color:NetworkControl.failed?Appearance.m3colors.m3error:Appearance.colors.colSubtext}

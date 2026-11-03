@@ -101,8 +101,9 @@ Item { // Wrapper
     StyledRectangularShadow {
         target: searchWidgetContent
     }
-    Rectangle { // Background
+    PanelSurface { // Background
         id: searchWidgetContent
+        border.width: 0
         anchors {
             top: parent.top
             horizontalCenter: parent.horizontalCenter

@@ -63,15 +63,12 @@ RippleButton {
         implicitHeight: entries.implicitHeight + 20 + shadowMargin * 2
         mask: Region { item: popupBackground }
         StyledRectangularShadow { target: popupBackground }
-        Rectangle {
+        PanelSurface {
             id: popupBackground
             objectName: "recording-menu-surface"
             anchors.fill: parent
             anchors.margins: menu.shadowMargin
-            color: Appearance.colors.colLayer0
             radius: Appearance.rounding.windowRounding
-            border.width: 1
-            border.color: Appearance.colors.colLayer0Border
         }
         ColumnLayout {
             id: entries

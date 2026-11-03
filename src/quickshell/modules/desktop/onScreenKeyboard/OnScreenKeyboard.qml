@@ -70,10 +70,10 @@ Scope { // Scope
             StyledRectangularShadow {
                 target: oskBackground
             }
-            Rectangle {
+            PanelSurface {
                 id: oskBackground
+                border.width: 0
                 anchors.centerIn: parent
-                color: Appearance.colors.colLayer0
                 radius: Appearance.rounding.windowRounding
                 property real padding: 10
                 implicitWidth: oskRowLayout.implicitWidth + padding * 2

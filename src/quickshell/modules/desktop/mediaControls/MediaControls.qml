@@ -160,10 +160,10 @@ Scope {
                         target: placeholderBackground
                     }
 
-                    Rectangle {
+                    PanelSurface {
                         id: placeholderBackground
+                        border.width: 0
                         anchors.centerIn: parent
-                        color: Appearance.colors.colLayer0
                         radius: root.popupRounding
                         property real padding: 20
                         implicitWidth: placeholderLayout.implicitWidth + padding * 2

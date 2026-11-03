@@ -51,18 +51,15 @@ Item {
     implicitHeight: sidebarRightBackground.implicitHeight
     implicitWidth: sidebarRightBackground.implicitWidth
 
-    StyledRectangularShadow {
+    PanelSurfaceShadow {
         target: sidebarRightBackground
     }
-    Rectangle {
+    PanelSurface {
         id: sidebarRightBackground
 
         anchors.fill: parent
         implicitHeight: parent.height - Appearance.sizes.hyprlandGapsOut * 2
         implicitWidth: sidebarWidth - Appearance.sizes.hyprlandGapsOut * 2
-        color: Appearance.colors.colLayer0
-        border.width: 1
-        border.color: Appearance.colors.colLayer0Border
         radius: Appearance.rounding.screenRounding - Appearance.sizes.hyprlandGapsOut + 1
 
         ColumnLayout {

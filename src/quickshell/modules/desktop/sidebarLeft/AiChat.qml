@@ -223,8 +223,8 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
         property string imageDecodeFileName: "image"
         property string imageDecodeFilePath: `${imageDecodePath}/${imageDecodeFileName}`
         function handleEntry(entry: string) {
-            imageDecodeFileName = parseInt(entry.match(/^(\d+)\t/)[1]);
-            decodeImageAndAttachProc.exec(["bash", "-c", `[ -f ${imageDecodeFilePath} ] || echo '${StringUtils.shellSingleQuoteEscape(entry)}' | ${Cliphist.cliphistBinary} decode > '${imageDecodeFilePath}'`]);
+            imageDecodeFileName = Cliphist.entryId(entry);
+            decodeImageAndAttachProc.exec(Cliphist.cacheCommand(entry, imageDecodeFilePath));
         }
         onExited: (exitCode, exitStatus) => {
             if (exitCode === 0) {
@@ -668,7 +668,7 @@ Inline w/ backslash and round brackets \\(e^{i\\pi} + 1 = 0\\)
                                     return;
                                 }
                                 // Try image paste first
-                                const currentClipboardEntry = Cliphist.entries[0];
+                                const currentClipboardEntry = Cliphist.latestEntry;
                                 const cleanCliphistEntry = StringUtils.cleanCliphistEntry(currentClipboardEntry);
                                 if (/^\d+\t\[\[.*binary data.*\d+x\d+.*\]\]$/.test(currentClipboardEntry)) {
                                     // First entry = currently copied entry = image?

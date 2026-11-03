@@ -32,8 +32,9 @@ Item {
         }
     }
 
-    Rectangle { // The dialog
+    PanelSurface { // The dialog
         id: dialog
+        border.width: 0
         color: Appearance.m3colors.m3surfaceContainerHigh
         radius: Appearance.rounding.normal
         anchors.fill: parent

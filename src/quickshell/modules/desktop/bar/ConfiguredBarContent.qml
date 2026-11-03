@@ -131,7 +131,7 @@ Item {
         }
         cancelDrag();
     }
-    Rectangle {
+    PanelSurface {
         x: root.outerMargin
         width: parent.width - root.outerMargin * 2
         height: root.barHeight - root.outerMargin * 2
@@ -139,7 +139,6 @@ Item {
         color: Config.options.bar.showBackground ? Appearance.colors.colLayer0 : "transparent"
         radius: Config.options.bar.cornerStyle === 1 ? Math.min(width, height) / 2 : 0
         border.width: Config.options.bar.cornerStyle === 1 ? 1 : 0
-        border.color: Appearance.colors.colLayer0Border
     }
     Item {
         id: strip
@@ -194,14 +193,14 @@ Item {
             color: Appearance.colors.colSubtext
         }
     }
-    Rectangle {
+    PanelSurface {
         id:drawer
         objectName:"bar-editor-drawer"
         visible:root.editing
         x:Math.max(Appearance.sizes.elevationMargin,(parent.width-width)/2)
         y:Config.options.bar.bottom?Appearance.sizes.elevationMargin*2-Appearance.sizes.hyprlandGapsOut:root.barHeight+Appearance.sizes.hyprlandGapsOut
         width:Math.max(1,Math.min(1100,parent.width-Appearance.sizes.elevationMargin*2));height:root.drawerHeight
-        radius:Appearance.rounding.large;color:Appearance.colors.colLayer0;border.width:1;border.color:Appearance.colors.colLayer0Border
+        radius:Appearance.rounding.large
         ColumnLayout {
             anchors.fill:parent;anchors.margins:16;spacing:10
             RowLayout {

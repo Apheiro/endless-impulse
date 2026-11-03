@@ -61,7 +61,7 @@ PopupWindow {
             opacity: popupBackground.opacity
         }
 
-        Rectangle {
+        PanelSurface {
             id: popupBackground
             readonly property real padding: 4
             anchors {
@@ -73,10 +73,7 @@ PopupWindow {
                 margins: root.padding
             }
 
-            color: Appearance.colors.colLayer0
             radius: Appearance.rounding.windowRounding
-            border.width: 1
-            border.color: Appearance.colors.colLayer0Border
             clip: true
 
             opacity: 0

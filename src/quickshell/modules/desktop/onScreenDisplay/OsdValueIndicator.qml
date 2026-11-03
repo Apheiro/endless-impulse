@@ -25,14 +25,14 @@ Item {
     StyledRectangularShadow {
         target: valueIndicator
     }
-    Rectangle {
+    PanelSurface {
         id: valueIndicator
+        border.width: 0
         anchors {
             fill: parent
             margins: Appearance.sizes.elevationMargin
         }
         radius: Appearance.rounding.full
-        color: Appearance.colors.colLayer0
 
         implicitWidth: valueRow.implicitWidth
         implicitHeight: valueRow.implicitHeight

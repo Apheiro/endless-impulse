@@ -79,18 +79,15 @@ Scope { // Scope
                         implicitWidth: dockRow.implicitWidth + 5 * 2
                         height: parent.height - Appearance.sizes.elevationMargin - Appearance.sizes.hyprlandGapsOut
 
-                        StyledRectangularShadow {
+                        PanelSurfaceShadow {
                             target: dockVisualBackground
                         }
-                        Rectangle { // The real rectangle that is visible
+                        PanelSurface { // The real rectangle that is visible
                             id: dockVisualBackground
                             property real margin: Appearance.sizes.elevationMargin
                             anchors.fill: parent
                             anchors.topMargin: Appearance.sizes.elevationMargin
                             anchors.bottomMargin: Appearance.sizes.hyprlandGapsOut
-                            color: Appearance.colors.colLayer0
-                            border.width: 1
-                            border.color: Appearance.colors.colLayer0Border
                             radius: Appearance.rounding.large
                         }
 

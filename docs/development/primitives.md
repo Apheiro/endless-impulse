@@ -20,6 +20,10 @@ live in `modules/shared/widgets`; shader assets and the upstream shapes submodul
 remain there. Their consumers use explicit imports and updated resource paths;
 there are no duplicate implementations or compatibility forwarding QML files.
 
+For window and panel backgrounds, use `common/PanelSurface` and the optional
+external `common/PanelSurfaceShadow`. See the [surface library guide](ui-components.md)
+for variants, visual states, native sizing, compositor blur limits and migrations.
+
 ## Bar responsibilities
 
 - `bar/BarModuleRegistry.qml` maps stable saved IDs to QML module URLs. It has no
@@ -92,7 +96,7 @@ Bar settings expose the mode and a connected-monitor selector for Edit/Restore.
 
 ### common
 
-`Box`, `BoxLayout`, `ButtonGroup`, `ButtonMouseArea`, `Circle`, `CircularProgress`, `ClippedFilledCircularProgress`, `ClippedProgressBar`, `ColorTint`, `Colorizer`, `CustomIcon`, `DashedBorder`, `ErrorShakeAnimation`, `FadeLoader`, `FlowButtonGroup`, `FocusedScrollMouseArea`, `Graph`, `GroupButton`, `KeyboardKey`, `MaskMultiEffect`, `MaterialCookie`, `MaterialLoadingIndicator`, `MaterialShape`, `MaterialShapeWrappedMaterialSymbol`, `MaterialSymbol`, `MaterialTextArea`, `MaterialTextField`, `NavigationRailButton`, `OptionalMaterialSymbol`, `Pill`, `PointingHandInteraction`, `PointingHandLinkHover`, `PopupToolTip`, `Revealer`, `RippleButton`, `RoundCorner`, `ScrollEdgeFade`, `SecondaryTabBar`, `SecondaryTabButton`, `SegmentedControl`, `SidebarReveal`, `SineCookie`, `StateLayer`, `StateOverlay`, `StyledBlurEffect`, `StyledComboBox`, `StyledDropShadow`, `StyledFlickable`, `StyledImage`, `StyledIndeterminateProgressBar`, `StyledListView`, `StyledProgressBar`, `StyledRadioButton`, `StyledRectangle`, `StyledRectangularShadow`, `StyledScrollBar`, `StyledSlider`, `StyledSpinBox`, `StyledSwitch`, `StyledText`, `StyledTextArea`, `StyledTextInput`, `StyledToolTip`, `StyledToolTipContent`, `Toolbar`, `ToolbarButton`, `ToolbarTabButton`, `ToolbarTextField`, `VerticalButtonGroup`, `WavyLine`.
+`Box`, `BoxLayout`, `ButtonGroup`, `ButtonMouseArea`, `Circle`, `CircularProgress`, `ClippedFilledCircularProgress`, `ClippedProgressBar`, `ColorTint`, `Colorizer`, `CustomIcon`, `DashedBorder`, `ErrorShakeAnimation`, `FadeLoader`, `FlowButtonGroup`, `FocusedScrollMouseArea`, `Graph`, `GroupButton`, `KeyboardKey`, `MaskMultiEffect`, `MaterialCookie`, `MaterialLoadingIndicator`, `MaterialShape`, `MaterialShapeWrappedMaterialSymbol`, `MaterialSymbol`, `MaterialTextArea`, `MaterialTextField`, `NavigationRailButton`, `OptionalMaterialSymbol`, `PanelSurface`, `PanelSurfaceShadow`, `Pill`, `PointingHandInteraction`, `PointingHandLinkHover`, `PopupToolTip`, `Revealer`, `RippleButton`, `RoundCorner`, `ScrollEdgeFade`, `SecondaryTabBar`, `SecondaryTabButton`, `SegmentedControl`, `SidebarReveal`, `SineCookie`, `StateLayer`, `StateOverlay`, `StyledBlurEffect`, `StyledComboBox`, `StyledDropShadow`, `StyledFlickable`, `StyledImage`, `StyledIndeterminateProgressBar`, `StyledListView`, `StyledProgressBar`, `StyledRadioButton`, `StyledRectangle`, `StyledRectangularShadow`, `StyledScrollBar`, `StyledSlider`, `StyledSpinBox`, `StyledSwitch`, `StyledText`, `StyledTextArea`, `StyledTextInput`, `StyledToolTip`, `StyledToolTipContent`, `Toolbar`, `ToolbarButton`, `ToolbarTabButton`, `ToolbarTextField`, `VerticalButtonGroup`, `WavyLine`.
 
 ### dialogs
 

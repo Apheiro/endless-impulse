@@ -73,8 +73,9 @@ Item {
     StyledRectangularShadow {
         target: overviewBackground
     }
-    Rectangle { // Background
+    PanelSurface { // Background
         id: overviewBackground
+        border.width: 0
         property real padding: 10
         anchors.fill: parent
         anchors.margins: Appearance.sizes.elevationMargin

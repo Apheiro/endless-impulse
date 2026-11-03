@@ -54,7 +54,7 @@ Item {
         height:contextItems.implicitHeight+20+Appearance.sizes.elevationMargin*2
         x:Math.max(0,Math.min(root.width-width,root.contextX-Appearance.sizes.elevationMargin))
         y:Config.options.bar.bottom?Appearance.sizes.elevationMargin:Appearance.sizes.barHeight+Appearance.sizes.hyprlandGapsOut-Appearance.sizes.elevationMargin
-        Rectangle{id:contextBackground;anchors.fill:parent;anchors.margins:Appearance.sizes.elevationMargin;color:Appearance.colors.colLayer0;border.width:1;border.color:Appearance.colors.colLayer0Border;radius:Appearance.rounding.large}
+        PanelSurface{id:contextBackground;anchors.fill:parent;anchors.margins:Appearance.sizes.elevationMargin;radius:Appearance.rounding.large}
         ColumnLayout {
             id:contextItems;anchors{left:parent.left;right:parent.right;top:parent.top;margins:Appearance.sizes.elevationMargin+10}
             RippleButtonWithIcon{objectName:"bar-context-edit";Layout.fillWidth:true;hoverEnabled:true;materialIcon:"edit";mainText:Translation.tr("Edit bar");onClicked:BarLayout.begin(root.screen?.name)}

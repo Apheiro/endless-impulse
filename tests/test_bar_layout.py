@@ -43,7 +43,7 @@ ShellRoot {
  property var menuOwner:null
  property int livePhase:0
  TestCase { id:pointer;parent:host.contentItem;name:"BarPointer";when:false }
- Component.onCompleted:{Config.options.bar.autoHide.enable=true;Config.options.bar.autoHide.pushWindows=false;}
+ Component.onCompleted:{Config.options.bar.autoHide.enable=false;Config.options.bar.autoHide.pushWindows=false;}
  function expect(condition,message){if(!condition)throw new Error(message);}
  function find(item,name){if(!item)return null;if(item.objectName===name)return item;for(const child of [...(item.children||[]),...(item.resources||[])]){const result=find(child,name);if(result)return result;}if(item.contentItem&&!Array.from(item.children||[]).includes(item.contentItem))return find(item.contentItem,name);return null;}
  function collect(item,name){if(!item)return [];let result=item.objectName===name?[item]:[];for(const child of [...(item.children||[]),...(item.resources||[])])result=result.concat(collect(child,name));return result;}
@@ -64,9 +64,33 @@ ShellRoot {
     root.liveFrame=GlobalFocusGrab.persistent.find(window=>window.screen.name===host.screen.name);
     root.expect(root.liveFrame!==undefined,"bar monitor variant was not created");
     root.menuOwner=root.find(root.liveFrame.contentItem,"bar-content");
-    root.menuOwner.openContext(200);
+    // Exercise the actual right-click handler on free bar space.
+    pointer.mouseClick(root.menuOwner,5,1,Qt.RightButton);
     root.expect(root.menuOwner.contextOpen&&!bar.editing,"context menu entered editing without confirmation");
     root.expect(root.liveFrame.mask.regions.some(region=>region.item===root.menuOwner.contextSurface),"menu surface is outside the bar input mask");
+    root.phase=-4;return;
+   }
+   if(root.phase===-4){
+    const edit=root.find(root.menuOwner,"bar-context-edit");
+    root.expect(edit&&edit.visible&&edit.width>0&&edit.height>0,"right click opened no visible actions");
+    root.expect(root.liveFrame.height>=root.menuOwner.implicitHeight,"menu is clipped by the bar window");
+    GlobalFocusGrab.dismiss();
+    root.expect(!root.menuOwner.contextOpen,"focus dismissal left context open");
+    root.phase=-3;return;
+   }
+   if(root.phase===-3){
+    pointer.mouseClick(root.menuOwner,5,1,Qt.RightButton);
+    root.expect(root.menuOwner.contextOpen,"right click did not reopen context after dismissal");
+    root.phase=-2;return;
+   }
+   if(root.phase===-2){
+    pointer.parent=root.liveFrame.contentItem;
+    pointer.keyClick(Qt.Key_Escape);
+    pointer.parent=host.contentItem;
+    root.expect(!root.menuOwner.contextOpen,"Escape left context open");
+    pointer.mouseClick(root.menuOwner,5,1,Qt.RightButton);
+    root.expect(root.menuOwner.contextOpen,"right click did not reopen context after Escape");
+    Config.options.bar.autoHide.enable=true;
     root.phase=-1;return;
    }
    if(root.phase===-1){

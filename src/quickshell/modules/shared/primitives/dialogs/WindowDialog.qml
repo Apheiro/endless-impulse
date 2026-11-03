@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import qs.modules.shared
+import qs.modules.shared.primitives.common
 import qs.modules.shared.functions
 
 Rectangle {
@@ -41,8 +42,9 @@ Rectangle {
         onPressed: root.dismiss()
     }
 
-    Rectangle {
+    PanelSurface {
         id: dialogBackground
+        border.width: 0
         anchors.horizontalCenter: parent.horizontalCenter
         radius: Appearance.rounding.large
         color: Appearance.m3colors.m3surfaceContainerHigh // Use opaque version of layer3

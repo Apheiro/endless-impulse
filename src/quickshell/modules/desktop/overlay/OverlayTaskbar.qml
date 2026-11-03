@@ -10,7 +10,7 @@ import qs.modules.shared.functions
 import qs.modules.shared.widgets
 import qs.modules.shared.widgets.widgetCanvas
 
-Rectangle {
+PanelSurface {
     id: root
 
     property real padding: 8
@@ -21,7 +21,6 @@ Rectangle {
     color: Appearance.m3colors.m3surfaceContainer
     radius: Appearance.rounding.large
     border.color: Appearance.colors.colOutlineVariant
-    border.width: 1
 
     Behavior on opacity {
         animation: Appearance.animation.elementMoveFast.numberAnimation.createObject(this)

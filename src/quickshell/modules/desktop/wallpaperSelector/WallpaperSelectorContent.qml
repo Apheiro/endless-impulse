@@ -31,7 +31,7 @@ MouseArea {
     }
 
     function handleFilePasting(event) {
-        const currentClipboardEntry = Cliphist.entries[0];
+        const currentClipboardEntry = Cliphist.latestEntry;
         if (/^\d+\tfile:\/\/\S+/.test(currentClipboardEntry)) {
             const url = StringUtils.cleanCliphistEntry(currentClipboardEntry);
             Wallpapers.setDirectory(FileUtils.trimFileProtocol(decodeURIComponent(url)));
@@ -115,16 +115,13 @@ MouseArea {
     StyledRectangularShadow {
         target: wallpaperGridBackground
     }
-    Rectangle {
+    PanelSurface {
         id: wallpaperGridBackground
         anchors {
             fill: parent
             margins: Appearance.sizes.elevationMargin
         }
         focus: true
-        border.width: 1
-        border.color: Appearance.colors.colLayer0Border
-        color: Appearance.colors.colLayer0
         radius: Appearance.rounding.screenRounding - Appearance.sizes.hyprlandGapsOut + 1
 
         property int calculatedRows: Math.ceil(grid.count / grid.columns)

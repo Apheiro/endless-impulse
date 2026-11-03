@@ -137,12 +137,12 @@ Scope { // Scope
             }
 
             // Content
-            StyledRectangularShadow {
+            PanelSurfaceShadow {
                 target: sidebarLeftBackground
                 transform: Translate { x: -(1 - reveal.progress) * (Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin) }
                 radius: sidebarLeftBackground.radius
             }
-            Rectangle {
+            PanelSurface {
                 id: sidebarLeftBackground
                 enabled: GlobalStates.sidebarLeftOpen
                 transform: Translate { x: -(1 - reveal.progress) * (Appearance.sizes.sidebarWidthExtended + Appearance.sizes.elevationMargin) }
@@ -152,9 +152,6 @@ Scope { // Scope
                 anchors.leftMargin: Appearance.sizes.hyprlandGapsOut
                 width: panelWindow.sidebarWidth - Appearance.sizes.hyprlandGapsOut - Appearance.sizes.elevationMargin
                 height: parent.height - Appearance.sizes.hyprlandGapsOut * 2
-                color: Appearance.colors.colLayer0
-                border.width: 1
-                border.color: Appearance.colors.colLayer0Border
                 radius: Appearance.rounding.screenRounding - Appearance.sizes.hyprlandGapsOut + 1
 
                 Behavior on width {
@@ -194,10 +191,11 @@ Scope { // Scope
                 if (!visible) GlobalStates.sidebarLeftOpen = false;
             }
             
-            Rectangle {
+            PanelSurface {
                 id: detachedSidebarBackground
+                radius: 0
+                border.width: 0
                 anchors.fill: parent
-                color: Appearance.colors.colLayer0
 
                 Keys.onPressed: (event) => {
                     if (event.modifiers === Qt.ControlModifier) {

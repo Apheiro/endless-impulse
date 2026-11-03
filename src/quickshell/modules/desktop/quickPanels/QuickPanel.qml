@@ -121,15 +121,12 @@ Scope {
                     panel.resizeToContent();
                 }
             }
-            StyledRectangularShadow { target: surface }
-            Rectangle {
+            PanelSurfaceShadow { target: surface }
+            PanelSurface {
                 id: surface
                 anchors.fill: parent
                 anchors.margins: Appearance.sizes.elevationMargin
                 radius: Appearance.rounding.large
-                color: Appearance.colors.colLayer0
-                border.width: 1
-                border.color: Appearance.colors.colLayer0Border
                 focus: true
                 Keys.onEscapePressed: QuickPanelState.dismiss()
                 Component.onCompleted: forceActiveFocus()

@@ -124,8 +124,9 @@ Item {
                 }
             }
 
-            Rectangle {
+            PanelSurface {
                 id: popupBackground
+                border.width: 0
                 property real padding: 5
                 opacity: previewPopup.show ? 1 : 0
                 visible: opacity > 0
