@@ -156,7 +156,8 @@ class SettingsNavigationTests(unittest.TestCase):
             }
             if (root.selectedPage.component === "RecordingConfig.qml" && !checkedRecording) {
                 if (!ScreenRecorder.loaded || ScreenRecorder.busy) return;
-                pageLoader.item.advanced = true;
+                // The recorder now has separate tabs; FPS lives under Video.
+                pageLoader.item.currentTab = 1;
                 function findEditor(item) {
                     if (item.objectName === "recorder-value-fps") return item;
                     for (const child of item.children || []) { const found = findEditor(child); if (found) return found; }
