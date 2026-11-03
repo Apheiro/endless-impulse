@@ -32,8 +32,11 @@ original configuration again; it never deletes the original rule.
 
 The Lua loader checks the preview session and deadline before loading a candidate.
 After logout, crash or reboot, unconfirmed settings cannot become the next session's
-layout. The next helper call reconciles the pending transaction. Temporary IPC
-failures are retried with backoff; recovery logs stay in the state directory.
+layout. The next helper call reconciles the pending transaction. Restoration uses
+a CLI-safe Lua expression so its leading comment cannot be parsed as hyprctl
+flags. A failed restoration preserves the baseline as `restore_failed`, stops
+automatic attempts and exposes an explicit retry. Recovery logs stay in the state
+directory. Repeating Revert after the guard already restored is harmless.
 
 From a terminal or TTY, an active preview can also be reverted without finding its token:
 
@@ -64,3 +67,7 @@ previews synchronize across Settings instances.
 Border colors use Qt Quick ColorDialog with alpha support, editable gradient stops
 and a 0–360° angle. Manual Hyprland RGBA syntax remains available. Color selection
 updates only the desktop draft until Test changes and Keep changes are used.
+Resolution clicks queue behind in-flight queries and dismiss the prompt
+immediately. Failed responses still synchronize transaction state; neither the
+countdown nor the detached guard loops on a failed restoration. These rules apply
+to Monitors, Windows & effects, and Keyboard & mouse through `DesktopSettings`.

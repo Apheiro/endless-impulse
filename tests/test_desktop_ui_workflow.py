@@ -45,6 +45,8 @@ elif args[0] == 'getoption':
     kind = {'bool':'bool','int':'int','float':'float','gap':'css'}.get(field['type'], 'str')
     print(json.dumps({kind: field['default']}))
 elif args[0] == 'configerrors': print('')
+elif args[0] == 'eval' and args[1].startswith('-'):
+    print('usage: hyprctl [flags] <command>', file=sys.stderr); sys.exit(1)
 else: print('ok')
 ''')
             fake.chmod(0o755)
@@ -120,3 +122,85 @@ ShellRoot {
             finally:
                 (base / "state/artificial-impulse/desktop/pending.json").unlink(missing_ok=True)
                 time.sleep(1.1)  # Let detached fixture guards observe cancellation before cleanup.
+
+    def test_failed_restore_pauses_polling_and_queued_retry_closes_prompt(self):
+        with tempfile.TemporaryDirectory(prefix="desktop-restore-error-") as directory:
+            base = Path(directory)
+            for name in ("modules", "services", "assets", "defaults", "translations", "GlobalStates.qml"):
+                (base / name).symlink_to(SOURCE / name)
+            scripts = base / "scripts/hyprland"
+            scripts.mkdir(parents=True)
+            (scripts / "desktop.py").write_text('''
+import json, pathlib, sys, time
+base = pathlib.Path(__file__).resolve().parents[2]
+state = base / 'state.json'
+data = json.loads(state.read_text()) if state.exists() else {'reverts': 0}
+action = sys.argv[1]
+with (base / 'calls.jsonl').open('a') as output: output.write(json.dumps(action) + '\\n')
+transaction = None if data['reverts'] >= 2 else dict(token='test-token', deadline=time.time()-1,
+    phase='restore_failed' if data['reverts'] else 'active', error='fixture restore failure')
+if action == 'transaction': time.sleep(.3)
+if action == 'revert':
+    data['reverts'] += 1
+    state.write_text(json.dumps(data))
+    transaction = None if data['reverts'] >= 2 else dict(transaction, phase='restore_failed')
+    if transaction:
+        print(json.dumps(dict(ok=False, error='fixture restore failure', transaction=transaction)))
+        sys.exit(1)
+result = dict(ok=True, transaction=transaction)
+if action == 'snapshot': result.update(monitors=[],devices=[],fields=[],values={},supported={},
+    saved=dict(options={},monitors={},devices={}),integrated=True)
+print(json.dumps(result))
+''')
+            (base / "shell.qml").write_text('''//@ pragma UseQApplication
+import QtQuick
+import Quickshell
+import Quickshell.Wayland
+import qs.services
+import qs.modules.settings
+ShellRoot {
+    property int phase: 0
+    property int pausedTicks: 0
+    DesktopPreviewPrompt { id: prompt; screen: Quickshell.screens[0]; WlrLayershell.keyboardFocus: WlrKeyboardFocus.None }
+    Timer {
+        interval: 100; repeat: true; running: true
+        onTriggered: {
+            if (DesktopSettings.busy) return;
+            if (phase === 0 && DesktopSettings.transaction) {
+                DesktopSettings.request("transaction");
+                DesktopSettings.revert();
+                if (!DesktopSettings.pendingResolution || prompt.visible) {
+                    console.error("RESTORE_ERROR_FAILED resolution lost during background query"); Qt.quit(); return;
+                }
+                phase++; return;
+            }
+            if (phase === 1) {
+                if (!DesktopSettings.restorationFailed || !DesktopSettings.transactionPollingPaused || !prompt.visible) {
+                    console.error("RESTORE_ERROR_FAILED no explicit failed state"); Qt.quit(); return;
+                }
+                // Let more than two poll intervals pass without automatic retries.
+                if (++pausedTicks < 25) return;
+                DesktopSettings.revert(); phase++; return;
+            }
+            if (phase === 2 && !DesktopSettings.transaction) {
+                if (prompt.visible) { console.error("RESTORE_ERROR_FAILED prompt reopened"); Qt.quit(); return; }
+                console.log("RESTORE_ERROR_OK"); Qt.quit();
+            }
+        }
+    }
+    Timer { interval: 10000; running: true; onTriggered: { console.error("RESTORE_ERROR_FAILED timeout"); Qt.quit(); } }
+}
+''')
+            env = dict(os.environ, DOTS_SHELL_SOURCE=str(base), XDG_CONFIG_HOME=str(base / "config"),
+                       XDG_STATE_HOME=str(base / "state"), XDG_CACHE_HOME=str(base / "cache"))
+            launcher = env.get("DOTS_TEST_LAUNCHER")
+            command = [launcher] if launcher else [shutil.which("quickshell"), "-p", str(base)]
+            result = subprocess.run(command, env=env, capture_output=True, text=True, timeout=15)
+            logs = result.stdout + result.stderr
+            self.assertEqual(result.returncode, 0, logs)
+            self.assertIn("RESTORE_ERROR_OK", logs)
+            self.assertNotIn("RESTORE_ERROR_FAILED", logs)
+            self.assertNotIn("TypeError:", logs)
+            calls = [json.loads(line) for line in (base / "calls.jsonl").read_text().splitlines()]
+            self.assertEqual(calls.count("transaction"), 2, calls)
+            self.assertEqual(calls.count("revert"), 2, calls)

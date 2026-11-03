@@ -152,6 +152,48 @@ class DesktopSettingsTests(unittest.TestCase):
         self.assertFalse(desktop.SAVED.exists())
         self.assertFalse(desktop.PENDING.exists())
 
+    def test_restore_script_is_a_cli_safe_expression_and_executes_all_statements(self):
+        pending = self.start_preview()
+        desktop.rollback(pending)
+        source = [call[1] for call in self.calls if call[0] == "eval"][-1]
+        self.assertFalse(source.startswith("-"), "hyprctl treats leading comments as CLI flags")
+        if shutil.which("lua"):
+            script = ('local options, monitors = 0, 0; hl = {'
+                      'config = function(_) options = options + 1 end, '
+                      'monitor = function(_) monitors = monitors + 1 end}; '
+                      'local result = ' + source + '\nassert(options == 1 and monitors == 2)')
+            result = subprocess.run(["lua", "-e", script], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_failed_restore_stops_automatic_attempts_but_can_be_retried(self):
+        pending = self.start_preview()
+        pending["deadline"] = time.time() - 1
+        desktop.write_json(desktop.PENDING, pending)
+        with patch.object(desktop, "ipc", side_effect=ValueError("Persistent IPC failure")) as ipc:
+            desktop.watch(pending["token"])
+            first_attempt = ipc.call_count
+            for _ in range(5):
+                desktop.recover_expired()
+                desktop.watch(pending["token"])
+            self.assertEqual(ipc.call_count, first_attempt)
+        failed = desktop.transaction()
+        self.assertEqual(failed["phase"], "restore_failed")
+        self.assertEqual(failed["error"], "Persistent IPC failure")
+        self.assertIn("baselineMonitors", desktop.read_json(desktop.PENDING))
+        desktop.rollback(desktop.read_json(desktop.PENDING))
+        self.assertIsNone(desktop.transaction())
+
+    def test_manual_revert_is_idempotent_after_guard_already_restored(self):
+        from contextlib import redirect_stdout
+        import io
+        pending = self.start_preview()
+        pending["deadline"] = time.time() - 1
+        desktop.write_json(desktop.PENDING, pending)
+        output = io.StringIO()
+        with patch.object(sys, "argv", [str(SCRIPT), "revert", pending["token"]]), redirect_stdout(output):
+            desktop.main()
+        self.assertEqual(json.loads(output.getvalue()), {"ok": True, "transaction": None})
+
     def test_new_session_restores_an_unconfirmed_preview_immediately(self):
         pending = self.start_preview()
         pending["session"] = "previous-session"

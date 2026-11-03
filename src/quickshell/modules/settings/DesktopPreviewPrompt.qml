@@ -30,14 +30,16 @@ PanelWindow {
         spacing: 16
         StyledText {
             Layout.fillWidth: true
-            text: Translation.tr("Keep these settings?")
+            text: DesktopSettings.restorationFailed ? Translation.tr("Restoration needs attention") : Translation.tr("Keep these settings?")
             font.pixelSize: Appearance.font.pixelSize.larger
             font.weight: Font.DemiBold
             wrapMode: Text.WordWrap
         }
         StyledText {
             Layout.fillWidth: true
-            text: Translation.tr("Previous settings will be restored in %1 seconds unless you confirm.").arg(DesktopSettings.remaining)
+            text: DesktopSettings.restorationFailed
+                ? Translation.tr("Automatic restoration stopped after an error. Retry restoring the previous settings.")
+                : Translation.tr("Previous settings will be restored in %1 seconds unless you confirm.").arg(DesktopSettings.remaining)
             wrapMode: Text.WordWrap
         }
         RowLayout {
@@ -45,15 +47,15 @@ PanelWindow {
             RippleButtonWithIcon {
                 Layout.fillWidth: true
                 materialIcon: "undo"
-                mainText: Translation.tr("Revert")
-                enabled: !DesktopSettings.busy
+                mainText: DesktopSettings.restorationFailed ? Translation.tr("Retry restoration") : Translation.tr("Revert")
+                enabled: !DesktopSettings.resolvingTransaction
                 onClicked: DesktopSettings.revert()
             }
             RippleButtonWithIcon {
                 Layout.fillWidth: true
                 materialIcon: "check"
                 mainText: Translation.tr("Keep changes")
-                enabled: !DesktopSettings.busy && DesktopSettings.remaining > 0
+                enabled: !DesktopSettings.resolvingTransaction && !DesktopSettings.restorationFailed && DesktopSettings.remaining > 0
                 onClicked: DesktopSettings.keep()
             }
         }

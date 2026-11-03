@@ -17,6 +17,7 @@ Artificial Impulse: escritorio Hyprland/Wayland, fork de illogical-impulse, con 
 - La ejecución usa la sesión y preferencias del usuario; no es una prueba aislada. No ejecutar `./setup install` ni reemplazar configuraciones personales sin una solicitud explícita.
 - Consultar `.github/CONTRIBUTING.md` y `docs/development/deps-info.md` para desarrollo y dependencias.
 - El usuario es el tester principal; distinguir las verificaciones del agente de las pruebas y validaciones del usuario.
+- Pruebas temporales: restauración idempotente y estado de resolución explícito. No perder Revertir/Confirmar durante consultas ni reintentar en bucle al vencer el contador; ante un fallo conservar la copia previa y ofrecer reintento manual. Probar error, vencimiento y restauración externa.
 
 # Interfaz
 - Reutilizar `qs.modules.shared.widgets` y tokens de `Appearance` para colores Matugen, texto, tamaños, radios, sombras y animaciones; evitar valores visuales fijos salvo indicadores semánticos (p. ej., grabación roja).

@@ -15,7 +15,9 @@ SettingsSection {
         visible: !root.compact
         Layout.fillWidth: true
         wrapMode: Text.WordWrap
-        text: DesktopSettings.transaction
+        text: DesktopSettings.restorationFailed
+            ? Translation.tr("Automatic restoration stopped after an error. Retry restoring the previous settings.")
+            : DesktopSettings.transaction
             ? Translation.tr("Keep these settings? Automatic restore in %1 seconds.").arg(DesktopSettings.remaining)
             : Translation.tr("Edit a draft, then test it for 20 seconds. Nothing changes until you click Test changes. Close Settings without confirming and the previous configuration will be restored.")
     }
@@ -45,16 +47,16 @@ SettingsSection {
         }
         RippleButtonWithIcon {
             visible: !!DesktopSettings.transaction
-            enabled: !DesktopSettings.busy && DesktopSettings.remaining > 0
+            enabled: !DesktopSettings.resolvingTransaction && !DesktopSettings.restorationFailed && DesktopSettings.remaining > 0
             materialIcon: "check"
             mainText: Translation.tr("Keep changes")
             onClicked: DesktopSettings.keep()
         }
         RippleButtonWithIcon {
             visible: !!DesktopSettings.transaction
-            enabled: !DesktopSettings.busy
+            enabled: !DesktopSettings.resolvingTransaction
             materialIcon: "undo"
-            mainText: Translation.tr("Revert now")
+            mainText: DesktopSettings.restorationFailed ? Translation.tr("Retry restoration") : Translation.tr("Revert now")
             onClicked: DesktopSettings.revert()
         }
         RippleButtonWithIcon {

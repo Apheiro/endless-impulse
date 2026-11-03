@@ -19,11 +19,15 @@ Singleton {
     property bool loaded: false
     property bool refreshPending: false
     property bool resolvingTransaction: false
+    property var pendingResolution: null
+    property bool transactionPollingPaused: false
+    readonly property bool restorationFailed: transaction?.phase === "restore_failed" || transactionPollingPaused
     property double lastTransactionPoll: 0
     property bool failed: false
     property string message: ""
     property double now: Date.now()
-    readonly property bool busy: worker.running
+    property bool requestInFlight: false
+    readonly property bool busy: requestInFlight
     readonly property int remaining: transaction ? Math.max(0, Math.ceil(transaction.deadline - now / 1000)) : 0
     readonly property int changes: Object.keys(draft.options).length + Object.keys(draft.monitors).length + Object.keys(draft.devices).length
 
@@ -62,9 +66,19 @@ Singleton {
         return keys.map(key => Object.assign({}, fields.find(field => field.key === "input:" + key), {key: key}));
     }
     function request(action, token) {
-        if (busy) return;
+        if (busy) {
+            if (["confirm", "revert"].includes(action) && !resolvingTransaction) {
+                resolvingTransaction = true;
+                pendingResolution = {action, token};
+            }
+            return;
+        }
+        requestInFlight = true;
         worker.operation = action;
-        if (["confirm", "revert"].includes(action)) resolvingTransaction = true;
+        if (["confirm", "revert"].includes(action)) {
+            resolvingTransaction = true;
+            transactionPollingPaused = false;
+        }
         worker.received = false;
         worker.stdinEnabled = action === "preview";
         worker.payload = action === "preview" ? JSON.stringify(draft) : "";
@@ -98,15 +112,21 @@ Singleton {
                 try {
                     const result = JSON.parse(text);
                     worker.received = true;
-                    root.failed = !result.ok;
-                    if (!result.ok) {
-                        root.message = result.error;
-                        if (["confirm", "revert"].includes(worker.operation)) worker.reloadAfter = true;
-                        return;
-                    }
                     const hadTransaction = root.transaction !== null;
                     if (Object.prototype.hasOwnProperty.call(result, "transaction")) root.transaction = result.transaction;
                     root.now = Date.now();
+                    root.failed = !result.ok;
+                    if (!result.ok) {
+                        root.message = result.error;
+                        if (root.transaction) root.transactionPollingPaused = true;
+                        else if (hadTransaction) { root.discard(); worker.reloadAfter = true; }
+                        return;
+                    }
+                    if (root.transaction?.phase === "restore_failed") {
+                        root.failed = true;
+                        root.message = root.transaction.error || "Previous settings could not be restored. Retry manually.";
+                        root.transactionPollingPaused = true;
+                    }
                     if (worker.operation === "snapshot") {
                         root.monitors = result.monitors;
                         root.devices = result.devices;
@@ -133,15 +153,24 @@ Singleton {
                     }
                 } catch (error) {
                     root.failed = true;
+                    if (root.transaction) root.transactionPollingPaused = true;
                     root.message = "Could not read Hyprland settings: " + error;
                 }
             }
         }
         stderr: StdioCollector { onStreamFinished: { if (text.trim()) console.warn("[Desktop settings]", text); } }
         onExited: (exitCode, exitStatus) => {
+            root.requestInFlight = false;
+            if (root.pendingResolution) {
+                const pending = root.pendingResolution;
+                root.pendingResolution = null;
+                Qt.callLater(() => root.request(pending.action, pending.token));
+                return;
+            }
             root.resolvingTransaction = false;
             if (!received) {
                 root.failed = true;
+                if (root.transaction) root.transactionPollingPaused = true;
                 root.message = "Could not start the settings helper. Check Python and hyprctl.";
             }
             if (reloadAfter || root.refreshPending) {
@@ -155,10 +184,10 @@ Singleton {
     Timer {
         interval: 250
         repeat: true
-        running: root.transaction !== null
+        running: root.transaction !== null && !root.restorationFailed && !root.resolvingTransaction
         onTriggered: {
             root.now = Date.now();
-            if (!root.busy && (root.remaining === 0 || root.now - root.lastTransactionPoll >= 1000)) {
+            if (!root.busy && root.now - root.lastTransactionPoll >= 1000) {
                 root.lastTransactionPoll = root.now;
                 root.request("transaction");
             }

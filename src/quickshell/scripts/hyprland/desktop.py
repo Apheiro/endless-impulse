@@ -160,7 +160,8 @@ def transaction():
     pending = read_json(PENDING)
     if not pending:
         return None
-    return dict(token=pending["token"], deadline=pending["deadline"])
+    return dict(token=pending["token"], deadline=pending["deadline"],
+                phase=pending.get("phase", "active"), error=pending.get("error", ""))
 
 
 def integrated():
@@ -329,25 +330,36 @@ def check_reload():
 
 
 def rollback(pending):
-    previous = pending["previousLua"]
-    if previous is None:
-        LUA.unlink(missing_ok=True)
-    else:
-        atomic(LUA, previous)
-    ipc("reload")
-    # Restore actual monitor geometry even if it was originally set by another UI at runtime.
-    connected = {m["name"] for m in ipc("monitors", "all", as_json=True) if not m.get("disabled")}
-    baseline = empty()
-    baseline["monitors"] = {name: value for name, value in pending["baselineMonitors"].items() if name in connected}
-    baseline["options"] = pending["baselineOptions"]
-    if baseline["options"] or baseline["monitors"]:
-        ipc("eval", generate(baseline))
+    pending = dict(pending, phase="restoring", error="")
+    write_json(PENDING, pending)
+    try:
+        previous = pending["previousLua"]
+        if previous is None:
+            LUA.unlink(missing_ok=True)
+        else:
+            atomic(LUA, previous)
+        ipc("reload")
+        # Include disabled outputs too: a preview may have disabled an output
+        # that must be brought back. Keep unknown/disconnected names excluded.
+        connected = {m["name"] for m in ipc("monitors", "all", as_json=True)}
+        baseline = empty()
+        baseline["monitors"] = {name: value for name, value in pending["baselineMonitors"].items() if name in connected}
+        baseline["options"] = pending["baselineOptions"]
+        if baseline["options"] or baseline["monitors"]:
+            # hyprctl parses a leading '--' comment as CLI flags. An expression
+            # wrapper also lets eval execute every statement, not just the first.
+            ipc("eval", "(function()\n" + generate(baseline) + "end)()")
+    except (ValueError, OSError, subprocess.SubprocessError) as error:
+        write_json(PENDING, dict(pending, phase="restore_failed", error=str(error)))
+        raise
     PENDING.unlink(missing_ok=True)
     (STATE / "preview-session").unlink(missing_ok=True)
 
 
 def recover_expired():
     pending = read_json(PENDING)
+    if pending and pending.get("phase") == "restore_failed":
+        return  # Keep the baseline for an explicit retry, never an automatic loop.
     if pending and (time.time() >= pending["deadline"] or pending.get("session") != os.environ.get("HYPRLAND_INSTANCE_SIGNATURE", "")):
         rollback(pending)
     elif not pending:
@@ -389,6 +401,8 @@ def confirm(token):
     pending = read_json(PENDING)
     if not pending or pending["token"] != token:
         raise ValueError("This preview is no longer active")
+    if pending.get("phase") == "restore_failed":
+        raise ValueError("Restoration failed; retry restoring the previous settings before testing again")
     if time.time() >= pending["deadline"]:
         rollback(pending)
         raise ValueError("Preview expired; previous settings restored")
@@ -409,12 +423,17 @@ def watch(token):
                 pending = read_json(PENDING)
                 if not pending or pending["token"] != token:
                     return
+                if pending.get("phase") == "restore_failed":
+                    return
                 remaining = pending["deadline"] - time.time()
                 if remaining <= 0:
                     rollback(pending)
                     return
             time.sleep(min(remaining, 1))
         except (ValueError, OSError, subprocess.SubprocessError) as error:
+            if read_json(PENDING, {}).get("phase") == "restore_failed":
+                print("Restoration failed; waiting for an explicit retry:", error, flush=True)
+                return
             failures += 1
             print("Rollback retry:", error, flush=True)
             if failures >= 6:
@@ -485,7 +504,7 @@ def main():
             result = confirm(arguments.token)
         elif arguments.action in ("revert", "recover"):
             pending = read_json(PENDING)
-            if arguments.action == "revert" and (not pending or pending["token"] != arguments.token):
+            if arguments.action == "revert" and pending and pending["token"] != arguments.token:
                 raise ValueError("This preview is no longer active")
             if pending:
                 rollback(pending)
@@ -501,5 +520,9 @@ if __name__ == "__main__":
     try:
         main()
     except (ValueError, OSError, subprocess.SubprocessError) as error:
-        print(json.dumps(dict(ok=False, error=str(error)), ensure_ascii=False))
+        try:
+            status = transaction()
+        except (ValueError, OSError, KeyError):
+            status = None
+        print(json.dumps(dict(ok=False, error=str(error), transaction=status), ensure_ascii=False))
         sys.exit(1)
