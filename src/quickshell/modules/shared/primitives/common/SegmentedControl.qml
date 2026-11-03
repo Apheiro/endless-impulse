@@ -44,10 +44,34 @@ Rectangle {
                 Accessible.name: modelData.name
                 Accessible.checked: toggled
                 onClicked: root.activate(index)
-                contentItem: RowLayout {
-                    spacing: 6
-                    MaterialSymbol { visible: root.width >= 380 && !!segment.modelData.icon; text: segment.modelData.icon || ""; iconSize: 19; color: segment.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer0 }
-                    StyledText { Layout.fillWidth: true; text: segment.modelData.name; elide: Text.ElideRight; horizontalAlignment: Text.AlignHCenter; font.pixelSize: Appearance.font.pixelSize.small; font.weight: segment.toggled ? Font.DemiBold : Font.Normal; color: segment.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer0 }
+                contentItem: Item {
+                    implicitWidth: contentGroup.implicitWidth
+                    implicitHeight: contentGroup.implicitHeight
+
+                    RowLayout {
+                        id: contentGroup
+                        anchors.centerIn: parent
+                        width: Math.max(0, Math.min(implicitWidth, parent.width))
+                        spacing: 6
+
+                        MaterialSymbol {
+                            Layout.alignment: Qt.AlignVCenter
+                            visible: root.width >= 380 && segment.availableWidth >= 48 && !!segment.modelData.icon
+                            text: segment.modelData.icon || ""
+                            iconSize: 19
+                            color: segment.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer0
+                        }
+                        StyledText {
+                            Layout.fillWidth: true
+                            Layout.minimumWidth: 0
+                            Layout.alignment: Qt.AlignVCenter
+                            text: segment.modelData.name
+                            elide: Text.ElideRight
+                            font.pixelSize: Appearance.font.pixelSize.small
+                            font.weight: segment.toggled ? Font.DemiBold : Font.Normal
+                            color: segment.toggled ? Appearance.colors.colOnSecondaryContainer : Appearance.colors.colOnLayer0
+                        }
+                    }
                 }
             }
         }

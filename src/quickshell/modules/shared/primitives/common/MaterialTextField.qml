@@ -4,13 +4,13 @@ import QtQuick.Controls.Material
 import QtQuick.Controls
 
 /**
- * Material 3 styled TextField (filled style)
+ * Theme-controlled outlined TextField, independent of the Controls backend.
  * https://m3.material.io/components/text-fields/overview
  * Note: We don't use NativeRendering because it makes the small placeholder text look weird
  */
 TextField {
     id: root
-    Material.theme: Material.System
+    Material.theme: Appearance.m3colors.darkmode ? Material.Dark : Material.Light
     Material.accent: Appearance.m3colors.m3primary
     Material.primary: Appearance.m3colors.m3primary
     Material.background: Appearance.m3colors.m3surface
@@ -21,11 +21,21 @@ TextField {
     rightPadding: Appearance.sizes.textInputHorizontalPadding
     topPadding: Appearance.sizes.textInputVerticalPadding + topInset
     bottomPadding: Appearance.sizes.textInputVerticalPadding
-    Binding {
-        target: root.background
-        property: "implicitHeight"
-        value: Appearance.sizes.textInputMinimumHeight
-        when: root.background !== null
+    // The shell uses Controls Basic. Material attached properties alone do not
+    // theme its default frame, so own the surface and outline explicitly.
+    color: Appearance.colors.colOnLayer1
+    background: Rectangle {
+        implicitHeight: Appearance.sizes.textInputMinimumHeight
+        radius: Appearance.rounding.unsharpenmore
+        color: Appearance.colors.colLayer1
+        border.width: root.activeFocus ? 2 : 1
+        border.color: !root.enabled ? Appearance.colors.colLayer0Border
+            : root.activeFocus ? Appearance.colors.colPrimary
+            : root.hovered ? Appearance.colors.colOutline : Appearance.colors.colLayer0Border
+        opacity: root.enabled ? 1 : .4
+        Behavior on border.color {
+            animation: Appearance.animation.elementMoveFast.colorAnimation.createObject(this)
+        }
     }
 
     selectedTextColor: Appearance.m3colors.m3onSecondaryContainer
