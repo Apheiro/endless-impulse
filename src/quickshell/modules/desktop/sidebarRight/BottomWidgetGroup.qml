@@ -14,7 +14,7 @@ Rectangle {
     radius: Appearance.rounding.normal
     color: Appearance.colors.colLayer1
     clip: true
-    implicitHeight: collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : 350
+    implicitHeight: collapsed ? collapsedBottomWidgetGroupRow.implicitHeight : bottomWidgetGroupColumn.implicitHeight + 20
     property int selectedTab: Persistent.states.sidebar.bottomGroup.tab
     property int previousIndex: -1
     property bool collapsed: Persistent.states.sidebar.bottomGroup.collapsed
@@ -50,7 +50,7 @@ Rectangle {
     function setCollapsed(state) {
         Persistent.states.sidebar.bottomGroup.collapsed = state;
         if (collapsed) {
-            bottomWidgetGroupRow.opacity = 0;
+            bottomWidgetGroupColumn.opacity = 0;
         } else {
             collapsedBottomWidgetGroupRow.opacity = 0;
         }
@@ -65,7 +65,7 @@ Rectangle {
             if (collapsed)
                 collapsedBottomWidgetGroupRow.opacity = 1;
             else
-                bottomWidgetGroupRow.opacity = 1;
+                bottomWidgetGroupColumn.opacity = 1;
         }
     }
 
@@ -122,15 +122,15 @@ Rectangle {
         }
     }
 
-    // The thing when expanded
-    RowLayout {
-        id: bottomWidgetGroupRow
+    // Full-width content followed by compact navigation.
+    ColumnLayout {
+        id: bottomWidgetGroupColumn
 
         opacity: collapsed ? 0 : 1
         visible: opacity > 0
         Behavior on opacity {
             NumberAnimation {
-                id: bottomWidgetGroupRowFade
+                id: bottomWidgetGroupColumnFade
                 duration: Appearance.animation.elementMove.duration / 2
                 easing.type: Appearance.animation.elementMove.type
                 easing.bezierCurve: Appearance.animation.elementMove.bezierCurve
@@ -138,62 +138,14 @@ Rectangle {
         }
 
         anchors.fill: parent
-        // implicitHeight: tabStack.implicitHeight
-        spacing: 20
-
-        // Navigation rail
-        Item {
-            Layout.fillHeight: true
-            Layout.fillWidth: false
-            Layout.leftMargin: 10
-            Layout.topMargin: 10
-            implicitWidth: tabBar.implicitWidth
-            // Navigation rail buttons
-            NavigationRailTabArray {
-                id: tabBar
-                anchors.verticalCenter: parent.verticalCenter
-                anchors.left: parent.left
-                anchors.leftMargin: 5
-                currentIndex: root.selectedTab
-                expanded: false
-                Repeater {
-                    model: root.tabs
-                    NavigationRailButton {
-                        required property int index
-                        required property var modelData
-                        showToggledHighlight: false
-                        toggled: root.selectedTab == index
-                        buttonText: modelData.name
-                        buttonIcon: modelData.icon
-                        onPressed: {
-                            root.selectedTab = index;
-                            Persistent.states.sidebar.bottomGroup.tab = index;
-                        }
-                    }
-                }
-            }
-            // Collapse button
-            CalendarHeaderButton {
-                anchors.left: parent.left
-                anchors.top: parent.top
-                forceCircle: true
-                downAction: () => {
-                    root.setCollapsed(true);
-                }
-                contentItem: MaterialSymbol {
-                    text: "keyboard_arrow_down"
-                    iconSize: Appearance.font.pixelSize.larger
-                    horizontalAlignment: Text.AlignHCenter
-                    color: Appearance.colors.colOnLayer1
-                }
-            }
-        }
+        anchors.margins: 10
+        spacing: 10
 
         // Content area
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            // implicitHeight: tabStack.implicitHeight
+            Layout.preferredHeight: 350
 
             Loader {
                 id: tabStack
@@ -201,15 +153,17 @@ Rectangle {
                 anchors.bottomMargin: -anchors.topMargin
 
                 Component.onCompleted: {
+                    root.previousIndex = root.selectedTab;
                     tabStack.source = root.tabs[root.selectedTab].widget;
                 }
 
                 Connections {
                     target: root
                     function onSelectedTabChanged() {
-                        if (root.currentTab > root.previousIndex)
+                        Persistent.states.sidebar.bottomGroup.tab = root.selectedTab;
+                        if (root.selectedTab > root.previousIndex)
                             tabSwitchBehavior.animation.down = true;
-                        else if (root.currentTab < root.previousIndex)
+                        else if (root.selectedTab < root.previousIndex)
                             tabSwitchBehavior.animation.down = false;
                         tabStack.source = root.tabs[root.selectedTab].widget;
                     }
@@ -221,6 +175,30 @@ Rectangle {
                         id: upAnim
                         down: true
                     }
+                }
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 10
+
+            SegmentedControl {
+                Layout.fillWidth: true
+                Layout.minimumWidth: 0
+                model: root.tabs
+                currentIndex: root.selectedTab
+                onActivated: index => root.selectedTab = index
+            }
+
+            CalendarHeaderButton {
+                forceCircle: true
+                downAction: () => root.setCollapsed(true)
+                contentItem: MaterialSymbol {
+                    text: "keyboard_arrow_down"
+                    iconSize: Appearance.font.pixelSize.larger
+                    horizontalAlignment: Text.AlignHCenter
+                    color: Appearance.colors.colOnLayer1
                 }
             }
         }
