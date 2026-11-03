@@ -13,7 +13,7 @@ GROUPS = [
     ('audio', 'Audio & Bluetooth', 'volume_up', 'Audio services, application volumes, media controls and BlueZ devices.',
      'pipewire pipewire-audio pipewire-pulse wireplumber rtkit easyeffects libpipewire playerctl cava bluez bluez-utils'),
     ('network', 'Network & location', 'lan', 'NetworkManager connections, IP/DNS settings and hotspot sharing.',
-     'networkmanager libnm dnsmasq wpa_supplicant'),
+     'networkmanager libnm dnsmasq wpa_supplicant tailscale'),
     ('capture', 'Recording, capture & clipboard', 'videocam', 'GPU recording, screenshots, region selection, image tools and clipboard history.',
      'gpu-screen-recorder hyprshot hyprpicker slurp swappy ffmpeg imagemagick wl-clipboard cliphist tesseract tesseract-data-eng'),
     ('appearance', 'Themes, fonts & application integration', 'palette', 'Wallpaper-derived colors, toolkit themes, fonts, icons and desktop portals.',
@@ -23,7 +23,7 @@ GROUPS = [
     ('build', 'Build & command-line support', 'terminal', 'Build tools and command-line helpers included by the installer.',
      'bc clang cmake cpptrace coreutils curl eza go-yq jemalloc jq libsoup3 procps-ng ripgrep rsync starship wget'),
 ]
-HOST = set('wpa_supplicant dbus polkit rtkit power-profiles-daemon easyeffects pipewire-audio bluez-utils hyprland wayland bluez networkmanager pipewire pipewire-pulse wireplumber upower geoclue gnome-keyring polkit-kde-agent xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland xdg-desktop-portal-kde'.split())
+HOST = set('tailscale wpa_supplicant dbus polkit rtkit power-profiles-daemon easyeffects pipewire-audio bluez-utils hyprland wayland bluez networkmanager pipewire pipewire-pulse wireplumber upower geoclue gnome-keyring polkit-kde-agent xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland xdg-desktop-portal-kde'.split())
 FEATURE = set('dnsmasq hyprlock dolphin systemsettings plasma-workspace kdialog kitty fish fuzzel translate-shell songrec wlogout cava'.split())
 BUILD = set('clang cmake cpptrace'.split())
 DETAILS = {
@@ -42,6 +42,7 @@ DETAILS = {
     'pipewire-pulse': 'PulseAudio-compatible interface used by pactl and applications.',
     'wireplumber': 'Host media policy, device profiles and audio routing.',
     'networkmanager': 'Host network service for Wi-Fi, Ethernet, profiles, VPN and IP/DNS settings.',
+    'tailscale': 'Tailscale CLI and host tailscaled daemon for native tailnet management.',
     'libnm': 'Native NetworkManager client library and introspection used by the shell.',
     'dnsmasq': 'Feature-specific support for connection sharing and Wi-Fi hotspots.',
     'gpu-screen-recorder': 'GPU video recording. The runtime prefers the host binary and can use its Nix fallback.',

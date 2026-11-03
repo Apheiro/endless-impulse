@@ -56,6 +56,7 @@ if [[ -d /run/systemd/system ]]; then
       fi
     fi
     v sudo systemctl enable bluetooth --now
+    v sudo systemctl enable tailscaled --now
   else
     echo -e "${STY_RED}Systemd detected, but the systemctl command is unavailable.${STY_RST}"
     pause

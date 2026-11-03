@@ -20,12 +20,14 @@ GroupButton {
 
     // Signals
     signal openMenu()
+    property bool clickOpensMenu: true
 
     // Declared in specific toggles
     property QuickToggleModel toggleModel
     property string name: toggleModel?.name ?? ""
     property string statusText: (toggleModel?.hasStatusText) ? (toggleModel?.statusText || (toggled ? Translation.tr("On") : Translation.tr("Off"))) : ""
     property string tooltipText: toggleModel?.tooltipText ?? ""
+    property string iconSource: ""
     property string buttonIcon: toggleModel?.icon ?? "close"
     property bool available: toggleModel?.available ?? true
     toggled: toggleModel?.toggled ?? false
@@ -69,7 +71,7 @@ GroupButton {
     property color colIcon: expandedSize ? ((root.toggled) ? Appearance.colors.colOnPrimary : Appearance.colors.colOnLayer3) : colText
 
     onClicked: {
-        if (root.expandedSize && root.altAction) root.altAction();
+        if (root.expandedSize && root.altAction && root.clickOpensMenu) root.altAction();
         else root.mainAction();
     }
 
@@ -117,11 +119,25 @@ GroupButton {
                 }
 
                 MaterialSymbol {
+                    visible: !root.iconSource
                     anchors.centerIn: parent
                     fill: root.toggled ? 1 : 0
                     iconSize: root.expandedSize ? 22 : 24
                     color: root.colIcon
                     text: root.buttonIcon
+                }
+
+                Loader {
+                    anchors.centerIn: parent
+                    active: !!root.iconSource
+                    width: root.expandedSize ? 22 : 24
+                    height: width
+                    sourceComponent: CustomIcon {
+                        anchors.fill: parent
+                        source: root.iconSource
+                        colorize: true
+                        color: root.colIcon
+                    }
                 }
 
                 // State layer

@@ -24,7 +24,10 @@ import qs.modules.desktop.overlay
 import qs.modules.desktop.verticalBar
 import qs.modules.desktop.wallpaperSelector
 
+import qs.modules.desktop.tailscale
+
 Scope {
+    PanelLoader { component: TailscalePanel {} }
     PanelLoader { extraCondition: !Config.options.bar.vertical; component: Bar {} }
     PanelLoader { component: Background {} }
     PanelLoader { component: Cheatsheet {} }

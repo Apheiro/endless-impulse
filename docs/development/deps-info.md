@@ -54,3 +54,8 @@ fallback with:
 ```bash
 python3 src/quickshell/scripts/system/dependencies.py --root . --snapshot > src/quickshell/defaults/dependencies.json
 ```
+
+Tailscale uses the host `tailscaled` daemon and a bundled/host `tailscale` CLI.
+The native panel discovers CLI options at runtime and requires operator rights
+or an explicit Polkit operation for privileged changes. See
+[Tailscale integration](../features/tailscale.md).

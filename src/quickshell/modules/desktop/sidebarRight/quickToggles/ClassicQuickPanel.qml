@@ -35,6 +35,7 @@ AbstractQuickPanel {
         GameMode {}
         IdleInhibitor {}
         EasyEffectsToggle {}
+        Tailscale {}
         CloudflareWarp {}
     }
 }

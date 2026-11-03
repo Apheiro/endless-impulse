@@ -20,6 +20,17 @@ DelegateChooser {
     signal openWifiDialog()
 
     role: "type"
+    DelegateChoice { roleValue: "tailscale"; AndroidTailscaleToggle {
+        required property int index
+        required property var modelData
+        buttonData: modelData
+        editMode: root.editMode
+        expandedSize: modelData.size > 1
+        baseCellWidth: root.baseCellWidth
+        baseCellHeight: root.baseCellHeight
+        cellSpacing: root.spacing
+        cellSize: modelData.size
+    } }
 
     DelegateChoice { roleValue: "antiFlashbang"; AndroidAntiFlashbangToggle {
         required property int index

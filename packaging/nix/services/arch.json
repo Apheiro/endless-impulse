@@ -98,6 +98,16 @@
         "hypridle"
       ],
       "activation": "Started by the project's Hyprland session; locking uses the host PAM stack."
+    },
+    {
+      "name": "Tailscale",
+      "packages": [
+        "tailscale"
+      ],
+      "systemUnits": [
+        "tailscaled.service"
+      ],
+      "activation": "Starts the daemon only; login, connection and operator permissions remain user controlled."
     }
   ]
 }

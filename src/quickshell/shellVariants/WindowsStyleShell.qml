@@ -23,7 +23,10 @@ import qs.modules.desktop.overlay
 import qs.modules.desktop.screenTranslator
 import qs.modules.desktop.wallpaperSelector
 
+import qs.modules.desktop.tailscale
+
 Scope {
+    PanelLoader { component: TailscalePanel {} }
     PanelLoader { component: WaffleActionCenter {} }
     PanelLoader { component: WaffleBar {} }
     PanelLoader { component: WaffleBackground {} }

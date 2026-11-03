@@ -552,6 +552,7 @@ Singleton {
                         property list<var> toggles: [
                             { "size": 2, "type": "network" },
                             { "size": 2, "type": "bluetooth"  },
+                            { "size": 1, "type": "tailscale" },
                             { "size": 1, "type": "idleInhibitor" },
                             { "size": 1, "type": "mic" },
                             { "size": 2, "type": "audio" },
@@ -643,7 +644,7 @@ Singleton {
                     property bool leftAlignApps: false
                 }
                 property JsonObject actionCenter: JsonObject {
-                    property list<string> toggles: [ "network", "bluetooth", "easyEffects", "powerProfile", "idleInhibitor", "nightLight", "darkMode", "antiFlashbang", "cloudflareWarp", "mic", "musicRecognition", "notifications", "onScreenKeyboard", "gameMode", "screenSnip", "colorPicker" ]
+                    property list<string> toggles: [ "network", "bluetooth", "tailscale", "easyEffects", "powerProfile", "idleInhibitor", "nightLight", "darkMode", "antiFlashbang", "cloudflareWarp", "mic", "musicRecognition", "notifications", "onScreenKeyboard", "gameMode", "screenSnip", "colorPicker" ]
                 }
                 property JsonObject calendar: JsonObject {
                     property bool force2CharDayOfWeek: true
