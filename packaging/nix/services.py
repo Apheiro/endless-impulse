@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install and activate Artificial Impulse's host services, without graphics drivers."""
+"""Install and activate Endless Impulse's host services, without graphics drivers."""
 import argparse
 import json
 import os
@@ -99,11 +99,11 @@ def apply(status, groups, config_home):
     uinput_needed = any(unit['name'] == 'ydotool.service' and unit.get('ActiveState') != 'active' for unit in status['units'])
     if uinput_needed and not Path('/dev/uinput').exists():
         run(['modprobe', '--dry-run', 'uinput'])
-    module_file = Path('/etc/modules-load.d/artificial-impulse-uinput.conf')
+    module_file = Path('/etc/modules-load.d/endless-Impulse-uinput.conf')
     if uinput_needed and module_file.exists() and module_file.read_text() != (HERE / 'services/uinput.conf').read_text():
         raise RuntimeError(str(module_file) + ' already contains a different configuration; it will not be overwritten.')
-    permission_rule = Path('/etc/udev/rules.d/70-artificial-impulse-uinput.rules')
-    expected_rule = (HERE / 'services/70-artificial-impulse-uinput.rules').read_text()
+    permission_rule = Path('/etc/udev/rules.d/70-endless-Impulse-uinput.rules')
+    expected_rule = (HERE / 'services/70-endless-Impulse-uinput.rules').read_text()
     if uinput_needed and permission_rule.exists() and permission_rule.read_text() != expected_rule:
         raise RuntimeError(str(permission_rule) + ' already contains a different rule; it will not be overwritten.')
     if status['missingPackages']:
@@ -112,7 +112,7 @@ def apply(status, groups, config_home):
         subprocess.run(['sudo', 'install', '-m', '0644', str(HERE / 'services/uinput.conf'), str(module_file)], check=True)
         subprocess.run(['sudo', 'modprobe', 'uinput'], check=True)
     if uinput_needed and not os.access('/dev/uinput', os.W_OK):
-        subprocess.run(['sudo', 'install', '-m', '0644', str(HERE / 'services/70-artificial-impulse-uinput.rules'), str(permission_rule)], check=True)
+        subprocess.run(['sudo', 'install', '-m', '0644', str(HERE / 'services/70-endless-Impulse-uinput.rules'), str(permission_rule)], check=True)
         subprocess.run(['sudo', 'udevadm', 'control', '--reload-rules'], check=True)
         subprocess.run(['sudo', 'udevadm', 'trigger', '--action=change', '/sys/class/misc/uinput'], check=True)
     # UPower/Polkit/portals/GeoClue/secrets use D-Bus activation, not enable --now.
@@ -158,7 +158,7 @@ def main():
     if args.json:
         print(json.dumps(status, indent=2))
         return
-    print('Artificial Impulse — host services (graphics drivers excluded)')
+    print('Endless Impulse — host services (graphics drivers excluded)')
     print('Missing packages: ' + (', '.join(status['missingPackages']) or 'none'))
     for unit in status['units']:
         print(f'  {unit["scope"]}: {unit["name"]} — {unit.get("ActiveState", "unknown")} / {unit.get("UnitFileState", "not installed")}')
