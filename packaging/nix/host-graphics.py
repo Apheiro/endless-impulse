@@ -76,6 +76,11 @@ def main():
     if len(sys.argv) < 2:
         raise RuntimeError("Expected the GUI command to launch.")
     environment = icon_environment(dict(os.environ))
+    # PAM modules and privileged password helpers belong to the host OS. Loading
+    # Nix PAM on Arch uses the wrong module/helper paths. Keep host PAM in a
+    # separate host-Python process instead of importing host libc into Qt.
+    if not Path("/etc/NIXOS").exists():
+        environment["DOTS_HOST_PAM_PYTHON"] = "/usr/bin/python3"
     source = environment.get("DOTS_SHELL_SOURCE")
     branding = Path(source) / "scripts/shell/branding.py" if source else None
     if branding and branding.is_file():
