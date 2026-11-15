@@ -12,11 +12,11 @@ import sys
 import tempfile
 import time
 
-OVERLAY = "ArtificialImpulse"
+OVERLAY = "EndlessImpulse"
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
 DATA = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share"))
 STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state"))
-STORE = CONFIG / "artificial-impulse/icons.json"
+STORE = CONFIG / "endless-Impulse/icons.json"
 ROOT = DATA / "icons" / OVERLAY
 EXTENSIONS = {".svg", ".png", ".xpm"}
 
@@ -229,7 +229,7 @@ def edit_property(text, key, separator):
 
 def color_paths():
     import tomllib
-    paths = [("Shell preferences", CONFIG / "artificial-impulse/config.json"),
+    paths = [("Shell preferences", CONFIG / "endless-Impulse/config.json"),
              ("Matugen", CONFIG / "matugen/config.toml"),
              ("Qt / KDE", CONFIG / "kdeglobals"),
              ("KDE color scheme (dark)", DATA / "color-schemes/MaterialYouDark.colors"),
@@ -268,7 +268,7 @@ def snapshot():
     paths += [{"name": name, "path": str(path), "exists": True} for name, path, _, _ in legacy_targets()]
     if (CONFIG / "dconf").exists():
         paths.append({"name": "GNOME / GSettings", "path": str(CONFIG / "dconf"), "exists": True})
-    paths += [{"name": "Artificial Impulse", "path": str(STORE), "exists": STORE.exists()}, {"name": "Icon overlay", "path": str(ROOT / "index.theme"), "exists": (ROOT / "index.theme").exists()}]
+    paths += [{"name": "Endless Impulse", "path": str(STORE), "exists": STORE.exists()}, {"name": "Icon overlay", "path": str(ROOT / "index.theme"), "exists": (ROOT / "index.theme").exists()}]
     paths += [{"name": "Application · " + Path(path).stem, "path": path, "exists": Path(path).exists()} for path in store.get("desktopFiles", {})]
     return {"ok": True, "theme": base, "fallbacks": fallbacks, "themes": available, "backupThemes": themes(True), "icons": mapping, "applications": app_list, "aliases": aliases, "overrides": store.get("overrides", {}), "paths": paths, "colorPaths": color_paths()}
 
@@ -311,7 +311,7 @@ def apply(payload):
             updates[destination] = path.read_bytes()
             overrides[app_id] = {"path": str(destination), "original": original, "source": source}
     inheritance = ",".join(dict.fromkeys([theme, *fallbacks, "hicolor"]))
-    updates[ROOT / "index.theme"] = f"[Icon Theme]\nName=Artificial Impulse\nComment=Personal icon overrides\nInherits={inheritance}\nDirectories=scalable/apps\n\n[scalable/apps]\nSize=48\nType=Scalable\nMinSize=8\nMaxSize=512\nContext=Applications\n"
+    updates[ROOT / "index.theme"] = f"[Icon Theme]\nName=Endless Impulse\nComment=Personal icon overrides\nInherits={inheritance}\nDirectories=scalable/apps\n\n[scalable/apps]\nSize=48\nType=Scalable\nMinSize=8\nMaxSize=512\nContext=Applications\n"
     desktop_overrides = {}
     for app in applications():
         if app["id"] in overrides:
@@ -328,7 +328,7 @@ def apply(payload):
         updates[path] = edit_property(path.read_text(), key, separator)
     next_store = {"theme": theme, "fallbacks": fallbacks, "overrides": overrides, "desktopFiles": desktop_overrides}
     updates[STORE] = json.dumps(next_store, indent=2) + "\n"
-    backup = STATE / "artificial-impulse/icon-backups" / (time.strftime("%Y%m%d-%H%M%S") + "-" + str(time.time_ns()))
+    backup = STATE / "endless-Impulse/icon-backups" / (time.strftime("%Y%m%d-%H%M%S") + "-" + str(time.time_ns()))
     backup.mkdir(parents=True)
     previous = {path: path.read_bytes() if path.exists() else None for path in {*updates, *restores, *old_files}}
     manifest = {}
@@ -397,8 +397,8 @@ def main():
             mapping = icon_map(theme, fallbacks)
             result = {"ok": True, "previewTheme": theme, "previewKey": json.dumps([theme, fallbacks], separators=(",", ":"), ensure_ascii=False), "previewIcons": {name: mapping.get(name, "") for name in ("folder", "applications-system", "network-wireless", "user-trash")}}
         elif action == "apply":
-            STATE.joinpath("artificial-impulse").mkdir(parents=True, exist_ok=True)
-            with (STATE / "artificial-impulse/icons.lock").open("w") as lock:
+            STATE.joinpath("endless-Impulse").mkdir(parents=True, exist_ok=True)
+            with (STATE / "endless-Impulse/icons.lock").open("w") as lock:
                 fcntl.flock(lock, fcntl.LOCK_EX)
                 result = apply(json.load(sys.stdin))
         else:

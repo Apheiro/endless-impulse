@@ -1,6 +1,6 @@
-# Artificial Impulse
+# Endless Impulse
 
-Artificial Impulse is a customizable Hyprland/Wayland shell and a fork of
+Endless Impulse is a customizable Hyprland/Wayland shell and a fork of
 [illogical-impulse](https://github.com/end-4/dots-hyprland).
 It uses ordinary upstream packages and an independent, locked Nix runtime.
 
@@ -55,13 +55,13 @@ is explicitly requested.
 
 ## Preferences
 
-Settings are stored in `$XDG_CONFIG_HOME/artificial-impulse` and shortcut state
-in `$XDG_STATE_HOME/artificial-impulse`. Launchers migrate the old directories
+Settings are stored in `$XDG_CONFIG_HOME/endless-Impulse` and shortcut state
+in `$XDG_STATE_HOME/endless-Impulse`. Launchers migrate the old directories
 without overwriting existing destinations and retain legacy path aliases.
-Existing keyring entries remain readable; new entries use `artificial-impulse`.
+Existing keyring entries remain readable; new entries use `endless-Impulse`.
 The saved shell-family IDs `ii` and `waffle` and the legacy Python environment
 variable remain compatibility identifiers. The installed configuration is named
-`artificial-impulse`; development source lives in `src/quickshell/`.
+`endless-Impulse`; development source lives in `src/quickshell/`.
 External package names and license notices are unchanged.
 
 ## Dock minimization

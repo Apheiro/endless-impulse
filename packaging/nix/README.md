@@ -1,4 +1,4 @@
-# Artificial Impulse — Locked desktop runtime
+# Endless Impulse — Locked desktop runtime
 
 `flake.lock` fixes the Nixpkgs snapshot and shape library. Nixpkgs supplies
 ordinary upstream Quickshell and a matching Qt; no illogical-impulse packages

@@ -46,10 +46,10 @@ _Might not be necessary depending on what you change, but this is recommended._
 _Most stuff in the shell will work but not everything._
 
 - Install Hyprland and the development version of Quickshell (`yay -S hyprland quickshell-git`).
-- Copy `src/quickshell/` into `~/.config/quickshell/artificial-impulse/` for a traditional deployment, or use `./dev` with Nix.
+- Copy `src/quickshell/` into `~/.config/quickshell/endless-Impulse/` for a traditional deployment, or use `./dev` with Nix.
 
 ## Extra setup for Quickshell
-- Quickshell-specific LSP setup: Run `touch ~/.config/quickshell/artificial-impulse/.qmlls.ini` for proper LSP support.
+- Quickshell-specific LSP setup: Run `touch ~/.config/quickshell/endless-Impulse/.qmlls.ini` for proper LSP support.
 - Hint for VSCode: Get the official "Qt Qml" extension, go to its settings and change custom exe path to `/usr/bin/qmlls6`.
 
 ## Python
@@ -61,5 +61,5 @@ If your changes involves using python package or script, please use the virtual 
 - For the shell:
   - Open `src/quickshell/` in your checkout in your code editor.
   - From the checkout, run `./dev restart` to restart this shell with logs in the terminal.
-  - For a traditional installed configuration, use `qs -c artificial-impulse` after closing that instance. Do not run a second shell alongside it.
+  - For a traditional installed configuration, use `qs -c endless-Impulse` after closing that instance. Do not run a second shell alongside it.
   - Make edits in the opened folder. Changes are reloaded live.

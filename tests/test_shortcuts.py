@@ -20,8 +20,8 @@ class ShortcutTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.base = Path(self.temporary.name)
-        shortcuts.CONFIG = self.base / "config/artificial-impulse"
-        shortcuts.STATE = self.base / "state/artificial-impulse"
+        shortcuts.CONFIG = self.base / "config/endless-Impulse"
+        shortcuts.STATE = self.base / "state/endless-Impulse"
         shortcuts.STORE = shortcuts.CONFIG / "shortcuts.lua"
         shortcuts.CONFIG.mkdir(parents=True)
         self.entries = [

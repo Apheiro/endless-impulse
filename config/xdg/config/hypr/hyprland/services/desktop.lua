@@ -1,10 +1,10 @@
--- Load only Artificial Impulse's own overrides, after user configuration.
+-- Load only Endless Impulse's own overrides, after user configuration.
 local M = {}
 function M.load()
     local home = os.getenv("HOME")
     local config = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
-    local state = (os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")) .. "/artificial-impulse/desktop"
-    local path = config .. "/artificial-impulse/hyprland.lua"
+    local state = (os.getenv("XDG_STATE_HOME") or (home .. "/.local/state")) .. "/endless-Impulse/desktop"
+    local path = config .. "/endless-Impulse/hyprland.lua"
     local preview = io.open(state .. "/preview-session", "r")
     if preview then
         local session = preview:read("*l")

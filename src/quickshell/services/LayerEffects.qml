@@ -18,11 +18,11 @@ Singleton {
     // XEmbed's mapped 32px capture containers must remain alive for tray icons.
     // Hyprland needs an explicit rule instead of their X11 opacity hint.
     function rules(value) {
-        return 'hl.layer_rule({name="artificial-impulse-xray",match={namespace="^quickshell:.*$"},xray=' + (value ? 'true' : 'false') + '});'
-            + 'hl.layer_rule({name="artificial-impulse-tooltip-xray",match={namespace="^quickshell:popup$"},xray=false});'
-            + 'hl.layer_rule({name="artificial-impulse-sidebar-animation",match={namespace="^quickshell:sidebar(Right|Left)$"},no_anim=true});'
-            + 'hl.layer_rule({name="artificial-impulse-bar-animation",match={namespace="^quickshell:bar$"},no_anim=true});'
-            + 'hl.window_rule({name="artificial-impulse-xembed-proxy",match={class="^xembedsniproxy$"},opacity="0 override",no_blur=true,no_shadow=true,border_size=0,no_focus=true,no_initial_focus=true})';
+        return 'hl.layer_rule({name="endless-Impulse-xray",match={namespace="^quickshell:.*$"},xray=' + (value ? 'true' : 'false') + '});'
+            + 'hl.layer_rule({name="endless-Impulse-tooltip-xray",match={namespace="^quickshell:popup$"},xray=false});'
+            + 'hl.layer_rule({name="endless-Impulse-sidebar-animation",match={namespace="^quickshell:sidebar(Right|Left)$"},no_anim=true});'
+            + 'hl.layer_rule({name="endless-Impulse-bar-animation",match={namespace="^quickshell:bar$"},no_anim=true});'
+            + 'hl.window_rule({name="endless-Impulse-xembed-proxy",match={class="^xembedsniproxy$"},opacity="0 override",no_blur=true,no_shadow=true,border_size=0,no_focus=true,no_initial_focus=true})';
     }
     function load() { enabled = true; schedule(); }
     function schedule() { if (enabled && Config.ready) debounce.restart(); }

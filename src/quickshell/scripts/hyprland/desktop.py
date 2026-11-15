@@ -17,8 +17,8 @@ import tempfile
 import time
 
 CONFIG = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
-STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "artificial-impulse/desktop"
-DIRECTORY = CONFIG / "artificial-impulse"
+STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "endless-Impulse/desktop"
+DIRECTORY = CONFIG / "endless-Impulse"
 SAVED = DIRECTORY / "hyprland.json"
 LUA = DIRECTORY / "hyprland.lua"
 PENDING = STATE / "pending.json"
@@ -310,7 +310,7 @@ def generate(data):
         for part in parts[:-1]:
             node = node.setdefault(part, {})
         node[parts[-1]] = value
-    lines = ["-- Artificial Impulse: generated desktop overrides. Edit through Settings.\n"]
+    lines = ["-- Endless Impulse: generated desktop overrides. Edit through Settings.\n"]
     if nested:
         lines.append("hl.config(" + lua_value(nested) + ")\n")
     for name, value in sorted(data["monitors"].items()):
@@ -368,7 +368,7 @@ def recover_expired():
 
 def preview(patch):
     if not integrated():
-        raise ValueError("Enable the Artificial Impulse desktop integration first")
+        raise ValueError("Enable the Endless Impulse desktop integration first")
     if PENDING.exists():
         raise ValueError("Confirm or revert the current preview first")
     if ipc("configerrors") not in ("", "ok"):
@@ -382,7 +382,7 @@ def preview(patch):
                    baselineMonitors={m["name"]: m["current"] for m in live["monitors"] if not m.get("disabled")},
                    baselineOptions={key: live["values"][key] for key in changed_keys})
     source = generate(candidate)
-    atomic(STATE / "last-good.lua", pending["previousLua"] or "-- No confirmed Artificial Impulse desktop overrides.\n")
+    atomic(STATE / "last-good.lua", pending["previousLua"] or "-- No confirmed Endless Impulse desktop overrides.\n")
     write_json(PENDING, pending)
     try:
         atomic(STATE / "preview-session", pending["session"] + "\n" + str(pending["deadline"]) + "\n")
@@ -473,7 +473,7 @@ def install():
     try:
         atomic(destination, source.read_text())
         if HOOK not in before:
-            atomic(MAIN, before.rstrip() + "\n\n-- Artificial Impulse desktop settings\n" + HOOK + "\n")
+            atomic(MAIN, before.rstrip() + "\n\n-- Endless Impulse desktop settings\n" + HOOK + "\n")
         check_reload()
     except Exception:
         atomic(MAIN, before)

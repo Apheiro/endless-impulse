@@ -10,7 +10,7 @@ import sys
 import tempfile
 
 WORKSPACE = "special:artificial-minimized"
-STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "artificial-impulse/minimized.json"
+STATE = Path(os.environ.get("XDG_STATE_HOME", Path.home() / ".local/state")) / "endless-Impulse/minimized.json"
 
 
 def ipc(*arguments, json_result=False):

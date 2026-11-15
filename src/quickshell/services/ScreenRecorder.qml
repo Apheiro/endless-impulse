@@ -13,7 +13,7 @@ Singleton {
     property string preview: ""
     property string message: ""
     property string store: Directories.shellConfig + "/recorder.json"
-    property string statePath: (Quickshell.env("XDG_STATE_HOME") || Directories.home.replace(/^file:\/\//, "") + "/.local/state") + "/artificial-impulse/recorder"
+    property string statePath: (Quickshell.env("XDG_STATE_HOME") || Directories.home.replace(/^file:\/\//, "") + "/.local/state") + "/endless-Impulse/recorder"
     property bool loaded: false
     property bool preferencesExist: false
     property bool failed: false

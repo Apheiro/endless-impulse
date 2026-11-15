@@ -53,7 +53,7 @@ ColumnLayout {
     }
     StyledText {
         Layout.fillWidth: true
-        text: InstallationPaths.error || (InstallationPaths.busy ? Translation.tr("Reading installation paths…") : root.pathCount + " " + Translation.tr("locations") + " · " + Translation.tr("Artificial Impulse"))
+        text: InstallationPaths.error || (InstallationPaths.busy ? Translation.tr("Reading installation paths…") : root.pathCount + " " + Translation.tr("locations") + " · " + Translation.tr("Endless Impulse"))
         color: InstallationPaths.error ? Appearance.m3colors.m3error : Appearance.colors.colSubtext
         font.pixelSize: Appearance.font.pixelSize.smaller
         wrapMode: Text.WordWrap

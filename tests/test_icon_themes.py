@@ -58,7 +58,7 @@ class IconThemeTests(unittest.TestCase):
         self.assertTrue(gtk.is_symlink())
         self.assertIn("# mine", real.read_text())
         self.assertIn("gtk-font-name=Sans 12", real.read_text())
-        self.assertIn("gtk-icon-theme-name=ArtificialImpulse", real.read_text())
+        self.assertIn("gtk-icon-theme-name=EndlessImpulse", real.read_text())
         self.assertIn("[Other]\nTheme=unchanged", (self.m.CONFIG / "kdeglobals").read_text())
         self.assertTrue(Path(result["backup"], "manifest.json").exists())
         for row in result["paths"]:
@@ -115,8 +115,8 @@ class IconThemeTests(unittest.TestCase):
         self.write(gtk, '# font\ngtk-font-name="Sans 12"\ngtk-icon-theme-name="Old"\n')
         self.write(xs, 'Net/IconThemeName "Old"\nNet/ThemeName "Keep"\n')
         self.m.apply({"theme": "Base", "application": "demo.desktop", "source": "folder"})
-        self.assertIn('gtk-icon-theme-name="ArtificialImpulse"', gtk.read_text())
-        self.assertIn('Net/IconThemeName "ArtificialImpulse"', xs.read_text())
+        self.assertIn('gtk-icon-theme-name="EndlessImpulse"', gtk.read_text())
+        self.assertIn('Net/IconThemeName "EndlessImpulse"', xs.read_text())
         self.assertIn('Net/ThemeName "Keep"', xs.read_text())
         desktop = self.m.DATA / "applications/demo.desktop"
         desktop.write_text(desktop.read_text().replace("--flag", "--new-flag"))
@@ -162,7 +162,7 @@ class IconThemeTests(unittest.TestCase):
         self.assertEqual(self.m.apply({"theme":"Base","fallbacks":["HiddenBackup"]})["fallbacks"],["HiddenBackup"])
 
     def test_invalid_backups_do_not_write_files(self):
-        for fallbacks in ("Other", ["missing"], ["../Other"], ["ArtificialImpulse"], [1]):
+        for fallbacks in ("Other", ["missing"], ["../Other"], ["EndlessImpulse"], [1]):
             with self.assertRaises(ValueError):self.m.apply({"theme":"Base","fallbacks":fallbacks})
         self.assertFalse(self.m.STORE.exists())
         self.assertFalse(self.m.ROOT.exists())

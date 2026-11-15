@@ -23,7 +23,7 @@ Singleton {
         const state = Quickshell.env("XDG_STATE_HOME") || Directories.home.replace(/^file:\/\//, "") + "/.local/state";
         const data = Quickshell.env("XDG_DATA_HOME") || Directories.home.replace(/^file:\/\//, "") + "/.local/share";
         function tr(text) { return Translation.tr(text); }
-        add("configuration", "Artificial Impulse", Directories.shellConfig, tr("Personal desktop preferences and integrations"), [tr("Settings"), tr("Shortcuts"), tr("Icons")]);
+        add("configuration", "Endless Impulse", Directories.shellConfig, tr("Personal desktop preferences and integrations"), [tr("Settings"), tr("Shortcuts"), tr("Icons")]);
         add("configuration", "config.json", Config.filePath, tr("Appearance, panels and feature preferences"), [tr("Settings")], "file");
         add("configuration", "shortcuts.lua", Directories.shellConfig + "/shortcuts.lua", tr("Personal keyboard and mouse shortcuts"), [tr("Shortcuts")], "file");
         add("configuration", "hyprland.json", Directories.shellConfig + "/hyprland.json", tr("Saved monitor, window and input settings"), ["Hyprland"], "file");
@@ -42,7 +42,7 @@ Singleton {
         for (const environment of ["gtk-3.0", "gtk-4.0", "qt5ct", "qt6ct"])
             add("configuration", environment, config + "/" + environment, tr("Application theme preferences"), [tr("Themes"), tr("Icons")]);
         for (const entry of IconTheme.paths.concat(IconTheme.colorPaths)) {
-            if (entry.path === data + "/icons/ArtificialImpulse/index.theme") continue;
+            if (entry.path === data + "/icons/EndlessImpulse/index.theme") continue;
             add("configuration", entry.path.split("/").pop(), entry.path, entry.name, [entry.name], entry.name === "GNOME / GSettings" ? "directory" : "file");
         }
         add("interface", tr("Shell source"), Quickshell.shellDir, tr("Running interface and its entry points"), ["QML", "JavaScript"]);
@@ -63,11 +63,11 @@ Singleton {
             [tr("Chats"), Directories.aiChats, tr("Saved assistant conversations"), "directory"],
             [tr("Generated colors"), Directories.generatedMaterialThemePath, tr("Current shell palette"), "file"]])
             add("data", entry[0], entry[1], entry[2], [tr("State")], entry[3]);
-        add("data", tr("Desktop state"), state + "/artificial-impulse", tr("Recovery information and integration state"), ["Hyprland", tr("Backups")]);
-        add("data", tr("Display recovery"), state + "/artificial-impulse/desktop", tr("Display previews, last good configuration and backups"), [tr("Monitors")]);
-        add("data", tr("Saved clipboard"), data + "/artificial-impulse/clipboard", tr("Saved copies kept when clipboard history is cleared"), [tr("Clipboard"), tr("Saved")]);
-        add("data", tr("Icon backups"), state + "/artificial-impulse/icon-backups", tr("Configuration copies made before applying icon changes"), [tr("Icons")]);
-        add("data", "minimized.json", state + "/artificial-impulse/minimized.json", tr("Original workspaces of minimized windows"), [tr("Dock")], "file");
+        add("data", tr("Desktop state"), state + "/endless-Impulse", tr("Recovery information and integration state"), ["Hyprland", tr("Backups")]);
+        add("data", tr("Display recovery"), state + "/endless-Impulse/desktop", tr("Display previews, last good configuration and backups"), [tr("Monitors")]);
+        add("data", tr("Saved clipboard"), data + "/endless-Impulse/clipboard", tr("Saved copies kept when clipboard history is cleared"), [tr("Clipboard"), tr("Saved")]);
+        add("data", tr("Icon backups"), state + "/endless-Impulse/icon-backups", tr("Configuration copies made before applying icon changes"), [tr("Icons")]);
+        add("data", "minimized.json", state + "/endless-Impulse/minimized.json", tr("Original workspaces of minimized windows"), [tr("Dock")], "file");
         add("data", "runtime.json", state + "/dots-hyperland/runtime.json", tr("Active shell source and launcher"), [tr("Runtime")], "file");
         add("data", tr("Shell cache"), Directories.cache, tr("Temporary files that can be regenerated"), [tr("Cache")]);
         for (const entry of [
@@ -79,10 +79,10 @@ Singleton {
             add("data", entry[0], entry[1], entry[2], [tr("Cache")]);
         add("data", tr("Notifications"), Directories.notificationsPath, tr("Saved notification history"), [tr("Notifications")], "file");
         const baseTheme = IconTheme.themes.find(theme => theme.id === IconTheme.theme);
-        if (baseTheme) add("data", baseTheme.name, baseTheme.path, tr("Installed base icon theme inherited by Artificial Impulse"), [tr("Icons"), tr("Themes")]);
+        if (baseTheme) add("data", baseTheme.name, baseTheme.path, tr("Installed base icon theme inherited by Endless Impulse"), [tr("Icons"), tr("Themes")]);
         add("data", tr("Personal icons"), data + "/icons", tr("User-installed icon themes"), [tr("Icons")]);
-        add("data", "ArtificialImpulse", data + "/icons/ArtificialImpulse", tr("Icon theme inheritance and custom application images"), [tr("Icons")]);
-        add("data", "index.theme", data + "/icons/ArtificialImpulse/index.theme", tr("Selected base theme and fallback chain"), [tr("Icons")], "file");
+        add("data", "EndlessImpulse", data + "/icons/EndlessImpulse", tr("Icon theme inheritance and custom application images"), [tr("Icons")]);
+        add("data", "index.theme", data + "/icons/EndlessImpulse/index.theme", tr("Selected base theme and fallback chain"), [tr("Icons")], "file");
         add("data", tr("Application entries"), data + "/applications", tr("Personal launchers and application icon overrides"), [tr("Apps"), tr("Icons")]);
         add("data", tr("Color schemes"), data + "/color-schemes", tr("Generated and installed KDE color schemes"), ["Qt", "KDE"]);
         add("data", tr("Temporary media"), "/tmp/quickshell/media", tr("Short-lived capture and clipboard files"), [tr("Temporary")]);

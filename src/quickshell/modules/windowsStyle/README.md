@@ -2,8 +2,8 @@
 
 A recreation of Windoes. It's WIP!
 
-- If you install Artificial Impulse fully, you can press Super+Alt+W to switch to this style.
-- For a traditional installation, run the config as usual (`qs -c artificial-impulse`), then run `qs -c artificial-impulse ipc call panelFamily cycle`. From a checkout, use `python3 src/quickshell/scripts/shell/control.py ipc panelFamily cycle` to target the active development instance.
+- If you install Endless Impulse fully, you can press Super+Alt+W to switch to this style.
+- For a traditional installation, run the config as usual (`qs -c endless-Impulse`), then run `qs -c endless-Impulse ipc call panelFamily cycle`. From a checkout, use `python3 src/quickshell/scripts/shell/control.py ipc panelFamily cycle` to target the active development instance.
 
 ## From EWW version to Quickshell
 

@@ -14,8 +14,8 @@ class RepositoryLayoutTests(unittest.TestCase):
     def test_desktop_integration_from_checkout_xdg_and_nix(self):
         layouts = {
             "checkout": ("checkout/src/quickshell", "checkout/config/xdg/config"),
-            "xdg": ("custom-config/quickshell/artificial-impulse", "custom-config"),
-            "nix": ("store/package/share/dots-hyperland/.config/quickshell/artificial-impulse",
+            "xdg": ("custom-config/quickshell/endless-Impulse", "custom-config"),
+            "nix": ("store/package/share/dots-hyperland/.config/quickshell/endless-Impulse",
                     "store/package/share/dots-hyperland/.config"),
         }
         for name, (shell_path, assets_path) in layouts.items():
@@ -81,12 +81,12 @@ class RepositoryLayoutTests(unittest.TestCase):
         self.assertIn("installer/lib/environment-variables.sh", setup)
         self.assertIn("SUBCMD_DIR=./installer/commands/$1", setup)
         legacy = (ROOT / "installer/commands/install/3.files-legacy.sh").read_text()
-        self.assertIn('install_dir__sync src/quickshell "$XDG_CONFIG_HOME"/quickshell/artificial-impulse', legacy)
+        self.assertIn('install_dir__sync src/quickshell "$XDG_CONFIG_HOME"/quickshell/endless-Impulse', legacy)
         nix = (ROOT / "packaging/nix/package.nix").read_text()
         self.assertIn("src = source + /src/quickshell;", nix)
         self.assertIn("source}/config/xdg/config/.", nix)
         variables = (ROOT / "config/xdg/config/hypr/hyprland/variables.lua").read_text()
-        self.assertIn('hl.env("qsConfig", "artificial-impulse")', variables)
+        self.assertIn('hl.env("qsConfig", "endless-Impulse")', variables)
 
     def test_shapes_submodule_path_is_registered(self):
         modules = (ROOT / ".gitmodules").read_text()

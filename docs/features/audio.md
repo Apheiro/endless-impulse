@@ -25,7 +25,7 @@ meters and `scripts/audio/control.py` (Python standard library). `pactl` control
 Pulse-compatible devices/streams/profiles through pipewire-pulse. `pw-dump`,
 `pw-link` and `pw-metadata` expose the native graph and runtime clock. WirePlumber
 continues managing policy, Bluetooth and automatic connections. No pavucontrol
-process is launched by the Artificial Impulse audio panel.
+process is launched by the Endless Impulse audio panel.
 
 It requires a running host PipeWire, pipewire-pulse and WirePlumber session.
 Nix bundles the client tools; it does not start another audio server. On Arch,

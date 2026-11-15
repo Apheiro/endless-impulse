@@ -34,7 +34,7 @@ ShellRoot {
     property int changes: 0
     Window {
         id: sourceWindow
-        title: "Artificial Impulse thumbnail test"
+        title: "Endless Impulse thumbnail test"
         visible: true
         width: 320; height: 180
         flags: Qt.Tool | Qt.WindowDoesNotAcceptFocus

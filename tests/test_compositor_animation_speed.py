@@ -86,7 +86,7 @@ else: print('ok')
             env = dict(os.environ, PATH=str(base) + os.pathsep + os.environ['PATH'],
                        XDG_RUNTIME_DIR=str(base), HYPRLAND_INSTANCE_SIGNATURE='animation-speed-test', ANIMATION_TEST_ROWS=str(rows))
             subprocess.run([sys.executable, str(SCRIPT), '2'], env=env, check=True, capture_output=True)
-            state_file = next((base / 'artificial-impulse').glob('*.json'))
+            state_file = next((base / 'endless-Impulse').glob('*.json'))
             state = json.loads(state_file.read_text())
             rows.write_text(json.dumps([applied_rows(state), []]))
             subprocess.run([sys.executable, str(SCRIPT), '3'], env=env, check=True, capture_output=True)

@@ -1,6 +1,6 @@
-# Artificial Impulse architecture
+# Endless Impulse architecture
 
-Artificial Impulse is an installable Linux desktop shell, not a web application.
+Endless Impulse is an installable Linux desktop shell, not a web application.
 
 ## Runtime layers
 
@@ -18,7 +18,7 @@ Artificial Impulse is an installable Linux desktop shell, not a web application.
 
 ## Quickshell source organization
 
-- `modules/desktop/`: the native Artificial Impulse layout, including bar,
+- `modules/desktop/`: the native Endless Impulse layout, including bar,
   dock, overlays and sidebars.
 - `modules/windowsStyle/`: alternative Windows-inspired layout.
 - `modules/shared/`: reusable components, appearance tokens and helpers. A single
@@ -37,9 +37,9 @@ Artificial Impulse is an installable Linux desktop shell, not a web application.
 - QML resolves its `qs.*` imports relative to the selected shell source.
   Keep `src/quickshell/` internally stable when moving components.
 - Quickshell's runtime source is `src/quickshell/` in development. Traditional
-  deployment targets `~/.config/quickshell/artificial-impulse/`, while Nix installs a copy
-  under `share/dots-hyperland/.config/quickshell/artificial-impulse/`.
-- User preferences remain in XDG config/state under `artificial-impulse`.
+  deployment targets `~/.config/quickshell/endless-Impulse/`, while Nix installs a copy
+  under `share/dots-hyperland/.config/quickshell/endless-Impulse/`.
+- User preferences remain in XDG config/state under `endless-Impulse`.
   Source tree moves must not migrate or overwrite personal preferences.
 - Nix pins application dependencies. Host drivers, systemd services, the
   compositor, device permissions and platform hardware remain host concerns.

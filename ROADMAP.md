@@ -1,4 +1,4 @@
-# Artificial Impulse — Roadmap
+# Endless Impulse — Roadmap
 
 Base: dependencias upstream y entorno Nix fijado. Referencia funcional:
 `pctrade/end4-pC` en `74813a8219defc8d210c2055d6935fbfb9f93239`.
@@ -51,7 +51,7 @@ de iconos sigue siendo dinámica; Steam fue verificado por el usuario.
   overrides por dispositivo. Se leen 39 opciones reales; las no soportadas se deshabilitan.
 - Tres páginas nuevas en Settings: Monitors, Windows & effects y Keyboard & mouse.
   Abrirlas no aplica valores. Los controles editan un borrador compartido.
-- Overrides propios en `artificial-impulse/hyprland.json` y `hyprland.lua`, cargados
+- Overrides propios en `endless-Impulse/hyprland.json` y `hyprland.lua`, cargados
   después de la configuración personal mediante un módulo y una línea de integración.
 - Prueba de 20 segundos y confirmación en un panel compacto independiente. Un
   guardián separado restaura el estado previo aunque se cierre Settings; una sesión

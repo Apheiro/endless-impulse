@@ -11,8 +11,8 @@ has been removed.
 never shell interpolation of clipboard contents. Text and image payloads are
 stored intact. Image previews and AI attachments use the same decoder.
 
-Saved entries live in `$XDG_DATA_HOME/artificial-impulse/clipboard` (normally
-`~/.local/share/artificial-impulse/clipboard`): `saved.json` indexes private
+Saved entries live in `$XDG_DATA_HOME/endless-Impulse/clipboard` (normally
+`~/.local/share/endless-Impulse/clipboard`): `saved.json` indexes private
 SHA-256-addressed payload files. They survive cliphist eviction, wipe and cache
 cleanup. Payloads are written before their index; Clear history verifies saved
 copies before touching cliphist. The directory is private (0700), files 0600.

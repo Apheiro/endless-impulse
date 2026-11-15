@@ -45,7 +45,7 @@ if which pacman &>/dev/null; then
   fi
 fi
 UPDATE_IGNORE_FILE="${REPO_ROOT}/.updateignore"
-XDG_UPDATE_IGNORE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/artificial-impulse/updateignore"
+XDG_UPDATE_IGNORE_FILE="${XDG_CONFIG_HOME:-$HOME/.config}/endless-Impulse/updateignore"
 #TODO: remove in future and add script to migrate to XDG path
 HOME_UPDATE_IGNORE_FILE="${HOME}/.updateignore" # Legacy support 
 
@@ -1042,7 +1042,7 @@ if [[ "$process_files" == true ]]; then
     
     # Source layout is intentionally independent of the installed XDG layout.
     case "$dir_name" in
-      src/quickshell) home_dir_path="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/artificial-impulse" ;;
+      src/quickshell) home_dir_path="${XDG_CONFIG_HOME:-$HOME/.config}/quickshell/endless-Impulse" ;;
       config/xdg/config) home_dir_path="${XDG_CONFIG_HOME:-$HOME/.config}" ;;
       config/xdg/data) home_dir_path="${XDG_DATA_HOME:-$HOME/.local/share}" ;;
       config/xdg/bin) home_dir_path="${XDG_BIN_HOME:-$HOME/.local/bin}" ;;

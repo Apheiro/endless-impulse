@@ -50,7 +50,7 @@ def sync(factor, durations=None, read_only=False):
     signature = os.environ.get('HYPRLAND_INSTANCE_SIGNATURE')
     if not signature:
         return {"animations": []}
-    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', '/run/user/' + str(os.getuid()))) / 'artificial-impulse'
+    runtime = Path(os.environ.get('XDG_RUNTIME_DIR', '/run/user/' + str(os.getuid()))) / 'endless-Impulse'
     runtime.mkdir(mode=0o700, parents=True, exist_ok=True)
     identity = hashlib.sha256(signature.encode()).hexdigest()[:20]
     path = runtime / ('animation-speed-' + identity + '.json')

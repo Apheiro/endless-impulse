@@ -2,7 +2,7 @@
 
 | Source | Installed/used as |
 | --- | --- |
-| `src/quickshell/` | Quickshell source, deployed to `$XDG_CONFIG_HOME/quickshell/artificial-impulse` |
+| `src/quickshell/` | Quickshell source, deployed to `$XDG_CONFIG_HOME/quickshell/endless-Impulse` |
 | `config/xdg/config/*` | `$XDG_CONFIG_HOME/*` |
 | `config/xdg/data/*` | `$XDG_DATA_HOME/*` |
 | `config/variants/*` | Optional replacement selected by installer |
@@ -23,7 +23,7 @@ For local development: `./dev run`, `./dev settings`, `./dev check`.
 shell, even when it was started from another checkout or a backup. It then starts
 this checkout. `./dev stop` also targets the registered active shell. A failed
 package build leaves the running desktop intact.
-The installed Quickshell configuration is named `artificial-impulse`.
+The installed Quickshell configuration is named `endless-Impulse`.
 The desktop integration helper resolves its Lua module from the repository's
 `config/xdg/config/hypr/` tree in development, or from the sibling `hypr/` tree
 under the installation's XDG config root, including inside the Nix bundle.

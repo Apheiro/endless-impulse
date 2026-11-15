@@ -1,8 +1,8 @@
 -- Keep callbacks and bind options intact; remap only their trigger.
 local M = {}
 local home = os.getenv("HOME")
-local config = (os.getenv("XDG_CONFIG_HOME") or home .. "/.config") .. "/artificial-impulse"
-local state = (os.getenv("XDG_STATE_HOME") or home .. "/.local/state") .. "/artificial-impulse"
+local config = (os.getenv("XDG_CONFIG_HOME") or home .. "/.config") .. "/endless-Impulse"
+local state = (os.getenv("XDG_STATE_HOME") or home .. "/.local/state") .. "/endless-Impulse"
 local original_bind, original_submap = hl.bind, hl.define_submap
 local entries, order, submap = {}, {}, ""
 local overrides = {}

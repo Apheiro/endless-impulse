@@ -6,8 +6,8 @@ xsettingsd preferences are updated too. GSettings is synchronized when available
 any failure is reported separately. Applications with private icon sets may ignore
 system preferences; some applications read their theme only when launched.
 
-Preferences live in `$XDG_CONFIG_HOME/artificial-impulse/icons.json`.
-`$XDG_DATA_HOME/icons/ArtificialImpulse/index.theme` inherits the selected installed
+Preferences live in `$XDG_CONFIG_HOME/endless-Impulse/icons.json`.
+`$XDG_DATA_HOME/icons/EndlessImpulse/index.theme` inherits the selected installed
 theme, the manually ordered backup themes, and hicolor, following the [freedesktop icon theme specification](https://specifications.freedesktop.org/icon-theme/).
 Only custom images are copied into this overlay. Installed theme files are untouched.
 
@@ -25,7 +25,7 @@ Unavailable files remain visible but disabled. GSettings uses a dconf database;
 its directory is shown when present.
 
 Before applying, the helper backs up affected files under
-`$XDG_STATE_HOME/artificial-impulse/icon-backups/`. Each backup contains a
+`$XDG_STATE_HOME/endless-Impulse/icon-backups/`. Each backup contains a
 `manifest.json` mapping original paths to numbered copies (null means the file
 was previously absent). File writes roll back together on failure. GSettings is
 applied afterward and reports partial failure without hiding the saved changes.

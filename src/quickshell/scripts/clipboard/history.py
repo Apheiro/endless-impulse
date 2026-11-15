@@ -13,7 +13,7 @@ import sys
 import tempfile
 import time
 
-DIRECTORY = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "artificial-impulse/clipboard"
+DIRECTORY = Path(os.environ.get("XDG_DATA_HOME", Path.home() / ".local/share")) / "endless-Impulse/clipboard"
 INDEX = DIRECTORY / "saved.json"
 BINARY = os.environ.get("DOTS_CLIPHIST_BINARY", "cliphist")
 SAVED_ID = re.compile(r"saved-([0-9a-f]{64})\Z")

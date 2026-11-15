@@ -15,11 +15,11 @@ Note:
 
 ## Post installation
 
-Bluetooth and networking open native Artificial Impulse panels. BlueDevil and
+Bluetooth and networking open native Endless Impulse panels. BlueDevil and
 Plasma-NM overrides are no longer needed. See [network integration](../network.md)
 for NetworkManager plugins and hotspot support.
 
-Set the update application in `~/.config/artificial-impulse/config.json` to the
+Set the update application in `~/.config/endless-Impulse/config.json` to the
 preferred Fedora update command, for example:
 
 ```json

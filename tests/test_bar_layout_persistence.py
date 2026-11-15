@@ -81,7 +81,7 @@ ShellRoot {
     }}
 }
 ''', "BAR_PERSISTENCE_SAVED")
-            config_file = home / "config/artificial-impulse/config.json"
+            config_file = home / "config/endless-Impulse/config.json"
             saved = json.loads(config_file.read_text())["bar"]["layout"]
             self.assertEqual(saved["items"], ITEMS)
             self.assertEqual(saved["centerKey"], "my-clock")

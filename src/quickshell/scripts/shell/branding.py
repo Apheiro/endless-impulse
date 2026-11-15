@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
-"""Move local preferences to Artificial Impulse, retaining legacy path aliases."""
+"""Move local preferences to Endless Impulse, retaining legacy path aliases."""
 import os
 from pathlib import Path
 
 
 def migrate_directory(base):
-    legacy, current = Path(base) / "illogical-impulse", Path(base) / "artificial-impulse"
-    if current.exists() or current.is_symlink() or not legacy.is_dir():
+    current = Path(base) / "endless-Impulse"
+    if current.exists() or current.is_symlink():
+        return
+    legacy = next((Path(base) / name for name in ("artificial-impulse", "illogical-impulse")
+                   if (Path(base) / name).is_dir()), None)
+    if legacy is None:
         return
     if legacy.is_symlink():
         current.symlink_to(legacy.resolve(), target_is_directory=True)
@@ -23,7 +27,8 @@ def migrate(environment=None):
     environment = os.environ if environment is None else environment
     home = Path(environment.get("HOME", Path.home()))
     for variable, fallback in (("XDG_CONFIG_HOME", home / ".config"),
-                               ("XDG_STATE_HOME", home / ".local/state")):
+                               ("XDG_STATE_HOME", home / ".local/state"),
+                               ("XDG_DATA_HOME", home / ".local/share")):
         migrate_directory(environment.get(variable, fallback))
 
 

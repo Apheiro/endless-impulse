@@ -1,5 +1,5 @@
 # Proyecto
-Artificial Impulse: escritorio Hyprland/Wayland, fork de illogical-impulse, con dependencias upstream independientes. Interfaz: Quickshell (Qt 6, QML y JavaScript); configuración: Lua; integración: Bash y Python; temas: Matugen; fórmulas: MathJax/Node.js.
+Endless Impulse: escritorio Hyprland/Wayland, fork de illogical-impulse, con dependencias upstream independientes. Interfaz: Quickshell (Qt 6, QML y JavaScript); configuración: Lua; integración: Bash y Python; temas: Matugen; fórmulas: MathJax/Node.js.
 
 # Estructura
 - `src/quickshell/`: fuente QML/JS independiente de la instalación. `modules/desktop/` (interfaz principal), `modules/windowsStyle/` (variante), `modules/shared/` (widgets comunes), `modules/settings/` (ajustes), `shellVariants/` (composición de layouts), `services/` (estado), `scripts/` (integraciones).

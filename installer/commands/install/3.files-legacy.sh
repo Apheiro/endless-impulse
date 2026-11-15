@@ -23,7 +23,7 @@ case "${SKIP_QUICKSHELL}" in
   true) true;;
   *)
      # Install this source as the ii configuration without replacing other Quickshell configurations.
-    install_dir__sync src/quickshell "$XDG_CONFIG_HOME"/quickshell/artificial-impulse
+    install_dir__sync src/quickshell "$XDG_CONFIG_HOME"/quickshell/endless-Impulse
     ;;
 esac
 
@@ -68,9 +68,7 @@ case "${SKIP_HYPRLAND}" in
         install_file__auto_backup "config/xdg/config/hypr/$i" "${XDG_CONFIG_HOME}/hypr/$i"
       fi
     done
-    if [ "$OS_GROUP_ID" = "fedora" ];then
-      v bash -c "printf \"# For fedora to setup polkit\nexec-once = /usr/libexec/kf6/polkit-kde-authentication-agent-1\n\" >> ${XDG_CONFIG_HOME}/hypr/hyprland/execs.conf"
-    fi
+    # Native Quickshell Polkit needs no separate exec-once agent.
 
     install_dir__ignore_existing "config/xdg/config/hypr/custom" "${XDG_CONFIG_HOME}/hypr/custom"
     ;;

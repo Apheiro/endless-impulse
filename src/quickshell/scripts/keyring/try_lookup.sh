@@ -2,8 +2,11 @@
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-data=$(secret-tool lookup 'application' 'artificial-impulse')
+data=$(secret-tool lookup 'application' 'endless-Impulse')
 # Read existing credentials without deleting or rewriting their legacy entry.
+if [[ -z "$data" ]]; then
+    data=$(secret-tool lookup 'application' 'artificial-impulse')
+fi
 if [[ -z "$data" ]]; then
     data=$(secret-tool lookup 'application' 'illogical-impulse')
 fi

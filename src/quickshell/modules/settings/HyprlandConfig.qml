@@ -34,7 +34,7 @@ SettingsPage {
         StyledText {
             Layout.fillWidth: true
             wrapMode: Text.WordWrap
-            text: Translation.tr("Remove Artificial Impulse's saved window overrides and use your original Hyprland configuration. This also uses the preview and confirmation step.")
+            text: Translation.tr("Remove Endless Impulse's saved window overrides and use your original Hyprland configuration. This also uses the preview and confirmation step.")
         }
         RippleButtonWithIcon {
             materialIcon: "restore"

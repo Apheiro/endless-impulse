@@ -23,7 +23,7 @@ and bundled shape library. Updating Arch's Qt does not replace Nix's Qt.
 Arch/systemd, also used by the setup stage of `./setup install --via-nix`.
 See `packaging/nix/services/arch.json` and `packaging/nix/README.md`; graphics drivers are excluded.
 
-Artificial Impulse uses `artificial-impulse` for configuration and shortcut state.
+Endless Impulse uses `endless-Impulse` for configuration and shortcut state.
 The legacy configuration aliases and Python environment variable remain
 compatibility interfaces. External package names and license notices are retained.
 
@@ -59,3 +59,15 @@ Tailscale uses the host `tailscaled` daemon and a bundled/host `tailscale` CLI.
 The native panel discovers CLI options at runtime and requires operator rights
 or an explicit Polkit operation for privileged changes. See
 [Tailscale integration](../features/tailscale.md).
+
+Firewall Settings optionally uses the host `firewalld` daemon and its
+`firewall-cmd` client and its host Python bindings over system D-Bus, with
+`pkcheck` and session Polkit authorization. It requires no extra bindings in the
+independent Python/Nix runtime or mandatory installer package and never
+starts the daemon automatically. See [native Firewall integration](../features/firewalld.md)
+for supported operations, connection states and safety limits.
+
+Polkit authorization uses the **native upstream Quickshell PolkitAgent** with
+host `polkit`. KDE's agent is optional explicit recovery and is not autostarted
+by this desktop. See [native authentication](../features/polkit.md) for startup,
+cross-process focus protection, dependencies and recovery limits.

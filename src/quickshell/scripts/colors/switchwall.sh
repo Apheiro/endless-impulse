@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-QUICKSHELL_CONFIG_NAME="artificial-impulse"
+QUICKSHELL_CONFIG_NAME="endless-Impulse"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
@@ -8,7 +8,7 @@ CONFIG_DIR="${DOTS_SHELL_SOURCE:-$XDG_CONFIG_HOME/quickshell/$QUICKSHELL_CONFIG_
 CACHE_DIR="$XDG_CACHE_HOME/quickshell"
 STATE_DIR="$XDG_STATE_HOME/quickshell"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SHELL_CONFIG_FILE="$XDG_CONFIG_HOME/artificial-impulse/config.json"
+SHELL_CONFIG_FILE="$XDG_CONFIG_HOME/endless-Impulse/config.json"
 MATUGEN_DIR="$XDG_CONFIG_HOME/matugen"
 terminalscheme="$SCRIPT_DIR/terminal/scheme-base.json"
 

@@ -116,11 +116,11 @@ ShellRoot {
                 self.assertIn("DESKTOP_WORKFLOW_OK", logs)
                 self.assertNotIn("ReferenceError:", logs)
                 self.assertNotIn("TypeError:", logs)
-                saved = json.loads((base / "config/artificial-impulse/hyprland.json").read_text())
+                saved = json.loads((base / "config/endless-Impulse/hyprland.json").read_text())
                 self.assertEqual(saved["options"], {"decoration:rounding": 22})
-                self.assertIn('["rounding"]=22', (base / "config/artificial-impulse/hyprland.lua").read_text())
+                self.assertIn('["rounding"]=22', (base / "config/endless-Impulse/hyprland.lua").read_text())
             finally:
-                (base / "state/artificial-impulse/desktop/pending.json").unlink(missing_ok=True)
+                (base / "state/endless-Impulse/desktop/pending.json").unlink(missing_ok=True)
                 time.sleep(1.1)  # Let detached fixture guards observe cancellation before cleanup.
 
     def test_failed_restore_pauses_polling_and_queued_retry_closes_prompt(self):

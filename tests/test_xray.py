@@ -88,8 +88,8 @@ ShellRoot {
             self.assertTrue(any('xray=true});' in command[-1] for command in commands))
             for command in commands:
                 self.assertEqual(command[:2], ['-r', 'eval'])
-                self.assertIn('name="artificial-impulse-xray"', command[-1])
+                self.assertIn('name="endless-Impulse-xray"', command[-1])
                 self.assertIn('namespace="^quickshell:.*$"', command[-1])
                 self.assertIn('namespace="^quickshell:popup$"},xray=false', command[-1])
-                self.assertIn('name="artificial-impulse-bar-animation",match={namespace="^quickshell:bar$"},no_anim=true', command[-1])
+                self.assertIn('name="endless-Impulse-bar-animation",match={namespace="^quickshell:bar$"},no_anim=true', command[-1])
                 self.assertNotIn('hl.config', command[-1])

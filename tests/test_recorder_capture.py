@@ -18,7 +18,7 @@ class RecorderCaptureTests(unittest.TestCase):
             base = Path(temporary)
             for name in ('modules','services','assets','scripts','defaults','translations','GlobalStates.qml'):
                 (base/name).symlink_to(SOURCE/name, target_is_directory=(SOURCE/name).is_dir())
-            config = base/'config/artificial-impulse'
+            config = base/'config/endless-Impulse'
             config.mkdir(parents=True)
             (config/'recorder.json').write_text(json.dumps(dict(saveDirectory=str(base/'videos'),filenamePattern='fixture_%Y-%m-%d_%H-%M-%S',container='mkv',fps=24,codec='h264',audioTracks=[],cursor=False)))
             fixture = '''//@ pragma UseQApplication
@@ -48,7 +48,7 @@ ShellRoot {
     Window {
         id: fixture
         visible: true; width: 480; height: 300
-        title: "Artificial Impulse recorder fixture"
+        title: "Endless Impulse recorder fixture"
         flags: Qt.Tool | Qt.WindowDoesNotAcceptFocus
         color: "#165cab"
     }
@@ -117,7 +117,7 @@ ShellRoot {
                     edge=frame.getpixel((1,1))
                     self.assertGreater(edge[2],edge[0]*2,edge)
             finally:
-                state_folder=base/'state/artificial-impulse/recorder'
+                state_folder=base/'state/endless-Impulse/recorder'
                 if state_folder.exists():
                     for name in ('session.json','recording.log','supervisor.log'):
                         if (state_folder/name).exists(): (ROOT/'work'/('recorder-'+name)).write_bytes((state_folder/name).read_bytes())

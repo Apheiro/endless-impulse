@@ -18,8 +18,8 @@ import tempfile
 import time
 import uuid
 
-CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'artificial-impulse'
-STATE = Path(os.environ.get('XDG_STATE_HOME', Path.home() / '.local/state')) / 'artificial-impulse/recorder'
+CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', Path.home() / '.config')) / 'endless-Impulse'
+STATE = Path(os.environ.get('XDG_STATE_HOME', Path.home() / '.local/state')) / 'endless-Impulse/recorder'
 STORE = CONFIG / 'recorder.json'
 SESSION = STATE / 'session.json'
 SESSION_ID = os.environ.get('HYPRLAND_INSTANCE_SIGNATURE', os.environ.get('WAYLAND_DISPLAY', ''))

@@ -14,7 +14,7 @@ user_preferences:
 patterns:
   # Always install these files
   - from: "src/quickshell"
-    to: "$XDG_CONFIG_HOME/quickshell/artificial-impulse"
+    to: "$XDG_CONFIG_HOME/quickshell/endless-Impulse"
     mode: "sync"
   # Conditionally install these files
   - from: "config/xdg/config/fish"

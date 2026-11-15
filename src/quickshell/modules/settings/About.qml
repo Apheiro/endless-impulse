@@ -86,7 +86,7 @@ SettingsPage {
     }
     SettingsSection {
         icon: "memory"
-        title: "Artificial Impulse"
+        title: "Endless Impulse"
 
         StyledText {
             Layout.fillWidth: true

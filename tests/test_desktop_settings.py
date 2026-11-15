@@ -24,9 +24,9 @@ class DesktopSettingsTests(unittest.TestCase):
         self.addCleanup(self.temporary.cleanup)
         base = Path(self.temporary.name)
         for name, value in {
-            "CONFIG": base / "config", "STATE": base / "state/artificial-impulse/desktop", "DIRECTORY": base / "config/artificial-impulse",
-            "SAVED": base / "config/artificial-impulse/hyprland.json", "LUA": base / "config/artificial-impulse/hyprland.lua",
-            "PENDING": base / "state/artificial-impulse/desktop/pending.json", "MAIN": base / "config/hypr/hyprland.lua",
+            "CONFIG": base / "config", "STATE": base / "state/endless-Impulse/desktop", "DIRECTORY": base / "config/endless-Impulse",
+            "SAVED": base / "config/endless-Impulse/hyprland.json", "LUA": base / "config/endless-Impulse/hyprland.lua",
+            "PENDING": base / "state/endless-Impulse/desktop/pending.json", "MAIN": base / "config/hypr/hyprland.lua",
         }.items():
             replacement = patch.object(desktop, name, value)
             replacement.start()
@@ -303,7 +303,7 @@ else: print('ok')
                                 capture_output=True, text=True, env=environment, timeout=10)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertTrue(json.loads(result.stdout)["ok"])
-        pending = base / "xdg-state/artificial-impulse/desktop/pending.json"
+        pending = base / "xdg-state/endless-Impulse/desktop/pending.json"
         deadline = time.monotonic() + 6
         while pending.exists() and time.monotonic() < deadline:
             time.sleep(0.05)

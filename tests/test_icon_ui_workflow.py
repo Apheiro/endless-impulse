@@ -80,7 +80,7 @@ ShellRoot {
                 IconTheme.apply({theme: "Base", application: "demo.desktop", source: "folder"}); parent.phase++; break;
             case 3:
                 if (!IconTheme.overrides["demo.desktop"]) return;
-                if (!IconTheme.aliases.demo?.includes("ArtificialImpulse")) { console.error("ICON_OVERRIDE_NOT_LIVE"); Qt.quit(); return; }
+                if (!IconTheme.aliases.demo?.includes("EndlessImpulse")) { console.error("ICON_OVERRIDE_NOT_LIVE"); Qt.quit(); return; }
                 IconTheme.apply({theme: "Base", application: "demo.desktop", reset: true}); parent.phase++; break;
             case 4:
                 if (IconTheme.overrides["demo.desktop"]) return;
@@ -107,5 +107,5 @@ ShellRoot {
             self.assertIn("ICON_WORKFLOW_OK", logs)
             self.assertNotIn("ReferenceError:", logs)
             self.assertNotIn("TypeError:", logs)
-            self.assertIn("Theme=ArtificialImpulse", (config / "kdeglobals").read_text())
-            self.assertIn("gtk-icon-theme-name=ArtificialImpulse", (config / "gtk-4.0/settings.ini").read_text())
+            self.assertIn("Theme=EndlessImpulse", (config / "kdeglobals").read_text())
+            self.assertIn("gtk-icon-theme-name=EndlessImpulse", (config / "gtk-4.0/settings.ini").read_text())

@@ -1,4 +1,4 @@
-# Artificial Impulse
+# Endless Impulse
 
 A Hyprland/Wayland desktop and a fork of [illogical-impulse](https://github.com/end-4/dots-hyprland).
 

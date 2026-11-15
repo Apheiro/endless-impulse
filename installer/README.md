@@ -13,7 +13,7 @@ This directory contains installation code; the application source lives in
 - `lib/`: shared Bash functions and environment setup.
 
 The installer maps `src/quickshell` to the user's
-`$XDG_CONFIG_HOME/quickshell/artificial-impulse`, and maps `config/xdg/config` and
+`$XDG_CONFIG_HOME/quickshell/endless-Impulse`, and maps `config/xdg/config` and
 `config/xdg/data` to their XDG destinations. Nix packaging under
 `packaging/nix/` handles the immutable runtime independently.
 

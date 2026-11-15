@@ -33,9 +33,9 @@ persistence after reload and Restore default. The user is the principal tester.
 
 ## Storage and automated checks
 
-- `$XDG_CONFIG_HOME/artificial-impulse/shortcuts.lua`: generated overrides, loaded
+- `$XDG_CONFIG_HOME/endless-Impulse/shortcuts.lua`: generated overrides, loaded
   as data in an empty Lua environment. Do not hand-edit this file.
-- `$XDG_STATE_HOME/artificial-impulse/shortcuts-catalog.json`: catalog regenerated
+- `$XDG_STATE_HOME/endless-Impulse/shortcuts-catalog.json`: catalog regenerated
   when the integrated Hyprland configuration loads.
 - XDG directories default to `~/.config` and `~/.local/state`.
 - Python 3 handles persistence and reload; libxkbcommon validates keysyms.

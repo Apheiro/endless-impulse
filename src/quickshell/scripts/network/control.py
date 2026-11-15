@@ -371,7 +371,7 @@ class SecretAgent:
     def enable(self):
         if self.registered or self.registering:return
         self.registering=True
-        self.bus.call('org.freedesktop.NetworkManager','/org/freedesktop/NetworkManager/AgentManager','org.freedesktop.NetworkManager.AgentManager','RegisterWithCapabilities',GLib.Variant('(su)',('org.artificialimpulse.Network.p'+str(os.getpid()),0)),None,Gio.DBusCallFlags.NONE,10000,None,self.registered_done)
+        self.bus.call('org.freedesktop.NetworkManager','/org/freedesktop/NetworkManager/AgentManager','org.freedesktop.NetworkManager.AgentManager','RegisterWithCapabilities',GLib.Variant('(su)',('org.EndlessImpulse.Network.p'+str(os.getpid()),0)),None,Gio.DBusCallFlags.NONE,10000,None,self.registered_done)
     def registered_done(self,connection,result):
         self.registering=False
         try:connection.call_finish(result);self.registered=True;self.controller.emit(dict(event='agent',ok=True))

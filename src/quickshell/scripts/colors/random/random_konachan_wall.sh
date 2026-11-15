@@ -17,7 +17,7 @@ get_pictures_dir() {
     echo "$HOME/Pictures"
 }
 
-QUICKSHELL_CONFIG_NAME="artificial-impulse"
+QUICKSHELL_CONFIG_NAME="endless-Impulse"
 XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
@@ -29,13 +29,13 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 mkdir -p "$PICTURES_DIR/Wallpapers"
 page=$((1 + RANDOM % 1000));
-artificialImpulseConfigPath="$HOME/.config/artificial-impulse/config.json"
-userAgent=$(jq -r '.networking.userAgent // empty' "$artificialImpulseConfigPath" 2>/dev/null)
+EndlessImpulseConfigPath="$HOME/.config/endless-Impulse/config.json"
+userAgent=$(jq -r '.networking.userAgent // empty' "$EndlessImpulseConfigPath" 2>/dev/null)
 response=$(curl -A "$userAgent" "https://konachan.net/post.json?tags=rating%3Asafe&limit=1&page=$page")
 link=$(echo "$response" | jq '.[0].file_url' -r);
 ext=$(echo "$link" | awk -F. '{print $NF}')
 downloadPath="$PICTURES_DIR/Wallpapers/random_wallpaper.$ext"
-currentWallpaperPath=$(jq -r '.background.wallpaperPath' "$artificialImpulseConfigPath")
+currentWallpaperPath=$(jq -r '.background.wallpaperPath' "$EndlessImpulseConfigPath")
 if [ "$downloadPath" == "$currentWallpaperPath" ]; then
     downloadPath="$PICTURES_DIR/Wallpapers/random_wallpaper-1.$ext"
 fi

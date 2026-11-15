@@ -1,5 +1,5 @@
 {
-  description = "Artificial Impulse: Hyprland shell with locked upstream dependencies";
+  description = "Endless Impulse: Hyprland shell with locked upstream dependencies";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -25,7 +25,7 @@
         settings = { type = "app"; program = "${self.packages.${system}.default}/bin/dots-hyperland-settings"; };
         services = let pkgs = import nixpkgs { inherit system; }; in {
           type = "app";
-          program = "${pkgs.writeShellScript "artificial-impulse-services" ''
+          program = "${pkgs.writeShellScript "endless-Impulse-services" ''
             exec ${pkgs.python3}/bin/python3 ${self}/packaging/nix/services.py "$@"
           ''}";
         };

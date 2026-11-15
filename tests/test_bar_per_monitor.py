@@ -118,7 +118,7 @@ class BarPerMonitorTests(unittest.TestCase):
             }
             console.log("BAR_MONITORS_SAVED"); Qt.quit();
 ''', "BAR_MONITORS_SAVED")
-            config = base / "config/artificial-impulse/config.json"
+            config = base / "config/endless-Impulse/config.json"
             saved = json.loads(config.read_text())["bar"]
             self.assertTrue(saved["independentLayouts"])
             self.assertEqual(saved["layout"]["items"][0]["type"], "clock")

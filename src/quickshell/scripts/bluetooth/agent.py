@@ -8,7 +8,7 @@ import sys
 import uuid
 from gi.repository import Gio, GLib, GLibUnix
 
-AGENT_PATH = '/org/artificialimpulse/BluetoothAgent'
+AGENT_PATH = '/org/EndlessImpulse/BluetoothAgent'
 XML = '''<node><interface name="org.bluez.Agent1">
 <method name="Release"/><method name="Cancel"/>
 <method name="RequestPinCode"><arg type="o" direction="in"/><arg type="s" direction="out"/></method>

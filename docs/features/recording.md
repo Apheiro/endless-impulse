@@ -1,6 +1,6 @@
 # GPU Screen Recorder
 
-Artificial Impulse uses the GPU Screen Recorder CLI directly. The existing
+Endless Impulse uses the GPU Screen Recorder CLI directly. The existing
 `record.sh` entry point and Hyprland shortcuts remain compatible. The host binary
 (`/run/wrappers/bin` or `/usr/bin`) takes precedence over the pinned Nix fallback;
 `DOTS_GSR_BINARY` can explicitly select another executable. Host GSR commands run
@@ -13,7 +13,7 @@ native `|` and `;key=value` syntax, including positioning, scaling, alignment,
 flipping and V4L2 camera options. Unsupported hardware/format combinations produce
 an actionable error rather than silently switching encoders.
 
-Preferences: `$XDG_CONFIG_HOME/artificial-impulse/recorder.json` (mode 0600).
+Preferences: `$XDG_CONFIG_HOME/endless-Impulse/recorder.json` (mode 0600).
 Before the first save, the old `config.json → screenRecord.savePath` is read as
 the output directory. Other preferences in that file are untouched.
 
@@ -48,7 +48,7 @@ Tiny regions may be padded to the encoder's minimum supported dimensions.
 
 A detached supervisor owns each recording. QML reloads and Settings closure do not
 stop it. State and diagnostic logs live under
-`$XDG_STATE_HOME/artificial-impulse/recorder/`; a private GSR IPC socket lives under
+`$XDG_STATE_HOME/endless-Impulse/recorder/`; a private GSR IPC socket lives under
 `$XDG_RUNTIME_DIR/artificial-recorder-UID/`. Only the session's tracked PID and
 process-start identity can be controlled. Stopping waits for GSR to finalize the
 file; no process-name-wide kill is used.
