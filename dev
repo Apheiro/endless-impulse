@@ -3,31 +3,33 @@ set -euo pipefail
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 cd "$root"
 command -v nix >/dev/null || { echo 'Install Nix first. See packaging/nix/README.md.' >&2; exit 1; }
+# Include new native/QML files in a dirty checkout without staging or committing.
+flake_ref="path:$root"
 export DOTS_SHELL_SOURCE="$root/src/quickshell"
 nix_cmd=(nix --extra-experimental-features 'nix-command flakes')
 action="${1:-run}"
 if (($#)); then shift; fi
 case "$action" in
-  run) exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@" ;;
-  settings) exec "${nix_cmd[@]}" run "$root#settings" -- --no-duplicate "$@" ;;
+  run) exec "${nix_cmd[@]}" run "${flake_ref}#default" -- --no-duplicate "$@" ;;
+  settings) exec "${nix_cmd[@]}" run "${flake_ref}#settings" -- --no-duplicate "$@" ;;
   stop)
     if python3 "$root/src/quickshell/scripts/shell/control.py" health; then
       exec python3 "$root/src/quickshell/scripts/shell/control.py" stop
     fi
-    exec "${nix_cmd[@]}" run "$root#default" -- kill "$@"
+    exec "${nix_cmd[@]}" run "${flake_ref}#default" -- kill "$@"
     ;;
   restart)
     # Prepare the replacement before stopping the desktop. After a checkout move,
     # its source path differs from the running shell's registered path.
-    "${nix_cmd[@]}" build "$root#default" --no-link
+    "${nix_cmd[@]}" build "${flake_ref}#default" --no-link
     if python3 "$root/src/quickshell/scripts/shell/control.py" health; then
       python3 "$root/src/quickshell/scripts/shell/control.py" stop
     else
-      "${nix_cmd[@]}" run "$root#default" -- kill || true
+      "${nix_cmd[@]}" run "${flake_ref}#default" -- kill || true
     fi
-    exec "${nix_cmd[@]}" run "$root#default" -- --no-duplicate "$@"
+    exec "${nix_cmd[@]}" run "${flake_ref}#default" -- --no-duplicate "$@"
     ;;
-  build) exec "${nix_cmd[@]}" build "$root#default" "$@" ;;
-  check) exec "${nix_cmd[@]}" develop "$root" --command python3 -m unittest discover -s tests -v "$@" ;;
+  build) exec "${nix_cmd[@]}" build "${flake_ref}#default" "$@" ;;
+  check) exec "${nix_cmd[@]}" develop "$flake_ref" --command python3 -m unittest discover -s tests -v "$@" ;;
   *) echo 'Usage: ./dev [run|settings|stop|restart|build|check]' >&2; exit 2 ;;
 esac
