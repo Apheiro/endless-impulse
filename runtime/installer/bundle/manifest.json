@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "payload_version": "0.1.0-subset",
+  "completeness": "subset",
+  "dependencies": "not_implemented",
+  "services": "not_implemented",
+  "files": [
+    {
+      "source": "payload/00-ShortcutSymbols.js",
+      "category": "quickshell_config",
+      "destination": "modules/shared/functions/ShortcutSymbols.js",
+      "sha256": "fe57b940ac51949da2100f1680735972e2dd28a7972c1662b53c582662b5c79b",
+      "ownership": "managed",
+      "mode": 420
+    },
+    {
+      "source": "payload/01-control.py",
+      "category": "runtime",
+      "destination": "scripts/shell/control.py",
+      "sha256": "b74ced0a9fc3d34963ed7f4eb210d18fbf0fff3e868bae2546e75c1021a2ebd9",
+      "ownership": "managed",
+      "mode": 420
+    },
+    {
+      "source": "payload/02-shortcuts.lua",
+      "category": "hypr_config",
+      "destination": "hyprland/services/shortcuts.lua",
+      "sha256": "c4c31db2211747c78bd382e9609ac0390f6dca000852555f092b3012cf3a7ead",
+      "ownership": "managed",
+      "mode": 420
+    },
+    {
+      "source": "payload/03-desktop.lua",
+      "category": "hypr_config",
+      "destination": "hyprland/services/desktop.lua",
+      "sha256": "6af61674de61e17f362e1b7b103a88f23b9c84fd52f1c99116b26d242feca310",
+      "ownership": "managed",
+      "mode": 420
+    },
+    {
+      "source": "payload/04-keybinds.lua",
+      "category": "hypr_config",
+      "destination": "hyprland/keybinds.lua",
+      "sha256": "4ef88ea1ed4118db2188b5a48131612537b0210d681e67d08f245f25ffa904dc",
+      "ownership": "managed",
+      "mode": 420
+    },
+    {
+      "source": "payload/05-keybinds.lua",
+      "category": "hypr_config",
+      "destination": "custom/keybinds.lua",
+      "sha256": "fb03943615e59a8038685f7fc7d338695ae626d3d55840d0235c622b9d62f308",
+      "ownership": "user",
+      "mode": 420
+    },
+    {
+      "source": "payload/06-illogical-impulse.svg",
+      "category": "data",
+      "destination": "icons/illogical-impulse.svg",
+      "sha256": "8fff2ead20ea10cd49787411945af8fffccf46830c32ba22f78ae4f9b42b37dc",
+      "ownership": "managed",
+      "mode": 420
+    }
+  ],
+  "assets": [
+    {
+      "source": "assets/arch-dependencies.json",
+      "sha256": "77b9692d1e1c32e27d76c0db0d4955fefaa3d2553884f0d3d16564b40ba7e359",
+      "role": "arch_dependencies"
+    },
+    {
+      "source": "assets/host-services.json",
+      "sha256": "db0cf862caf5edc554d34d3b441074e3e7e923d0aa8b4aa765584ff263456ca1",
+      "role": "services_reference"
+    },
+    {
+      "source": "assets/LICENSE",
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986",
+      "role": "license"
+    }
+  ]
+}

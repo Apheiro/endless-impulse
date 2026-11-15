@@ -1,0 +1,113 @@
+{
+  "schema": 1,
+  "groups": [
+    {
+      "name": "Audio",
+      "packages": [
+        "pipewire",
+        "pipewire-audio",
+        "pipewire-pulse",
+        "wireplumber",
+        "rtkit"
+      ],
+      "userUnits": [
+        "pipewire.socket",
+        "pipewire-pulse.socket",
+        "wireplumber.service"
+      ]
+    },
+    {
+      "name": "Network",
+      "packages": [
+        "networkmanager",
+        "wpa_supplicant",
+        "dnsmasq"
+      ],
+      "systemUnits": [
+        "NetworkManager.service"
+      ],
+      "activation": "NetworkManager starts its Wi-Fi and hotspot helpers on demand; no separate dnsmasq service is enabled."
+    },
+    {
+      "name": "Bluetooth",
+      "packages": [
+        "bluez",
+        "bluez-utils"
+      ],
+      "systemUnits": [
+        "bluetooth.service"
+      ]
+    },
+    {
+      "name": "Power",
+      "packages": [
+        "upower",
+        "power-profiles-daemon"
+      ],
+      "systemUnits": [
+        "power-profiles-daemon.service"
+      ],
+      "activation": "UPower is D-Bus activated."
+    },
+    {
+      "name": "Authentication & secrets",
+      "packages": [
+        "dbus",
+        "polkit",
+        "gnome-keyring"
+      ],
+      "activation": "D-Bus activation; the shell provides its own Polkit agent."
+    },
+    {
+      "name": "Desktop portals",
+      "packages": [
+        "xdg-desktop-portal",
+        "xdg-desktop-portal-hyprland",
+        "xdg-desktop-portal-gtk",
+        "xdg-desktop-portal-kde"
+      ],
+      "activation": "D-Bus activation in the Hyprland session."
+    },
+    {
+      "name": "Location",
+      "packages": [
+        "geoclue"
+      ],
+      "activation": "D-Bus activation when location is requested."
+    },
+    {
+      "name": "Audio effects",
+      "packages": [
+        "easyeffects"
+      ],
+      "activation": "Started in service mode by the project's Hyprland session."
+    },
+    {
+      "name": "Input automation",
+      "packages": [
+        "ydotool"
+      ],
+      "userUnits": [
+        "ydotool.service"
+      ],
+      "requiresUinput": true
+    },
+    {
+      "name": "Idle & locking",
+      "packages": [
+        "hypridle"
+      ],
+      "activation": "Started by the project's Hyprland session; locking uses the host PAM stack."
+    },
+    {
+      "name": "Tailscale",
+      "packages": [
+        "tailscale"
+      ],
+      "systemUnits": [
+        "tailscaled.service"
+      ],
+      "activation": "Starts the daemon only; login, connection and operator permissions remain user controlled."
+    }
+  ]
+}
