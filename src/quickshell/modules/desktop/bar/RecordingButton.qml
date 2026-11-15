@@ -117,6 +117,6 @@ RippleButton {
                 onClicked: { menu.visible = false; ScreenRecorder.stop(); }
             }
         }
-        HyprlandFocusGrab { active: menu.visible; windows: [root.QsWindow.window, menu]; onCleared: menu.visible = false }
+        AuthenticationFocusGrab { active: menu.visible; windows: [root.QsWindow.window, menu]; onCleared: menu.visible = false }
     }
 }

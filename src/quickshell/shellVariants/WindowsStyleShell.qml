@@ -10,7 +10,6 @@ import qs.modules.windowsStyle.notificationCenter
 import qs.modules.windowsStyle.notificationPopup
 import qs.modules.windowsStyle.onScreenDisplay
 // import qs.modules.windowsStyle.overlay
-import qs.modules.windowsStyle.polkit
 import qs.modules.windowsStyle.screenSnip
 import qs.modules.windowsStyle.startMenu
 import qs.modules.windowsStyle.sessionScreen
@@ -35,7 +34,6 @@ Scope {
     PanelLoader { component: WaffleNotificationPopup {} }
     PanelLoader { component: WaffleOSD {} }
     // PanelLoader { component: WaffleOverlay {} }
-    PanelLoader { component: WafflePolkit {} }
     PanelLoader { component: WScreenSnip {} }
     PanelLoader { component: WaffleStartMenu {} }
     PanelLoader { component: WaffleSessionScreen {} }

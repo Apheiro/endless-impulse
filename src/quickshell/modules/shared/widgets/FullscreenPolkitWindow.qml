@@ -1,44 +1,7 @@
-pragma ComponentBehavior: Bound
-import qs
-import qs.services
-import qs.modules.shared
-import qs.modules.shared.widgets
-import qs.modules.shared.functions
 import QtQuick
-import Quickshell
-import Quickshell.Wayland
+import qs.modules.shared.widgets
 
-Scope {
-    id: root
-    required property Component contentComponent
-    
-    Loader {
-        active: PolkitService.active
-        sourceComponent: Variants {
-            model: Quickshell.screens
-            delegate: PanelWindow {
-                id: panelWindow
-                required property var modelData
-                screen: modelData
-                
-                anchors {
-                    top: true
-                    left: true
-                    right: true
-                    bottom: true
-                }
-
-                color: "transparent"
-                WlrLayershell.namespace: "quickshell:polkit"
-                WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
-                WlrLayershell.layer: WlrLayer.Overlay
-                exclusionMode: ExclusionMode.Ignore
-
-                Loader {
-                    anchors.fill: parent
-                    sourceComponent: root.contentComponent
-                }
-            }
-        }
-    }
+// Compatibility source name. Authentication now has one bottom panel.
+PolkitPanel {
+    property Component contentComponent
 }

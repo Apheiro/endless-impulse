@@ -1,5 +1,6 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import Quickshell
 import Quickshell.Hyprland
@@ -61,7 +62,7 @@ Singleton {
         );
     }
 
-    HyprlandFocusGrab {
+    AuthenticationFocusGrab {
         id: grab
         windows: root.dismissable.every(w => !w?.focusable) || root.dismissable.some(w => hasActive(w?.contentItem)) ? [...root.dismissable, ...root.persistent] : [...root.dismissable]
         active: root.dismissable.length > 0

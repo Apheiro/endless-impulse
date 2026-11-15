@@ -1,3 +1,4 @@
+import qs.modules.shared.primitives.common
 import QtQuick
 import Quickshell
 import Quickshell.Io
@@ -38,7 +39,7 @@ Scope {
             implicitWidth: content.implicitWidth
             implicitHeight: content.implicitHeight
 
-            HyprlandFocusGrab {
+            AuthenticationFocusGrab {
                 id: focusGrab
                 active: true
                 windows: [panelWindow]

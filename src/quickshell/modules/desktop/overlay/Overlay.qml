@@ -1,3 +1,4 @@
+import qs.modules.shared.primitives.common
 import qs
 import qs.modules.shared
 import qs.modules.shared.widgets
@@ -44,12 +45,12 @@ Scope {
                 right: true
             }
 
-            HyprlandFocusGrab {
+            AuthenticationFocusGrab {
                 id: grab
                 windows: [overlayWindow]
                 active: false
                 onCleared: () => {
-                    if (!active) GlobalStates.overlayOpen = false;
+                    GlobalStates.overlayOpen = false;
                 }
             }
 

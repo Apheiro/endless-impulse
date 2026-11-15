@@ -7,6 +7,7 @@ hl.on("hyprland.start", function ()
     hl.exec_cmd("$HOME/.config/hypr/custom/scripts/__restore_video_wallpaper.sh")
 
     -- Core components (authentication, lock screen, notification daemon)
+    -- Quickshell owns the native Polkit agent. See start_polkit_agent.sh --fallback for recovery.
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
     hl.exec_cmd("hypridle")
     hl.exec_cmd("dbus-update-activation-environment --all")

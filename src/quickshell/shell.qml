@@ -9,6 +9,7 @@
 import "modules/shared"
 import "services"
 import "shellVariants"
+import qs.modules.shared.widgets
 import qs.modules.desktop.quickPanels
 
 import QtQuick
@@ -23,9 +24,15 @@ ShellRoot {
     // Stuff for every panel family
     ReloadPopup {}
     QuickPanel {}
+    // Authentication is session-wide and survives layout family switches.
+    LazyLoader {
+        active: Config.ready
+        component: PolkitPanel {}
+    }
 
     Component.onCompleted: {
         registerRuntime.running = true
+        InternalSurfaces.load()
         // Legacy X11 applications need a bridge to the shared StatusNotifier registry.
         Quickshell.execDetached(["sh", "-c", "command -v xembedsniproxy >/dev/null && (pidof xembedsniproxy >/dev/null || exec xembedsniproxy)"])
         AnimationSpeed.load()

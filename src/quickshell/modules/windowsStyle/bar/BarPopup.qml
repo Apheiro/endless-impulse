@@ -1,4 +1,5 @@
 pragma ComponentBehavior: Bound
+import qs.modules.shared.primitives.common
 import QtQuick
 import QtQuick.Controls
 import Quickshell
@@ -54,7 +55,7 @@ Loader {
             edges: root.barAtBottom ? Edges.Top : Edges.Bottom
         }
 
-        HyprlandFocusGrab {
+        AuthenticationFocusGrab {
             id: focusGrab
             active: true
             windows: [popupWindow]
@@ -67,7 +68,7 @@ Loader {
         }
 
         function grabFocus() {
-            focusGrab.active = true; // Doesn't work
+            focusGrab.requestFocus(); // Doesn't work
         }
 
         implicitWidth: realContent.implicitWidth + (root.ambientShadowWidth * 2) + (root.visualMargin * 2)

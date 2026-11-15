@@ -25,7 +25,7 @@ Item {
     }
 
     function grabFocus() {
-        focusGrab.active = true;
+        focusGrab.requestFocus();
     }
 
     function setExtraWindowAndGrabFocus(window) {
@@ -52,7 +52,7 @@ Item {
         }
     }
 
-    HyprlandFocusGrab {
+    AuthenticationFocusGrab {
         id: focusGrab
         active: false
         windows: [trayOverflowLayout.QsWindow?.window, root.activeMenu]

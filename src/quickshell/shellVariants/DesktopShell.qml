@@ -12,7 +12,6 @@ import qs.modules.desktop.notificationPopup
 import qs.modules.desktop.onScreenDisplay
 import qs.modules.desktop.onScreenKeyboard
 import qs.modules.desktop.overview
-import qs.modules.desktop.polkit
 import qs.modules.desktop.recording
 import qs.modules.desktop.regionSelector
 import qs.modules.desktop.screenCorners
@@ -39,7 +38,6 @@ Scope {
     PanelLoader { component: OnScreenKeyboard {} }
     PanelLoader { component: Overlay {} }
     PanelLoader { component: Overview {} }
-    PanelLoader { component: Polkit {} }
     PanelLoader { component: RegionSelector {} }
     RecordingOverlay {}
     PanelLoader { component: ScreenCorners {} }

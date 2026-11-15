@@ -37,11 +37,12 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
 
-    HyprlandFocusGrab {
+    Settings.SettingsFocusGrab {
         id: settingsFocusGrab
         windows: previewPrompt.visible ? [root, previewPrompt] : [root]
-        active: root.visible
-        onCleared: Qt.quit()
+        shown: root.visible
+        authorizing: FirewalldControl.authorizing
+        onDismissed: Qt.quit()
     }
 
     function sizeForScreen(screenWidth, screenHeight, reserved) {
@@ -69,7 +70,7 @@ PanelWindow {
 
     function selectSection(section) {
         if (!section) return;
-        const components = {audio: "AudioConfig.qml", network: "NetworkConfig.qml", bluetooth: "BluetoothConfig.qml"};
+        const components = {storage: "StorageConfig.qml", audio: "AudioConfig.qml", network: "NetworkConfig.qml", bluetooth: "BluetoothConfig.qml", firewall: "FirewallConfig.qml", "security-network": "FirewallConfig.qml"};
         const parts = section.split("/");
         const component = components[parts[0]] || parts[0];
         if (parts[0] === "audio" && parts[1]) AudioControl.section = parts[1];
@@ -130,7 +131,7 @@ PanelWindow {
             Layout.leftMargin: 10
             StyledText {
                 Layout.fillWidth: true
-                text: "Artificial Impulse · " + Translation.tr("Settings")
+                text: "Endless Impulse · " + Translation.tr("Settings")
                 font.pixelSize: Appearance.font.pixelSize.larger
                 font.weight: Font.Medium
             }
