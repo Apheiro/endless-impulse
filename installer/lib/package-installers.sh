@@ -80,3 +80,15 @@ install-python-packages(){
   fi
   x deactivate
 }
+
+# Build the locked native engine before the installed page can be opened.
+install-storage-runtime(){
+  local storage_runtime="${XDG_DATA_HOME:-$HOME/.local/share}/dots-hyperland/storage"
+  command -v cargo >/dev/null || { echo 'Rust/Cargo is required to build Storage.' >&2; return 1; }
+  x cargo build --locked --release --manifest-path "$REPO_ROOT/runtime/storage/Cargo.toml"
+  x install -Dm755 "$REPO_ROOT/runtime/storage/target/release/endless-storage" "$storage_runtime/endless-storage"
+  if [[ -n "${INSTALLED_LISTFILE:-}" ]]; then
+    x mkdir -p "$(dirname "$INSTALLED_LISTFILE")"
+    realpath -se "$storage_runtime/endless-storage" >> "$INSTALLED_LISTFILE"
+  fi
+}

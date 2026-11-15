@@ -7,7 +7,7 @@ from pathlib import Path
 
 GROUPS = [
     ('desktop', 'Session & hardware', 'desktop_windows', 'The host session, hardware services and desktop authentication.',
-     'hyprland wayland hypridle hyprlock hyprsunset mesa libdrm libxcb upower power-profiles-daemon dbus polkit geoclue polkit-kde-agent gnome-keyring xdg-user-dirs'),
+     'hyprland wayland hypridle hyprlock hyprsunset mesa libdrm libxcb upower power-profiles-daemon dbus polkit geoclue gnome-keyring xdg-user-dirs'),
     ('runtime', 'Interface & shared runtimes', 'code', 'Quickshell, Qt/QML, Python integration and formula rendering.',
      'quickshell qt6-5compat qt6-base qt6-declarative qt6-imageformats qt6-multimedia qt6-positioning qt6-quicktimeline qt6-sensors qt6-svg qt6-tools qt6-translations qt6-virtualkeyboard qt6-wayland qt6-avif-image-plugin kirigami syntax-highlighting glib2 gobject-introspection python-gobject nodejs npm uv'),
     ('audio', 'Audio & Bluetooth', 'volume_up', 'Audio services, application volumes, media controls and BlueZ devices.',
@@ -19,14 +19,15 @@ GROUPS = [
     ('appearance', 'Themes, fonts & application integration', 'palette', 'Wallpaper-derived colors, toolkit themes, fonts, icons and desktop portals.',
      'matugen breeze breeze-plus adw-gtk-theme-git bibata-cursor-theme-bin darkly-bin fontconfig gtk4 libadwaita gnome-desktop-4 libnotify libdbusmenu-gtk3 libportal-gtk4 xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland xdg-desktop-portal-kde otf-space-grotesk ttf-jetbrains-mono-nerd ttf-material-symbols-variable-git ttf-readex-pro ttf-rubik-vf ttf-twemoji'),
     ('tools', 'Desktop tools & integrations', 'construction', 'Utilities used by individual desktop features and configured application shortcuts.',
-     'brightnessctl ddcutil dolphin systemsettings plasma-workspace kdialog kitty fish fuzzel libqalculate translate-shell songrec wlogout wtype ydotool'),
+     'rust brightnessctl ddcutil dolphin systemsettings plasma-workspace kdialog kitty fish fuzzel libqalculate translate-shell songrec wlogout wtype ydotool'),
     ('build', 'Build & command-line support', 'terminal', 'Build tools and command-line helpers included by the installer.',
-     'bc clang cmake cpptrace coreutils curl eza go-yq jemalloc jq libsoup3 procps-ng ripgrep rsync starship wget'),
+     'bc clang cmake cpptrace coreutils util-linux curl eza go-yq jemalloc jq libsoup3 procps-ng ripgrep rsync starship wget'),
 ]
-HOST = set('tailscale wpa_supplicant dbus polkit rtkit power-profiles-daemon easyeffects pipewire-audio bluez-utils hyprland wayland bluez networkmanager pipewire pipewire-pulse wireplumber upower geoclue gnome-keyring polkit-kde-agent xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland xdg-desktop-portal-kde'.split())
+HOST = set('tailscale wpa_supplicant dbus polkit rtkit power-profiles-daemon easyeffects pipewire-audio bluez-utils hyprland wayland bluez networkmanager pipewire pipewire-pulse wireplumber upower geoclue gnome-keyring xdg-desktop-portal xdg-desktop-portal-gtk xdg-desktop-portal-hyprland xdg-desktop-portal-kde'.split())
 FEATURE = set('dnsmasq hyprlock dolphin systemsettings plasma-workspace kdialog kitty fish fuzzel translate-shell songrec wlogout cava'.split())
 BUILD = set('clang cmake cpptrace'.split())
 DETAILS = {
+    'rust': 'Build toolchain for the native endless-storage runtime (no ncdu dependency).',
     'hyprland': 'Wayland compositor: windows, workspaces, monitors and effects.',
     'wayland': 'Display protocol libraries for the desktop session.',
     'quickshell': 'The native desktop interface, panels and Settings.',
@@ -47,7 +48,7 @@ DETAILS = {
     'dnsmasq': 'Feature-specific support for connection sharing and Wi-Fi hotspots.',
     'gpu-screen-recorder': 'GPU video recording. The runtime prefers the host binary and can use its Nix fallback.',
     'matugen': 'Generates the shared color palette from the wallpaper.',
-    'polkit-kde-agent': 'Host permission prompts for privileged desktop operations; still required by those operations.',
+    'polkit': 'Host authorization authority; native Quickshell PolkitAgent presents authentication. KDE agent is optional manual recovery.',
     'gnome-keyring': 'Host secret storage for compatible applications and integrations.',
     'hyprlock': 'Fallback lock screen when the native Quickshell lock cannot run.',
     'systemsettings': 'External KDE configuration tools retained for configured integrations.',
@@ -84,6 +85,7 @@ def build(root):
     shared['count']=len(shared['children'])
     network=next(group for group in groups if group['id']=='group:network')
     network['children'].append(dict(id='optional:vpn',title='VPN provider plugins',description='Provider-based VPNs such as OpenVPN need a matching host plugin and compatible importer. WireGuard is native to NetworkManager.',scope='Optional host integration',optional=True,origin='',declared=False,children=[],uses=['vpn OpenVPN OpenConnect plugins import'],tags=['optional']))
+    network['children'].append(dict(id='optional:firewalld', title='Firewalld', description='Optional host firewalld daemon and firewall-cmd client for the native Firewall settings panel. Uses system D-Bus and session Polkit authorization; never starts the daemon automatically.', scope='Optional host integration', optional=True, origin='', declared=False, children=[], uses=['firewall zones services ports policies security'], tags=['optional']))
     network['count']=len(network['children'])
     return dict(schema=1, reference='Arch Linux', total=len(origin), repository=len(manifest['repository']), aur=len(manifest['aur']), groups=groups, manifests=MANIFESTS, fingerprint=hashlib.sha256(path.read_bytes()).hexdigest())
 

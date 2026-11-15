@@ -104,7 +104,7 @@ packages = [
   "NetworkManager",
   "NetworkManager-libnm",
   "dnsmasq",
-  "polkit-kde",
+  "polkit",
   "dolphin",
   "plasma-systemsettings"
 ]
@@ -190,6 +190,9 @@ packages = [
 # Toolkit
 [groups.toolkit]
 packages = [
+  "rust",
+  "cargo",
+  "util-linux",
   "upower",
   "wtype",
   "ydotool"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
+case "${1:-run}" in
+    run)
+        exec cargo run --locked --release --quiet
+        ;;
+    check)
+        cargo fmt --check
+        cargo clippy --locked --all-targets -- -D warnings
+        cargo test --locked
+        ;;
+    bench)
+        cargo build --locked --release --bins --examples
+        shift
+        exec cargo run --locked --release --quiet --example fixture_bench -- "$PWD/target/release/endless-storage" "$@"
+        ;;
+    *)
+        echo 'Usage: runtime/storage/dev [run|check|bench [BASELINE_BINARY]]' >&2
+        exit 2
+        ;;
+esac

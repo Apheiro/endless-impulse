@@ -36,7 +36,7 @@ function auto_backup_configs(){
   esac
   if $backup;then
     backup_clashing_targets config/xdg/config $XDG_CONFIG_HOME "${BACKUP_DIR}/.config"
-    backup_clashing_targets src/quickshell "$XDG_CONFIG_HOME/quickshell/artificial-impulse" "${BACKUP_DIR}/.config/quickshell/artificial-impulse"
+    backup_clashing_targets src/quickshell "$XDG_CONFIG_HOME/quickshell/endless-Impulse" "${BACKUP_DIR}/.config/quickshell/endless-Impulse"
     backup_clashing_targets config/xdg/data $XDG_DATA_HOME "${BACKUP_DIR}/.local/share"
     printf "${STY_BLUE}Backup into \"${BACKUP_DIR}\" finished.${STY_RST}\n"
   fi
@@ -218,6 +218,12 @@ esac
 
 showfun auto_update_git_submodule
 v auto_update_git_submodule
+
+# The files-only entry point must also deliver the native Storage engine.
+if [[ "$INSTALL_VIA_NIX" != true ]]; then
+  showfun install-storage-runtime
+  v install-storage-runtime
+fi
 
 # Backup
 if [[ ! "${SKIP_BACKUP}" == true ]]; then auto_backup_configs; fi

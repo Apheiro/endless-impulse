@@ -1,5 +1,12 @@
 { lib, stdenvNoCC, pkgs, makeWrapper, source, shapes, buildNpmPackage }:
 let
+  storageRuntime = pkgs.rustPlatform.buildRustPackage {
+    pname = "endless-storage";
+    version = "0.1.0";
+    src = builtins.path { path = source + /runtime/storage; name = "endless-storage-source"; filter = path: type: builtins.baseNameOf path != "target"; };
+    cargoLock.lockFile = source + /runtime/storage/Cargo.lock;
+    nativeCheckInputs = [ pkgs.coreutils ];
+  };
   mathRuntime = buildNpmPackage {
     pname = "dots-hyperland-math";
     version = "1.0.0";
@@ -45,12 +52,14 @@ in stdenvNoCC.mkDerivation {
       modules/shared/widgets/shaders/color-tint.frag
   '';
   installPhase = ''
-    mkdir -p $out/share/dots-hyperland/.config/quickshell/artificial-impulse $out/share/dots-hyperland/.local/share $out/bin $out/lib/python-env/bin
+    mkdir -p $out/share/dots-hyperland/.config/quickshell/endless-Impulse $out/share/dots-hyperland/.local/share $out/bin $out/lib/python-env/bin
     cp ${source}/packaging/nix/host-graphics.py $out/lib/host-graphics.py
-    cp -r ./. $out/share/dots-hyperland/.config/quickshell/artificial-impulse/
+    cp -r ./. $out/share/dots-hyperland/.config/quickshell/endless-Impulse/
     cp -r ${source}/config/xdg/config/. $out/share/dots-hyperland/.config/
     cp -r ${source}/config/xdg/data/. $out/share/dots-hyperland/.local/share/
-    shapeDir=$out/share/dots-hyperland/.config/quickshell/artificial-impulse/modules/shared/widgets/shapes
+    mkdir -p $out/share/dots-hyperland/.config/quickshell/endless-Impulse/runtime/storage
+    ln -s ${storageRuntime}/bin/endless-storage $out/share/dots-hyperland/.config/quickshell/endless-Impulse/runtime/storage/endless-storage
+    shapeDir=$out/share/dots-hyperland/.config/quickshell/endless-Impulse/modules/shared/widgets/shapes
     rm -rf "$shapeDir"
     cp -r ${shapes} "$shapeDir"
     cat > $out/lib/python-env/bin/activate <<'ACTIVATE'
@@ -70,21 +79,22 @@ in stdenvNoCC.mkDerivation {
         --set DOTS_MESA_DRIVERS ${pkgs.mesa}/lib/dri \
         --set DOTS_MESA_GBM ${pkgs.mesa}/lib/gbm \
         --set DOTS_MATH_RUNTIME ${mathRuntime} \
+        --set DOTS_STORAGE_EXECUTABLE ${storageRuntime}/bin/endless-storage \
         --set DOTS_SHELL_LAUNCHER "$out/bin/dots-hyperland" \
         --set ILLOGICAL_IMPULSE_VIRTUAL_ENV $out/lib/python-env \
-        --set-default DOTS_SHELL_SOURCE "$out/share/dots-hyperland/.config/quickshell/artificial-impulse" \
+        --set-default DOTS_SHELL_SOURCE "$out/share/dots-hyperland/.config/quickshell/endless-Impulse" \
         --add-flags "$out/lib/host-graphics.py ${pkgs.quickshell}/bin/quickshell" \
         --add-flags '-p "$DOTS_SHELL_SOURCE'"$entry"'"'
     done
     makeShellWrapper ${python}/bin/python3 $out/bin/dots-shell \
-      --add-flags "$out/share/dots-hyperland/.config/quickshell/artificial-impulse/scripts/shell/control.py"
+      --add-flags "$out/share/dots-hyperland/.config/quickshell/endless-Impulse/scripts/shell/control.py"
   '';
   preFixup = ''
     wrapQtApp "$out/bin/dots-hyperland"
     wrapQtApp "$out/bin/dots-hyperland-settings"
   '';
   passthru = {
-    inherit mathRuntime python tools;
+    inherit mathRuntime storageRuntime python tools;
     giPath = lib.makeSearchPath "lib/girepository-1.0" introspection;
     runtimeVersions = {
       quickshell = pkgs.quickshell.version;
