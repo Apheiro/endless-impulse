@@ -48,21 +48,31 @@ class SettingsNavigationTests(unittest.TestCase):
                 self.assertNotIn(error, logs)
 
     def test_all_pages_and_filtered_navigation(self):
+        expected_page_count = (SOURCE / "modules/settings/SettingsCatalog.qml").read_text().count('component: "')
         with tempfile.TemporaryDirectory(prefix="dots-settings-test-") as temporary:
             base = Path(temporary)
             for name in ("modules", "services", "assets", "scripts", "defaults", "translations", "GlobalStates.qml", "welcome.qml"):
-                (base / name).symlink_to(SOURCE / name, target_is_directory=(SOURCE / name).is_dir())
+                if name == "services":
+                    shutil.copytree(SOURCE / name, base / name)
+                    # This broad navigation smoke test must never analyze real
+                    # user directories when visiting the Storage page.
+                    storage_service = base / "services/Storage.qml"
+                    storage_service.write_text(storage_service.read_text().replace(
+                        "function activateSelection() {", "function activateSelection() { return;", 1).replace(
+                        'function analyze(path = "") {', 'function analyze(path = "") { return;', 1))
+                else:
+                    (base / name).symlink_to(SOURCE / name, target_is_directory=(SOURCE / name).is_dir())
             spec = importlib.util.spec_from_file_location("desktop_schema", SOURCE / "scripts/hyprland/desktop.py")
             schema = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(schema)
-            catalog = base / "state/artificial-impulse/shortcuts-catalog.json"
+            catalog = base / "state/endless-Impulse/shortcuts-catalog.json"
             catalog.parent.mkdir(parents=True)
             catalog.write_text(json.dumps([
                 {"id": "|SUPER+TAB", "default": "SUPER + Tab", "submap": "", "description": "Shell: Overview", "category": "Shell", "count": 1},
                 {"id": "|CTRL+SUPER+F1", "default": "CTRL + SUPER + F1", "submap": "", "description": "Window: Focus", "category": "Window", "count": 2}
             ]))
             text = (SOURCE / "settings.qml").read_text().replace("    property bool allowShowing: true", "    property bool allowShowing: false", 1)
-            text = text.replace("active: root.visible", "active: false")
+            text = text.replace("shown: root.visible", "shown: false")
             text = text.replace("WlrKeyboardFocus.OnDemand", "WlrKeyboardFocus.None").replace("quickshell:settings", "quickshell:settings-test")
             text = text.rstrip()[:-1] + '''
     Timer {
@@ -72,6 +82,10 @@ class SettingsNavigationTests(unittest.TestCase):
             if (root.selectedPage.component !== "AudioConfig.qml" || AudioControl.section !== "profiles") { console.error("SETTINGS_DEEP_LINK_FAILED"); Qt.quit(); return; }
             root.selectSection("network/wifi");
             if (root.selectedPage.component !== "NetworkConfig.qml" || NetworkControl.page !== "wifi") { console.error("SETTINGS_DEEP_LINK_FAILED"); Qt.quit(); return; }
+            root.selectSection("firewall");
+            if (root.selectedPage.component !== "FirewallConfig.qml") { console.error("SETTINGS_DEEP_LINK_FAILED firewall"); Qt.quit(); return; }
+            root.selectSection("security-network");
+            if (root.selectedPage.component !== "FirewallConfig.qml" || root.pages.length !== __SETTINGS_PAGE_COUNT__) { console.error("SETTINGS_DEEP_LINK_FAILED security-network"); Qt.quit(); return; }
             root.currentPage = 0;
             console.log("SETTINGS_DEEP_LINK_OK");
             DesktopSettings.fields = __DESKTOP_FIELDS__;
@@ -247,6 +261,8 @@ class SettingsNavigationTests(unittest.TestCase):
                 ["tipografía", "FontsConfig.qml"], ["búsqueda", "OverviewConfig.qml"],
                 ["captura", "CaptureConfig.qml"], ["batería", "SystemConfig.qml"],
                 ["tray icons", "BarConfig.qml"], ["privacidad", "SecurityConfig.qml"],
+                ["cortafuegos", "FirewallConfig.qml"], ["firewalld", "FirewallConfig.qml"],
+                ["almacenamiento", "StorageConfig.qml"],
                 ["monitores", "MonitorsConfig.qml"], ["desenfoque", "HyprlandConfig.qml"], ["sensibilidad", "InputConfig.qml"]
             ];
             for (const [query, expected] of checks) {
@@ -304,6 +320,7 @@ class SettingsNavigationTests(unittest.TestCase):
 }
 '''
             text = text.replace("__DESKTOP_FIELDS__", json.dumps(schema.FIELDS)).replace("__DESKTOP_VALUES__", json.dumps({field["key"]: field["default"] for field in schema.FIELDS}))
+            text = text.replace("__SETTINGS_PAGE_COUNT__", str(expected_page_count))
             (base / "settings.qml").write_text(text)
             environment = dict(os.environ, DOTS_SHELL_SOURCE=str(base), DOTS_SETTINGS_PAGE="audio/profiles",
                                HYPRLAND_INSTANCE_SIGNATURE="isolated-settings-test",
@@ -314,7 +331,7 @@ class SettingsNavigationTests(unittest.TestCase):
             result = subprocess.run(command, env=environment, capture_output=True, text=True, timeout=20)
             logs = result.stdout + result.stderr
             self.assertEqual(result.returncode, 0, logs)
-            self.assertIn("SETTINGS_NAVIGATION_OK 21", logs)
+            self.assertIn(f"SETTINGS_NAVIGATION_OK {expected_page_count}", logs)
             self.assertIn("SETTINGS_MONITOR_OK", logs)
             self.assertIn("SETTINGS_DEEP_LINK_OK", logs)
             self.assertIn("PATH_MAP_OK", logs)
