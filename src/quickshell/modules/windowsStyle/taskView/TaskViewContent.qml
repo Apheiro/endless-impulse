@@ -61,6 +61,7 @@ Rectangle {
     property real padding: 52
     property real spacing: 25
     readonly property list<var> toplevels: ToplevelManager.toplevels.values.filter(t => {
+        if (InternalSurfaces.isInternal(t)) return false;
         const client = HyprlandData.clientForToplevel(t);
         return client && client.workspace.id === HyprlandData.activeWorkspace?.id;
     })

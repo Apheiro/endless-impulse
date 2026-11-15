@@ -25,6 +25,7 @@ Singleton {
     }
     function request(action, toplevel) {
         if (busy) return;
+        if (toplevel && InternalSurfaces.isInternal(toplevel)) return;
         const id = address(toplevel);
         if (action !== "status" && !id) { toplevel?.activate(); return; }
         if (action !== "status") { error = ""; errorAddress = id; }

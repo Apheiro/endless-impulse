@@ -80,6 +80,11 @@ Singleton {
 
             property string panelFamily: "ii" // "ii", "waffle"
 
+            property JsonObject internalSurfaces: JsonObject {
+                property bool xembedEnabled: true
+                property list<var> rules: []
+            }
+
             property JsonObject policies: JsonObject {
                 property int ai: 1 // 0: No | 1: Yes | 2: Local
                 property int weeb: 1 // 0: No | 1: Open | 2: Closet
@@ -106,6 +111,7 @@ Singleton {
 
             property JsonObject appearance: JsonObject {
                 property real animationSpeed: 1.25
+                property bool reducedMotion: false
                 property var compositorAnimationDurations: ({})
                 property JsonObject animationDurations: JsonObject {
                     property int move: 500
@@ -258,7 +264,7 @@ Singleton {
                 property int cornerStyle: 0 // 0: Hug | 1: Float | 2: Plain rectangle
                 property bool floatStyleShadow: true // Show shadow behind bar when cornerStyle == 1 (Float)
                 property bool borderless: false // true for no grouping of items
-                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/artificial-impulse/assets/icons
+                property string topLeftIcon: "spark" // Options: "distro" or any icon name in ~/.config/quickshell/endless-Impulse/assets/icons
                 property bool showBackground: true
                 property bool verbose: true
                 property bool vertical: false
